@@ -1,4 +1,4 @@
-package fr.mediaroll.mediaroll;
+package fr.mediarollClient.mediarollClient;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class MediarollApplicationTests {
+public class MediarollClientApplicationTests {
 
 	@Test
 	public void contextLoads() {
