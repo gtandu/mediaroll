@@ -24,7 +24,7 @@ public class User implements UserDetails {
 	private String lastname;
 	
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
-	protected Collection<Authority> authorities;
+	private Collection<Authority> authorities;
 	
 	public User() {
 		super();

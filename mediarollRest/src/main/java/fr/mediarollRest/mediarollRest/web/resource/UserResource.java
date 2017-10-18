@@ -22,7 +22,7 @@ public class UserResource {
 	@Autowired
 	private IUserService userService;
 
-	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	@RequestMapping(value = "/accounts", method = RequestMethod.GET)
 	public ResponseEntity<List<User>> findAll() {
 		List<User> listUser = userService.findAll();
 		if (listUser.isEmpty()) {
