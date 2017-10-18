@@ -1,7 +1,10 @@
 package fr.mediarollRest.mediarollRest.service.implementation;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fr.mediarollRest.mediarollRest.model.User;
 import fr.mediarollRest.mediarollRest.repository.UserRepository;
@@ -19,8 +22,20 @@ public class UserService implements IUserService {
 	}
 	
 	@Override
+	@Transactional
 	public boolean deleteByMail(String mail) {
-		return userRepository.deleteByMail(mail);
+		int deleteResult = userRepository.deleteByMail(mail);
+		if(deleteResult == 1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public List<User> findAll() {
+		return (List<User>) userRepository.findAll();
 	}
 
 }

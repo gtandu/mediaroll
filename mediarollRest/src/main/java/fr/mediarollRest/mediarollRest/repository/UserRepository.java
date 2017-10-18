@@ -12,7 +12,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
 	
 	Optional<User> findByMail(String mail);
 	
-	boolean deleteByMail(String mail);
+	int deleteByMail(String mail);
 	
 
 }
