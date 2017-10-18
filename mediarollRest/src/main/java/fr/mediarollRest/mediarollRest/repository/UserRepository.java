@@ -11,5 +11,8 @@ import fr.mediarollRest.mediarollRest.model.User;
 public interface UserRepository extends CrudRepository<User, Long> {
 	
 	Optional<User> findByMail(String mail);
+	
+	boolean deleteByMail(String mail);
+	
 
 }
