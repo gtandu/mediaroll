@@ -16,7 +16,11 @@ public class UserService implements IUserService {
 	@Override
 	public User findByMail(String mail) {
 		return userRepository.findByMail(mail).get();
-		
+	}
+	
+	@Override
+	public boolean deleteByMail(String mail) {
+		return userRepository.deleteByMail(mail);
 	}
 
 }
