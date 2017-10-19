@@ -13,17 +13,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import fr.mediarollRest.mediarollRest.security.Authority;
 
+@SuppressWarnings("serial")
 @Entity
 public class User implements UserDetails {
 	
 	@Id
 	private String mail;
 	private String password;
-	private String firstName;
-	private String lastName;
+	private String firstname;
+	private String lastname;
 	
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
-	protected Collection<Authority> authorities;
+	private Collection<Authority> authorities;
 	
 	public User() {
 		super();
@@ -33,8 +34,8 @@ public class User implements UserDetails {
 		super();
 		this.mail = mail;
 		this.password = password;
-		this.firstName = firstName;
-		this.lastName = lastName;
+		this.firstname = firstName;
+		this.lastname = lastName;
 	}
 	
 	public String getMail() {
@@ -50,16 +51,16 @@ public class User implements UserDetails {
 		this.password = password;
 	}
 	public String getFirstName() {
-		return firstName;
+		return firstname;
 	}
 	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+		this.firstname = firstName;
 	}
 	public String getLastName() {
-		return lastName;
+		return lastname;
 	}
 	public void setLastName(String lastName) {
-		this.lastName = lastName;
+		this.lastname = lastName;
 	}
 	
 	@Override
@@ -86,5 +87,32 @@ public class User implements UserDetails {
 	public boolean isEnabled() {
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mail == null) ? 0 : mail.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (mail == null) {
+			if (other.mail != null)
+				return false;
+		} else if (!mail.equals(other.mail))
+			return false;
+		return true;
+	}
+	
+	
 	
 }

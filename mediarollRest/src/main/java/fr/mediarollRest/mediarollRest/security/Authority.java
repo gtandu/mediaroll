@@ -9,7 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+
+import fr.mediarollRest.mediarollRest.model.User;
 
 @Entity
 public class Authority implements GrantedAuthority {
