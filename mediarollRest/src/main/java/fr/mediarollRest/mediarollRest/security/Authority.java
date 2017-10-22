@@ -10,8 +10,9 @@ import javax.persistence.ManyToOne;
 
 import org.springframework.security.core.GrantedAuthority;
 
-import fr.mediarollRest.mediarollRest.model.User;
+import fr.mediarollRest.mediarollRest.model.Account;
 
+@SuppressWarnings("serial")
 @Entity
 public class Authority implements GrantedAuthority {
 
@@ -21,7 +22,7 @@ public class Authority implements GrantedAuthority {
 	private long id;
 
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private User user;
+	private Account account;
 
 	private String role;
 
@@ -33,9 +34,9 @@ public class Authority implements GrantedAuthority {
 		this.role = role;
 	}
 
-	public Authority(User account, String role) {
+	public Authority(Account account, String role) {
 		super();
-		this.user = account;
+		this.account = account;
 		this.role = role;
 	}
 
@@ -47,12 +48,12 @@ public class Authority implements GrantedAuthority {
 		this.id = id;
 	}
 
-	public User getAccount() {
-		return user;
+	public Account getAccount() {
+		return account;
 	}
 
-	public void setAccount(User account) {
-		this.user = account;
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 
 	public String getRole() {
