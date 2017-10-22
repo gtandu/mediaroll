@@ -1,13 +1,20 @@
 package fr.mediarollRest.mediarollRest.web.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static fr.mediarollRest.mediarollRest.constant.Paths.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,62 +41,138 @@ public class AccountResourceTest {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private IAccountService userService;
+	private IAccountService accountService;
 
-	private Account user;
+	private Account account;
 
 	private ObjectMapper objectMapper = new ObjectMapper();
+	
+	private String mail;
 
 	@Before
 	public void init() {
-		user = new Account("test@gmail.com", "test", "test", "test");
+		mail = "test@gmail.com";
+		account = new Account(mail, "test", "test", "test");
 	}
 
 	@Test
 	public void testFindAllAtLeastOneUser() throws Exception {
-		List<Account> usersList = Arrays.asList(user);
+		List<Account> usersList = Arrays.asList(account);
 
-		when(userService.findAll()).thenReturn(usersList);
+		when(accountService.findAll()).thenReturn(usersList);
 
-		MvcResult result = mockMvc.perform(get("/accounts").contentType(MediaType.APPLICATION_JSON))
+		MvcResult result = mockMvc.perform(get(ACCOUNTS).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andDo(print()).andReturn();
 
-		String userJSON = objectMapper.writeValueAsString(usersList);
-		JSONAssert.assertEquals(userJSON, result.getResponse().getContentAsString(), false);
+		String accountJSON = objectMapper.writeValueAsString(usersList);
+		JSONAssert.assertEquals(accountJSON, result.getResponse().getContentAsString(), false);
+		
+		verify(accountService).findAll();
 	}
 	
 	@Test
 	public void testFindAllNoUserExist() throws Exception {
 		List<Account> usersList = Arrays.asList();
 
-		when(userService.findAll()).thenReturn(usersList);
+		when(accountService.findAll()).thenReturn(usersList);
 
-		MvcResult result = mockMvc.perform(get("/accounts").contentType(MediaType.APPLICATION_JSON))
+		MvcResult result = mockMvc.perform(get(ACCOUNTS).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNoContent()).andDo(print()).andReturn();
 		
 		assertThat(result.getResponse().getContentLength()).isEqualTo(0);
-
-	}
-
-	@Test
-	public void testGetUserByMail() throws Exception {
 		
+		verify(accountService).findAll();
+
+	}
+
+	@Test
+	public void testGetUserByMailUserExist() throws Exception {
 		
+		when(accountService.findByMail(eq(mail))).thenReturn(Optional.of(account));
+		
+		MvcResult result = mockMvc.perform(get(ACCOUNT+MAIL,mail)).andExpect(status().isOk()).andDo(print()).andReturn();
+		
+		String accountJSON = objectMapper.writeValueAsString(account);
+		JSONAssert.assertEquals(accountJSON, result.getResponse().getContentAsString(), false);
+		
+		verify(accountService).findByMail(eq(mail));
+	}
+	
+	@Test
+	public void testGetUserByMailUserNotExist() throws Exception {
+		
+		when(accountService.findByMail(eq(mail))).thenReturn(Optional.empty());
+		
+		MvcResult result = mockMvc.perform(get(ACCOUNT+MAIL,mail)).andExpect(status().isNotFound()).andDo(print()).andReturn();
+		
+		assertThat(result.getResponse().getContentLength()).isEqualTo(0);
+		
+		verify(accountService).findByMail(eq(mail));
 	}
 
 	@Test
-	public void testCreateUser() throws Exception {
-		throw new RuntimeException("not yet implemented");
+	public void testCreateUserNotExist() throws Exception {
+		when(accountService.isAccountExist(eq(account))).thenReturn(false);
+		when(accountService.saveAccount(eq(account))).thenReturn(account);
+		
+		String accountJSON = objectMapper.writeValueAsString(account);
+		mockMvc.perform(post(ACCOUNT).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isCreated()).andDo(print());
+		
+		verify(accountService).isAccountExist(eq(account));
+		verify(accountService).saveAccount(eq(account));
+	}
+	
+	@Test
+	public void testCreateUserAlreadyExist() throws Exception {
+		String accountJSON = objectMapper.writeValueAsString(account);
+
+		when(accountService.isAccountExist(eq(account))).thenReturn(true);
+		
+		mockMvc.perform(post(ACCOUNT).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isConflict()).andDo(print());
+		
+		verify(accountService).isAccountExist(eq(account));
 	}
 
 	@Test
-	public void testUpdateUser() throws Exception {
-		throw new RuntimeException("not yet implemented");
+	public void testUpdateUserExist() throws Exception {
+		
+		String accountJSON = objectMapper.writeValueAsString(account);
+		when(accountService.updateUser(eq(account))).thenReturn(account);
+		
+		mockMvc.perform(put(ACCOUNT).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isOk()).andDo(print());
+		
+		verify(accountService).updateUser(eq(account));
+	}
+	
+	@Test
+	public void testUpdateUserNotExist() throws Exception {
+		
+		String accountJSON = objectMapper.writeValueAsString(account);
+		when(accountService.updateUser(eq(account))).thenReturn(null);
+		
+		mockMvc.perform(put(ACCOUNT).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isNotFound()).andDo(print());
+		
+		verify(accountService).updateUser(eq(account));
 	}
 
 	@Test
-	public void testDeleteUserByMail() throws Exception {
-		throw new RuntimeException("not yet implemented");
+	public void testDeleteUserByMailExist() throws Exception {
+
+		when(accountService.deleteByMail(eq(mail))).thenReturn(true);
+		
+		mockMvc.perform(delete(ACCOUNT+MAIL,mail)).andExpect(status().isNoContent()).andDo(print()).andReturn();
+		
+		verify(accountService).deleteByMail(eq(mail));
+	}
+	
+	@Test
+	public void testDeleteUserByMailNotExist() throws Exception {
+
+		when(accountService.deleteByMail(eq(mail))).thenReturn(false);
+		
+		mockMvc.perform(delete(ACCOUNT+MAIL,mail)).andExpect(status().isNotFound()).andDo(print()).andReturn();
+		
+		verify(accountService).deleteByMail(eq(mail));
 	}
 
 }
