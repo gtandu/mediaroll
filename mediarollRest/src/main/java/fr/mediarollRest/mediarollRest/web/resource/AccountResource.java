@@ -69,10 +69,10 @@ public class AccountResource {
 	@RequestMapping(value = ACCOUNT, method = RequestMethod.POST)
 	public ResponseEntity<Void> createUser(@RequestBody Account account) {
 		if (accountService.isAccountExist(account)) {
-			return new ResponseEntity<>(HttpStatus.CONFLICT);
+			return new ResponseEntity<Void>(HttpStatus.CONFLICT);
 		} else {
 			accountService.saveAccount(account);
-			return new ResponseEntity<>(HttpStatus.CREATED);
+			return new ResponseEntity<Void>(HttpStatus.CREATED);
 		}
 	}
 

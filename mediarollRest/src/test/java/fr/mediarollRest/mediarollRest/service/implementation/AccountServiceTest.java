@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.repository.AccountRepository;
@@ -22,6 +23,10 @@ public class AccountServiceTest {
 
 	@Mock
 	private AccountRepository accountRepository;
+
+	@Mock
+	private BCryptPasswordEncoder passwordEncoder;
+
 	@InjectMocks
 	private AccountService accountService;
 
@@ -32,7 +37,7 @@ public class AccountServiceTest {
 	@Before
 	public void init() {
 		mail = "user1@mail.fr";
-		account1 = new Account(mail, "account1", "Joe", "Biceps");
+		account1 = new Account(mail, "passwordaccount1", "Joe", "Biceps");
 		account2 = new Account("user2@mail.fr", "account2", "Bibi", "Aumic");
 	}
 
@@ -90,41 +95,46 @@ public class AccountServiceTest {
 	}
 
 	@Test
-		public void testSaveAccount() throws Exception {
-			// WHEN
-			when(accountRepository.save(eq(account1))).thenReturn(account1);
-	
-			// GIVEN
-			accountService.saveAccount(account1);
-	
-			// THEN
-			verify(accountRepository).save(eq(account1));
-		}
+	public void testSaveAccount() throws Exception {
+		// WHEN
+		String passwordBeforeEncore = account1.getPassword();
+		String encodedpassword = "azerty123456";
+		
+		when(passwordEncoder.encode(eq(passwordBeforeEncore))).thenReturn(encodedpassword);
+		when(accountRepository.save(eq(account1))).thenReturn(account1);
+
+		// GIVEN
+		accountService.saveAccount(account1);
+
+		// THEN
+		verify(passwordEncoder).encode(passwordBeforeEncore);
+		verify(accountRepository).save(eq(account1));
+	}
 
 	@Test
-		public void testIsAccountExistTrue() throws Exception {
-			// WHEN
-			when(accountRepository.findByMail(eq(mail))).thenReturn(Optional.of(account1));
-	
-			// GIVEN
-			accountService.isAccountExist(account1);
-	
-			// THEN
-			verify(accountRepository).findByMail(eq(mail));
-	
-		}
+	public void testIsAccountExistTrue() throws Exception {
+		// WHEN
+		when(accountRepository.findByMail(eq(mail))).thenReturn(Optional.of(account1));
+
+		// GIVEN
+		accountService.isAccountExist(account1);
+
+		// THEN
+		verify(accountRepository).findByMail(eq(mail));
+
+	}
 
 	@Test
-		public void testIsAccountExistFalse() throws Exception {
-			// WHEN
-			when(accountRepository.findByMail(eq(mail))).thenReturn(Optional.empty());
-	
-			// GIVEN
-			accountService.isAccountExist(account1);
-	
-			// THEN
-			verify(accountRepository).findByMail(eq(mail));
-		}
+	public void testIsAccountExistFalse() throws Exception {
+		// WHEN
+		when(accountRepository.findByMail(eq(mail))).thenReturn(Optional.empty());
+
+		// GIVEN
+		accountService.isAccountExist(account1);
+
+		// THEN
+		verify(accountRepository).findByMail(eq(mail));
+	}
 
 	@Test
 	public void testUpdateUserWithUserExist() throws Exception {

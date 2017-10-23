@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -56,6 +57,7 @@ public class AccountResourceTest {
 	}
 
 	@Test
+	@WithMockUser
 	public void testFindAllAtLeastOneUser() throws Exception {
 		List<Account> usersList = Arrays.asList(account);
 
@@ -71,6 +73,7 @@ public class AccountResourceTest {
 	}
 	
 	@Test
+	@WithMockUser
 	public void testFindAllNoUserExist() throws Exception {
 		List<Account> usersList = Arrays.asList();
 
@@ -86,6 +89,7 @@ public class AccountResourceTest {
 	}
 
 	@Test
+	@WithMockUser
 	public void testGetUserByMailUserExist() throws Exception {
 		
 		when(accountService.findByMail(eq(mail))).thenReturn(Optional.of(account));
@@ -99,6 +103,7 @@ public class AccountResourceTest {
 	}
 	
 	@Test
+	@WithMockUser
 	public void testGetUserByMailUserNotExist() throws Exception {
 		
 		when(accountService.findByMail(eq(mail))).thenReturn(Optional.empty());
@@ -111,6 +116,7 @@ public class AccountResourceTest {
 	}
 
 	@Test
+	@WithMockUser
 	public void testCreateUserNotExist() throws Exception {
 		when(accountService.isAccountExist(eq(account))).thenReturn(false);
 		when(accountService.saveAccount(eq(account))).thenReturn(account);
@@ -123,6 +129,7 @@ public class AccountResourceTest {
 	}
 	
 	@Test
+	@WithMockUser
 	public void testCreateUserAlreadyExist() throws Exception {
 		String accountJSON = objectMapper.writeValueAsString(account);
 
@@ -134,6 +141,7 @@ public class AccountResourceTest {
 	}
 
 	@Test
+	@WithMockUser
 	public void testUpdateUserExist() throws Exception {
 		
 		String accountJSON = objectMapper.writeValueAsString(account);
@@ -145,6 +153,7 @@ public class AccountResourceTest {
 	}
 	
 	@Test
+	@WithMockUser
 	public void testUpdateUserNotExist() throws Exception {
 		
 		String accountJSON = objectMapper.writeValueAsString(account);
@@ -156,6 +165,7 @@ public class AccountResourceTest {
 	}
 
 	@Test
+	@WithMockUser
 	public void testDeleteUserByMailExist() throws Exception {
 
 		when(accountService.deleteByMail(eq(mail))).thenReturn(true);
@@ -166,6 +176,7 @@ public class AccountResourceTest {
 	}
 	
 	@Test
+	@WithMockUser
 	public void testDeleteUserByMailNotExist() throws Exception {
 
 		when(accountService.deleteByMail(eq(mail))).thenReturn(false);

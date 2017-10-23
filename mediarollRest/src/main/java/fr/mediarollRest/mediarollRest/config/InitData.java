@@ -6,21 +6,21 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import fr.mediarollRest.mediarollRest.model.Account;
-import fr.mediarollRest.mediarollRest.repository.AccountRepository;
+import fr.mediarollRest.mediarollRest.service.IAccountService;
 
 @Component
 public class InitData implements ApplicationRunner {
 
 	@Autowired
-	private AccountRepository accountRepository;
+	private IAccountService accountService;
 
 	public void run(ApplicationArguments args) {
 		
 		Account account1 = new Account("g.tandu@hotmail.fr", "glodie", "Glodie", "Tandu");
 		Account account2 = new Account("test@mail.fr","test","test","test");
 		
-		accountRepository.save(account1);
-		accountRepository.save(account2);
+		accountService.saveAccount(account1);
+		accountService.saveAccount(account2);
 	}
 	
 	

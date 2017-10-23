@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,10 +17,12 @@ public class AccountService implements IAccountService {
 	
 	@Autowired
 	private AccountRepository accountRepository;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
 	@Override
 	public Optional<Account> findByMail(String mail) {
-		
 		return accountRepository.findByMail(mail);
 	}
 	
@@ -38,6 +41,7 @@ public class AccountService implements IAccountService {
 
 	@Override
 	public Account saveAccount(Account account) {
+		account.setPassword(passwordEncoder.encode(account.getPassword()));
 		return accountRepository.save(account);
 	}
 
