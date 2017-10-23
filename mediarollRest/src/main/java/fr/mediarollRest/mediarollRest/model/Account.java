@@ -25,7 +25,7 @@ public class Account implements UserDetails {
 	private String firstname;
 	private String lastname;
 	
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")
 	private Collection<Authority> authorities;
 	
 	public Account() {
