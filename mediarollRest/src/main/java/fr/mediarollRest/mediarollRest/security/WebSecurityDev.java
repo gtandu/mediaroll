@@ -21,12 +21,14 @@ public class WebSecurityDev extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	 @Override
-	    protected void configure(HttpSecurity http) throws Exception {
-	        http
-	            .authorizeRequests()
-	            .antMatchers("/**").permitAll();
-	    }
+	@Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.authorizeRequests().antMatchers("/").permitAll().and()
+                .authorizeRequests().antMatchers("/console/**").permitAll();
+ 
+        httpSecurity.csrf().disable();
+        httpSecurity.headers().frameOptions().disable();
+    }
 
 	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
