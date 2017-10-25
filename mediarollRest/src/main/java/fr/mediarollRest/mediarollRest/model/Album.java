@@ -2,9 +2,11 @@ package fr.mediarollRest.mediarollRest.model;
 
 import java.util.List;
 
+import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+@Entity
 public class Album extends Media {
 
 	@OneToOne
@@ -13,6 +15,10 @@ public class Album extends Media {
 	@OneToMany
 	private List<Media> medias;
 
+	public Album() {
+		super();
+	}
+	
 	public Album(int id, String name, String description, String importDate, User owner) {
 		super(id, name, description, importDate, owner);
 	}
