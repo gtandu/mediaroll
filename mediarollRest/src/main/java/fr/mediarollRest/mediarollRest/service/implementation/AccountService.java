@@ -14,10 +14,10 @@ import fr.mediarollRest.mediarollRest.service.IAccountService;
 
 @Service
 public class AccountService implements IAccountService {
-	
+
 	@Autowired
 	private AccountRepository accountRepository;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
@@ -25,7 +25,7 @@ public class AccountService implements IAccountService {
 	public Optional<Account> findByMail(String mail) {
 		return accountRepository.findByMail(mail);
 	}
-	
+
 	@Override
 	@Transactional
 	public boolean deleteByMail(String mail) {
@@ -54,7 +54,7 @@ public class AccountService implements IAccountService {
 	@Override
 	public Account updateUser(Account account) {
 		Optional<Account> accountOptional = accountRepository.findByMail(account.getMail());
-		if(accountOptional.isPresent()){
+		if (accountOptional.isPresent()) {
 			Account accountFromDb = accountOptional.get();
 			accountFromDb.setFirstName(account.getFirstName());
 			accountFromDb.setLastName(account.getLastName());

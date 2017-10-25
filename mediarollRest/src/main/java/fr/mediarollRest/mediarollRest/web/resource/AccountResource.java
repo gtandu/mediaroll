@@ -45,7 +45,7 @@ public class AccountResource {
 		}
 	}
 
-	@ApiOperation(value = "View a user account")
+	@ApiOperation(value = "View an user account")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved user"),
             @ApiResponse(code = 404, message = "No users in db"),
@@ -61,11 +61,12 @@ public class AccountResource {
 		}
 	}
 
-	@ApiOperation(value = "Create a user account")
+	@ApiOperation(value = "Create an user account")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "User created"),
             @ApiResponse(code = 409, message = "User already exist in database"),
     })
+	
 	@RequestMapping(value = ACCOUNT, method = RequestMethod.POST)
 	public ResponseEntity<Void> createUser(@RequestBody Account account) {
 		if (accountService.isAccountExist(account)) {
@@ -76,7 +77,7 @@ public class AccountResource {
 		}
 	}
 
-	@ApiOperation(value = "Update a user account")
+	@ApiOperation(value = "Update an user account")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User updated"),
             @ApiResponse(code = 404, message = "User not found in database"),
@@ -94,7 +95,7 @@ public class AccountResource {
 
 	}
 
-	@ApiOperation(value = "Delete a user account")
+	@ApiOperation(value = "Delete an user account")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "User deleted"),
             @ApiResponse(code = 404, message = "User not found in database"),

@@ -1,5 +1,8 @@
 package fr.mediarollRest.mediarollRest.web.resource;
 
+import static fr.mediarollRest.mediarollRest.constant.Paths.ACCOUNT;
+import static fr.mediarollRest.mediarollRest.constant.Paths.ACCOUNTS;
+import static fr.mediarollRest.mediarollRest.constant.Paths.MAIL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -10,7 +13,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static fr.mediarollRest.mediarollRest.constant.Paths.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -85,7 +87,6 @@ public class AccountResourceTest {
 		assertThat(result.getResponse().getContentLength()).isEqualTo(0);
 		
 		verify(accountService).findAll();
-
 	}
 
 	@Test
