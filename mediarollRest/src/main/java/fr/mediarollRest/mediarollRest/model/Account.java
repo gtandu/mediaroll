@@ -11,11 +11,13 @@ import javax.persistence.OneToMany;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import fr.mediarollRest.mediarollRest.security.Authority;
 
 @SuppressWarnings("serial")
 @Entity
-public class User implements UserDetails {
+public class Account implements UserDetails {
 	
 	@Id
 	private String mail;
@@ -23,14 +25,14 @@ public class User implements UserDetails {
 	private String firstname;
 	private String lastname;
 	
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")
 	private Collection<Authority> authorities;
 	
-	public User() {
+	public Account() {
 		super();
 	}
 	
-	public User(String mail, String password, String firstName, String lastName) {
+	public Account(String mail, String password, String firstName, String lastName) {
 		super();
 		this.mail = mail;
 		this.password = password;
@@ -64,6 +66,7 @@ public class User implements UserDetails {
 	}
 	
 	@Override
+	@JsonIgnore
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;
 	}
@@ -72,14 +75,17 @@ public class User implements UserDetails {
 		return mail;
 	}
 	@Override
+	@JsonIgnore
 	public boolean isAccountNonExpired() {
 		return true;
 	}
 	@Override
+	@JsonIgnore
 	public boolean isAccountNonLocked() {
 		return true;
 	}
 	@Override
+	@JsonIgnore
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
@@ -104,7 +110,7 @@ public class User implements UserDetails {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		User other = (User) obj;
+		Account other = (Account) obj;
 		if (mail == null) {
 			if (other.mail != null)
 				return false;

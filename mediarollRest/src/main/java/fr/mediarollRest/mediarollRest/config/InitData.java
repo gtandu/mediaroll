@@ -5,22 +5,22 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import fr.mediarollRest.mediarollRest.model.User;
-import fr.mediarollRest.mediarollRest.repository.UserRepository;
+import fr.mediarollRest.mediarollRest.model.Account;
+import fr.mediarollRest.mediarollRest.service.IAccountService;
 
 @Component
 public class InitData implements ApplicationRunner {
 
 	@Autowired
-	private UserRepository userRepository;
+	private IAccountService accountService;
 
 	public void run(ApplicationArguments args) {
 		
-		User user1 = new User("g.tandu@hotmail.fr", "glodie", "Glodie", "Tandu");
-		User user2 = new User("test@mail.fr","test","test","test");
+		Account account1 = new Account("g.tandu@hotmail.fr", "glodie", "Glodie", "Tandu");
+		Account account2 = new Account("test@mail.fr","test","test","test");
 		
-		userRepository.save(user1);
-		userRepository.save(user2);
+		accountService.saveAccount(account1);
+		accountService.saveAccount(account2);
 	}
 	
 	
