@@ -24,8 +24,6 @@ public class Account extends ResourceSupport implements UserDetails {
 	
 	@Id
 	private String mail;
-	
-	
 	private String password;
 	private String firstname;
 	private String lastname;

@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static fr.mediarollRest.mediarollRest.constant.Paths.*;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -94,10 +95,7 @@ public class AccountResourceTest {
 		
 		when(accountService.findByMail(eq(mail))).thenReturn(Optional.of(account));
 		
-		MvcResult result = mockMvc.perform(get(ACCOUNT+MAIL,mail)).andExpect(status().isOk()).andDo(print()).andReturn();
-		
-		String accountJSON = objectMapper.writeValueAsString(account);
-		JSONAssert.assertEquals(accountJSON, result.getResponse().getContentAsString(), false);
+		mockMvc.perform(get(ACCOUNTS+MAIL,mail)).andExpect(status().isOk()).andDo(print()).andReturn();
 		
 		verify(accountService).findByMail(eq(mail));
 	}
@@ -108,7 +106,7 @@ public class AccountResourceTest {
 		
 		when(accountService.findByMail(eq(mail))).thenReturn(Optional.empty());
 		
-		MvcResult result = mockMvc.perform(get(ACCOUNT+MAIL,mail)).andExpect(status().isNotFound()).andDo(print()).andReturn();
+		MvcResult result = mockMvc.perform(get(ACCOUNTS+MAIL,mail)).andExpect(status().isNotFound()).andDo(print()).andReturn();
 		
 		assertThat(result.getResponse().getContentLength()).isEqualTo(0);
 		
@@ -122,7 +120,7 @@ public class AccountResourceTest {
 		when(accountService.saveAccount(eq(account))).thenReturn(account);
 		
 		String accountJSON = objectMapper.writeValueAsString(account);
-		mockMvc.perform(post(ACCOUNT).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isCreated()).andDo(print());
+		mockMvc.perform(post(ACCOUNTS).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isCreated()).andDo(print());
 		
 		verify(accountService).isAccountExist(eq(account));
 		verify(accountService).saveAccount(eq(account));
@@ -135,7 +133,7 @@ public class AccountResourceTest {
 
 		when(accountService.isAccountExist(eq(account))).thenReturn(true);
 		
-		mockMvc.perform(post(ACCOUNT).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isConflict()).andDo(print());
+		mockMvc.perform(post(ACCOUNTS).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isConflict()).andDo(print());
 		
 		verify(accountService).isAccountExist(eq(account));
 	}
@@ -147,7 +145,7 @@ public class AccountResourceTest {
 		String accountJSON = objectMapper.writeValueAsString(account);
 		when(accountService.updateUser(eq(account))).thenReturn(account);
 		
-		mockMvc.perform(put(ACCOUNT).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isOk()).andDo(print());
+		mockMvc.perform(put(ACCOUNTS).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isOk()).andDo(print());
 		
 		verify(accountService).updateUser(eq(account));
 	}
@@ -159,7 +157,7 @@ public class AccountResourceTest {
 		String accountJSON = objectMapper.writeValueAsString(account);
 		when(accountService.updateUser(eq(account))).thenReturn(null);
 		
-		mockMvc.perform(put(ACCOUNT).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isNotFound()).andDo(print());
+		mockMvc.perform(put(ACCOUNTS).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isNotFound()).andDo(print());
 		
 		verify(accountService).updateUser(eq(account));
 	}
@@ -170,7 +168,7 @@ public class AccountResourceTest {
 
 		when(accountService.deleteByMail(eq(mail))).thenReturn(true);
 		
-		mockMvc.perform(delete(ACCOUNT+MAIL,mail)).andExpect(status().isNoContent()).andDo(print()).andReturn();
+		mockMvc.perform(delete(ACCOUNTS+MAIL,mail)).andExpect(status().isNoContent()).andDo(print()).andReturn();
 		
 		verify(accountService).deleteByMail(eq(mail));
 	}
@@ -181,7 +179,7 @@ public class AccountResourceTest {
 
 		when(accountService.deleteByMail(eq(mail))).thenReturn(false);
 		
-		mockMvc.perform(delete(ACCOUNT+MAIL,mail)).andExpect(status().isNotFound()).andDo(print()).andReturn();
+		mockMvc.perform(delete(ACCOUNTS+MAIL,mail)).andExpect(status().isNotFound()).andDo(print()).andReturn();
 		
 		verify(accountService).deleteByMail(eq(mail));
 	}
