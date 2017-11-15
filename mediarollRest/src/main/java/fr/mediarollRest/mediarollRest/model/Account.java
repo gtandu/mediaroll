@@ -8,19 +8,24 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fr.mediarollRest.mediarollRest.security.Authority;
 
 @SuppressWarnings("serial")
 @Entity
-public class Account implements UserDetails {
+public class Account extends ResourceSupport implements UserDetails {
 	
 	@Id
 	private String mail;
+	
+	
 	private String password;
 	private String firstname;
 	private String lastname;
@@ -32,7 +37,8 @@ public class Account implements UserDetails {
 		super();
 	}
 	
-	public Account(String mail, String password, String firstName, String lastName) {
+	@JsonCreator
+	public Account(@JsonProperty("mail") String mail,@JsonProperty("password") String password,@JsonProperty("firstName") String firstName,@JsonProperty("lastName") String lastName) {
 		super();
 		this.mail = mail;
 		this.password = password;
@@ -46,6 +52,8 @@ public class Account implements UserDetails {
 	public void setMail(String mail) {
 		this.mail = mail;
 	}
+	
+	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}

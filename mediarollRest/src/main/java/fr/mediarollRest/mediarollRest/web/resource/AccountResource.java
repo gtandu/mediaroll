@@ -1,8 +1,9 @@
 package fr.mediarollRest.mediarollRest.web.resource;
 
-import static fr.mediarollRest.mediarollRest.constant.Paths.ACCOUNT;
 import static fr.mediarollRest.mediarollRest.constant.Paths.ACCOUNTS;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MAIL;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,24 +42,36 @@ public class AccountResource {
 		if (accountsList.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} else {
+			for (Account account : accountsList) {
+				account.add(linkTo(methodOn(AccountResource.class).getUserByMail(account.getMail())).withSelfRel());
+
+			}
 			return new ResponseEntity<>(accountsList, HttpStatus.OK);
 		}
 	}
 
-	@ApiOperation(value = "View a user account")
+	@ApiOperation(value = "View an user account")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved user"),
             @ApiResponse(code = 404, message = "No users in db"),
     })
-	@RequestMapping(value = ACCOUNT+MAIL, method = RequestMethod.GET)
+	@RequestMapping(value = ACCOUNTS+MAIL, method = RequestMethod.GET)
 	public ResponseEntity<Account> getUserByMail(@PathVariable("mail") String mail) {
 		Optional<Account> accountOptional = accountService.findByMail(mail);
 
 		if (accountOptional.isPresent()) {
-			return new ResponseEntity<>(accountOptional.get(), HttpStatus.OK);
+			
+			Account account = accountOptional.get();
+			buildLink(mail, account);
+			return new ResponseEntity<>(account, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+	}
+
+	private void buildLink(String mail, Account account) {
+		account.add(linkTo(methodOn(AccountResource.class).getUserByMail(mail)).withSelfRel());
+		account.add(linkTo(methodOn(AccountResource.class).findAll()).withRel("list accounts"));
 	}
 
 	@ApiOperation(value = "Create a user account")
@@ -66,7 +79,7 @@ public class AccountResource {
             @ApiResponse(code = 201, message = "User created"),
             @ApiResponse(code = 409, message = "User already exist in database"),
     })
-	@RequestMapping(value = ACCOUNT, method = RequestMethod.POST)
+	@RequestMapping(value = ACCOUNTS, method = RequestMethod.POST)
 	public ResponseEntity<Void> createUser(@RequestBody Account account) {
 		if (accountService.isAccountExist(account)) {
 			return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -76,12 +89,12 @@ public class AccountResource {
 		}
 	}
 
-	@ApiOperation(value = "Update a user account")
+	@ApiOperation(value = "Update an user account")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User updated"),
             @ApiResponse(code = 404, message = "User not found in database"),
     })
-	@RequestMapping(value = ACCOUNT, method = RequestMethod.PUT)
+	@RequestMapping(value = ACCOUNTS, method = RequestMethod.PUT)
 	public ResponseEntity<Account> updateUser(@RequestBody Account account) {
 
 		Account userUpdated = accountService.updateUser(account);
@@ -94,12 +107,12 @@ public class AccountResource {
 
 	}
 
-	@ApiOperation(value = "Delete a user account")
+	@ApiOperation(value = "Delete an user account")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "User deleted"),
             @ApiResponse(code = 404, message = "User not found in database"),
     })
-	@RequestMapping(value = ACCOUNT+MAIL, method = RequestMethod.DELETE)
+	@RequestMapping(value = ACCOUNTS+MAIL, method = RequestMethod.DELETE)
 	public ResponseEntity<Void> deleteUserByMail(@PathVariable("mail") String mail) {
 		boolean deleteStatus = accountService.deleteByMail(mail);
 		if (deleteStatus) {
