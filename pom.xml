@@ -33,8 +33,4 @@
 		</plugins>
 	</build>
 
-	<modules>
-		<module>mediarollRest</module>
-		<module>mediarollClient</module>
-	</modules>
 </project>
