@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col s12 m12 l3 offset-l4">
             <div class="card-panel">
-                <h4 class="header2">Bienvenue sur Mediaroll</h4>
+                <h4 class="center-align">Bienvenue sur Mediaroll</h4>
                 <div class="row">
                     <form class="col s12" name="form" (ngSubmit)="f.form.valid && login()" #f="ngForm" novalidate>
                         <div class="row">
@@ -21,11 +21,27 @@
                         </div>
                         <div class="row">
                             <div class="row">
-                                <div class="input-field col s12">
-                                    <button class="btn cyan waves-effect waves-light right" type="submit" name="action">Submit
+                                <div *ngIf="errorMsg" class="red-text">{{errorMsg}}</div>
+                                <div *ngIf="loader; else elseBlock" class="preloader-wrapper small active right">
+                                    <div class="spinner-layer spinner-green-only">
+                                        <div class="circle-clipper left">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="gap-patch">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="circle-clipper right">
+                                            <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ng-template #elseBlock>
+                                    <div class="input-field col s12">
+                                        <button class="btn waves-effect waves-light right" type="submit" name="action">Submit
                               <i class="mdi-content-send right"></i>
                             </button>
-                                </div>
+                                    </div>
+                                </ng-template>
                             </div>
                         </div>
                     </form>
