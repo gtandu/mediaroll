@@ -35,13 +35,13 @@ public class InitData implements ApplicationRunner {
 		Picture p1 = new Picture(1, "beubeu01", "Beubeu à Evry", "25/10/2017", account1);
 		Picture p2 = new Picture(2, "Beubeu02", "Beubeu en cours", "25/10/2017", account2);
 		
-		mediaService.saveMedia(p1);
-		mediaService.saveMedia(p2);
+		//mediaService.saveMedia(p1);
+		//mediaService.saveMedia(p2);
 		
 		
 		Movie m1 = new Movie(3, "Beubeu s'amuse", "Beubeu fait du breakDance", "25/10/2017", account1, "3:21");
 		
-		mediaService.saveMedia(m1);
+		//mediaService.saveMedia(m1);
 		
 		ArrayList<Media> medias = new ArrayList<Media>();
 		medias.add(p1);
@@ -49,7 +49,7 @@ public class InitData implements ApplicationRunner {
 		
 		Album a1 = new Album(4, "Les histoires de Beubeu", "Rien à dire", "25/10/2017", account1, p1, medias);
 		
-		mediaService.saveMedia(a1);
+		//mediaService.saveMedia(a1);
 	}
 	
 	

@@ -1,33 +1,43 @@
 package fr.mediarollRest.mediarollRest.service.implementation;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.repository.MediaRepository;
 import fr.mediarollRest.mediarollRest.service.IMediaService;
 
 @Service
-public class MediaService implements IMediaService{
+public class MediaService implements IMediaService {
 
 	@Autowired
 	MediaRepository mediaRepository;
 
-	public void saveMedia(Media media) {
-		mediaRepository.save(media);
+	public void saveMedia(MultipartFile media) throws IOException {
+		Tika tika = new Tika();
+		String detectedType = tika.detect(media.getBytes());
+		//MediaType.ANY_VIDEO_TYPE
+		System.out.println(detectedType);
+
+		// String extension =
+		// FilenameUtils.getExtension(file.getOriginalFilename());
+		// mediaRepository.save(media);
 	}
-	
+
 	public void deleteMedia(Media media) {
 		mediaRepository.delete(media);
 	}
-	
+
 	public Media findByName(String name) {
 		return mediaRepository.findByName(name);
 	}
-	
-	public List<Media> findAll(){
+
+	public List<Media> findAll() {
 		return mediaRepository.findAll();
 	}
 }

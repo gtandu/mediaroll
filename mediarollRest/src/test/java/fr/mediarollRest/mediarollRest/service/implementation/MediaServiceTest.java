@@ -52,7 +52,7 @@ public class MediaServiceTest {
 		//when(mediaRepository.save(any(Album.class))).thenReturn(a1);
 		
 		//GIVEN
-		mediaService.saveMedia(any(Picture.class));
+		//mediaService.saveMedia(any(Picture.class));
 		
 		//mediaService.saveMedia(any(Movie.class));
 		//mediaService.saveMedia(any(Album.class));
