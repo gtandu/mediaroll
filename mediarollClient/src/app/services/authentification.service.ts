@@ -10,7 +10,6 @@ export class AuthentificationService {
     public token: string;
 
     constructor(private http: Http) {
-        // set token if saved in local storage
         var currentUser = JSON.parse(localStorage.getItem('currentUser'));
         this.token = currentUser && currentUser.token;
     }
@@ -19,6 +18,7 @@ export class AuthentificationService {
         let body = JSON.stringify({ mail: mail, password: password });
         let headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
+
         return this.http.post('http://localhost:8080/api-token', body, options)
             .map((response: Response) => {
                 // login successful if there's a jwt token in the response

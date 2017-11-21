@@ -16,9 +16,6 @@ export class LoginFormComponent implements OnInit {
 
   ngOnInit() {
     this.authService.logout();
-    $(document).ready(function(){
-      $('.parallax').parallax();
-    });
   }
 
   login(){
@@ -29,8 +26,9 @@ export class LoginFormComponent implements OnInit {
         if (result === true) {
           // login successful
           console.log("TOKEN OK REDIRECT APP");
+          this.errorMsg = null;
           this.loader = true;
-          //this.router.navigate(['/userspace/librairies']);
+          this.router.navigate(['/mediaroll/home']);
         } else {
           // login failed
           console.log("ERROR LOGIN");

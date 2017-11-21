@@ -8,7 +8,7 @@
                         <div class="row">
                             <div class="input-field col s12">
                                 <i class="material-icons prefix">account_circle</i>
-                                <input id="email" type="email" name="email" class="validate" placeholder="Saisissez votre adresse email" required [(ngModel)]="model.email" #email="ngModel" [ngClass]="{ 'invalid': f.submitted && !email.valid }">
+                                <input id="email" type="email" name="email" class="validate" placeholder="Saisissez votre adresse email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" [(ngModel)]="model.email" #email="ngModel" [ngClass]="{ 'invalid': f.submitted && !email.valid }">
                                 <label for="email" class="active" data-error="L'adresse email saisie est incorrecte">Email</label>
                             </div>
                         </div>
