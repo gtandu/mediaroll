@@ -13,7 +13,7 @@ export class AuthentificationService {
         this.token = currentUser && currentUser.token;
     }
 
-    login(mail: String, password: String): Observable {
+    login(mail: String, password: String): Observable<Boolean> {
         let body = JSON.stringify({ mail: mail, password: password });
         let headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
@@ -21,6 +21,7 @@ export class AuthentificationService {
         return this.http.post('http://localhost:8080/api-token', body, options)
             .map((response: Response) => {
                 // login successful if there's a jwt token in the response
+                console.log(response);
                 let token = response._body;
                 if (token) {
                     console.log(token);

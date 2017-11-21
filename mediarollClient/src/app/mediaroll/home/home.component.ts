@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
+// const URL = '/api/';
+const URL = 'http://localhost:8080/medias';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -7,9 +10,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+  ) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() {  }
 
 }
