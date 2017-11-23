@@ -16,10 +16,10 @@ import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.service.implementation.MediaService;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MediaRessourceTest {
+public class MediaResourceTest {
 
 	@Mock
-	private MediaRessource mediaRessource;
+	private MediaResource mediaRessource;
 	
 	@InjectMocks
 	private MediaService mediaService;
