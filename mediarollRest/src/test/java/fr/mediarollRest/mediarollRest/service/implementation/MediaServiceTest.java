@@ -37,7 +37,7 @@ public class MediaServiceTest {
 	@Before
 	public void init() {
 		u1 = new Account("corentin@mediaroll.xyz","cor","Corentin","Mapella");
-		p1 = new Picture(1,"Pic01","PicTest","25/10/2017",u1);
+		//p1 = new Picture(1,"Pic01","PicTest","25/10/2017",u1);
 		
 		//m1 = new Movie(1,"Mov1","MovieTest","25/10/2017",u1,"3:15");
 		//a1 = new Album(1,"Alb1","AlbTest","25/10/2017",u1);

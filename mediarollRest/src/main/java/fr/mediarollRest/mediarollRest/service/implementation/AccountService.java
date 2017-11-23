@@ -56,8 +56,8 @@ public class AccountService implements IAccountService {
 		Optional<Account> accountOptional = accountRepository.findByMail(account.getMail());
 		if (accountOptional.isPresent()) {
 			Account accountFromDb = accountOptional.get();
-			accountFromDb.setFirstName(account.getFirstName());
-			accountFromDb.setLastName(account.getLastName());
+			accountFromDb.setFirstname(account.getFirstname());
+			accountFromDb.setLastname(account.getLastname());
 			return accountRepository.save(accountFromDb);
 		}
 		return null;

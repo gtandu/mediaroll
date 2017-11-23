@@ -8,6 +8,6 @@ import fr.mediarollRest.mediarollRest.model.Media;
 
 public interface IMediaService {
 
-	public void saveMedia(MultipartFile file) throws IOException;
+	public Media saveMedia(Media media);
 	public void deleteMedia(Media media);
 }

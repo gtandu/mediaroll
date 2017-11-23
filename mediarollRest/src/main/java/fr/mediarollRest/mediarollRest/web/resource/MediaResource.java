@@ -1,7 +1,9 @@
 package fr.mediarollRest.mediarollRest.web.resource;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +17,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.common.net.MediaType;
-
+import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Media;
+import fr.mediarollRest.mediarollRest.service.implementation.AccountService;
 import fr.mediarollRest.mediarollRest.service.implementation.MediaManagerService;
 import fr.mediarollRest.mediarollRest.service.implementation.MediaService;
 
 @RestController
 @RequestMapping("")
 public class MediaResource {
+
+	@Autowired
+	private AccountService accountService;
 
 	@Autowired
 	private MediaService mediaService;
@@ -48,35 +52,33 @@ public class MediaResource {
 
 	@PostMapping("/medias")
 	@ResponseBody
-	public ResponseEntity<Void> handleFileUpload(@RequestParam("media") MultipartFile media,
-			RedirectAttributes redirectAttributes) throws IOException {
+	public ResponseEntity<Void> handleFileUpload(@RequestParam("media") MultipartFile media, Principal principal)
+			throws IOException {
 
-		String folder = "";
-		String mediaPath = "";
+		Media mediaToSave = null;
 
 		if (mediaManagerService.isMedia(media)) {
+			Optional<Account> userOptional = accountService.findByMail(principal.getName());
+			if (userOptional.isPresent()) {
+				Account account = userOptional.get();
 
-			String mediaType = mediaManagerService.getMediaType(media);
-
-			if (mediaType.contains(MediaType.ANY_IMAGE_TYPE.type())) {
-				folder = "pictures";
 				try {
-					mediaPath = mediaManagerService.saveMediaInFileSystem(media, folder);
+					mediaToSave = mediaManagerService.saveMediaInFileSystem(media);
+
+					mediaToSave.setOwner(account);
+					account.getMediaList().add(mediaToSave);
+					accountService.saveAccount(account);
+
+					return new ResponseEntity<>(HttpStatus.CREATED);
 				} catch (FileUploadException e) {
 					return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 				}
 			}
 
 			else {
-				folder = "videos";
-				try {
-					mediaPath = mediaManagerService.saveMediaInFileSystem(media, folder);
-				} catch (FileUploadException e) {
-					return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-				}
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			
-			return new ResponseEntity<>(HttpStatus.CREATED);
+
 		} else {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}

@@ -4,6 +4,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import org.apache.tika.Tika;
@@ -13,14 +15,35 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.net.MediaType;
 
+import fr.mediarollRest.mediarollRest.model.Media;
+import fr.mediarollRest.mediarollRest.model.Picture;
+import fr.mediarollRest.mediarollRest.model.Video;
 import fr.mediarollRest.mediarollRest.service.IMediaManagerService;
 
 @Service
 public class MediaManagerService implements IMediaManagerService {
 
+	private static final String VIDEOS_FOLDER = "videos";
+	private static final String PICTURES_FOLDER = "pictures";
+
 	@Override
-	public String saveMediaInFileSystem(MultipartFile media, String folder) throws FileUploadException {
+	public Media saveMediaInFileSystem(MultipartFile media) throws FileUploadException {
 		String randomUUIDFileName = "";
+		Media mediaToSave = null;
+		String folder ="";
+		String mediaType = getMediaType(media);
+		Date dNow = new Date();
+		
+	    SimpleDateFormat ft = new SimpleDateFormat ("d M Y 'at' hh:mm:ss");
+	    String uploadDate = ft.format(dNow);
+		
+		if(mediaType.contains(MediaType.ANY_IMAGE_TYPE.type())){
+			folder = PICTURES_FOLDER;
+			mediaToSave = new Picture();
+		}else {
+			folder = VIDEOS_FOLDER;
+			mediaToSave = new Video();
+		}
 		
 		if (!media.isEmpty()) {
 			try {
@@ -50,7 +73,12 @@ public class MediaManagerService implements IMediaManagerService {
 
 				System.out.println("You successfully uploaded file=" + randomUUIDFileName);
 				
-				return serverFile.getAbsolutePath();
+				
+				mediaToSave.setFilePath(serverFile.getAbsolutePath());
+				mediaToSave.setImportDate(uploadDate);
+				mediaToSave.setName(media.getOriginalFilename());
+				
+				return mediaToSave;
 			} catch (Exception e) {
 				throw new FileUploadException("You failed to upload " + randomUUIDFileName + " => " + e.getMessage());
 			}

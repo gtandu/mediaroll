@@ -1,42 +1,62 @@
 package fr.mediarollRest.mediarollRest.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 @Entity
 @Inheritance
 public abstract class Media {
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	private String name;
 	private String description;
 	private String importDate;
+	private String filePath;
 	private boolean privateMedia;
-	
-	@OneToOne
+
+	@ManyToOne(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
 	private Account owner;
-	
-	@OneToMany
+
+	@ManyToOne(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
 	private List<Account> SharedPeople;
 
-	public Media(int id, String name, String description, String importDate, Account owner) {
+	public Media() {
+		this.name ="";
+		this.description = "";
+		this.importDate = "";
+		this.filePath = "";
+		this.privateMedia = true;
+	}
+	
+	public Media(String mediaName, String mediaPath, String uploadDate) {
+		this.name = mediaName;
+		this.description="";
+		this.filePath = mediaPath;
+		this.importDate = uploadDate;
+		this.privateMedia = true;
+	}
+
+	public Media(int id, String name, String description, String importDate, String filePath, boolean privateMedia,
+			Account owner, List<Account> sharedPeople) {
+		super();
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.importDate = importDate;
-		this.privateMedia = true;
+		this.filePath = filePath;
+		this.privateMedia = privateMedia;
 		this.owner = owner;
-		this.SharedPeople = new ArrayList<Account>();		
-	}
-	
-	public Media() {
+		SharedPeople = sharedPeople;
 	}
 
 	public int getId() {
@@ -69,6 +89,14 @@ public abstract class Media {
 
 	public void setImportDate(String importDate) {
 		this.importDate = importDate;
+	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 
 	public boolean isPrivateMedia() {

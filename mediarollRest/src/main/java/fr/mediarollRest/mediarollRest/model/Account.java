@@ -1,6 +1,7 @@
 package fr.mediarollRest.mediarollRest.model;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -27,6 +28,12 @@ public class Account extends ResourceSupport implements UserDetails {
 	private String password;
 	private String firstname;
 	private String lastname;
+	
+	@OneToMany(mappedBy="owner", cascade=CascadeType.ALL)
+	private List<Media> mediaList;
+	
+	@OneToMany(mappedBy="owner", cascade=CascadeType.ALL)
+	private List<Album> albumList;
 	
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")
 	private Collection<Authority> authorities;
@@ -58,19 +65,41 @@ public class Account extends ResourceSupport implements UserDetails {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getFirstName() {
+	
+	public String getFirstname() {
 		return firstname;
 	}
-	public void setFirstName(String firstName) {
-		this.firstname = firstName;
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
 	}
-	public String getLastName() {
+
+	public String getLastname() {
 		return lastname;
 	}
-	public void setLastName(String lastName) {
-		this.lastname = lastName;
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
 	}
-	
+
+	@JsonIgnore
+	public List<Media> getMediaList() {
+		return mediaList;
+	}
+
+	public void setMediaList(List<Media> mediaList) {
+		this.mediaList = mediaList;
+	}
+
+	@JsonIgnore
+	public List<Album> getAlbumList() {
+		return albumList;
+	}
+
+	public void setAlbumList(List<Album> albumList) {
+		this.albumList = albumList;
+	}
+
 	@Override
 	@JsonIgnore
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -96,6 +125,7 @@ public class Account extends ResourceSupport implements UserDetails {
 		return true;
 	}
 	@Override
+	@JsonIgnore
 	public boolean isEnabled() {
 		return false;
 	}
