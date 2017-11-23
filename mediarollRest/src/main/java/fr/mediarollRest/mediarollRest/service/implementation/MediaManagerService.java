@@ -27,15 +27,12 @@ public class MediaManagerService implements IMediaManagerService {
 	private static final String PICTURES_FOLDER = "pictures";
 
 	@Override
-	public Media saveMediaInFileSystem(MultipartFile media) throws FileUploadException {
+	public Media saveMediaInFileSystem(MultipartFile media) throws FileUploadException, IOException {
 		String randomUUIDFileName = "";
 		Media mediaToSave = null;
 		String folder ="";
 		String mediaType = getMediaType(media);
-		Date dNow = new Date();
-		
-	    SimpleDateFormat ft = new SimpleDateFormat ("d M Y 'at' hh:mm:ss");
-	    String uploadDate = ft.format(dNow);
+		String uploadDate = generateCurrentDate();
 		
 		if(mediaType.contains(MediaType.ANY_IMAGE_TYPE.type())){
 			folder = PICTURES_FOLDER;
@@ -79,8 +76,8 @@ public class MediaManagerService implements IMediaManagerService {
 				mediaToSave.setName(media.getOriginalFilename());
 				
 				return mediaToSave;
-			} catch (Exception e) {
-				throw new FileUploadException("You failed to upload " + randomUUIDFileName + " => " + e.getMessage());
+			} catch (IOException e) {
+				throw new IOException("You failed to upload " + randomUUIDFileName + " => " + e.getMessage());
 			}
 		} else {
 			throw new FileUploadException("You failed to upload " + media.getOriginalFilename() + " because the file was empty.");
@@ -88,15 +85,17 @@ public class MediaManagerService implements IMediaManagerService {
 
 	}
 
+	private String generateCurrentDate() {
+		Date dNow = new Date();
+		
+	    SimpleDateFormat ft = new SimpleDateFormat ("d M Y 'at' hh:mm:ss");
+	    String uploadDate = ft.format(dNow);
+		return uploadDate;
+	}
+
 	@Override
 	public boolean isMedia(MultipartFile media) {
-		Tika tika = new Tika();
-		String detectedType = "";
-		try {
-			detectedType = tika.detect(media.getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		String detectedType = getMediaType(media);
 
 		return detectedType.contains(MediaType.ANY_IMAGE_TYPE.type())
 				|| detectedType.contains(MediaType.ANY_VIDEO_TYPE.type()) ? true : false;

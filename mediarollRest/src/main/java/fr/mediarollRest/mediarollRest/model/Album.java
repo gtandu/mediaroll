@@ -2,6 +2,7 @@ package fr.mediarollRest.mediarollRest.model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,14 +18,17 @@ public class Album {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@ManyToOne
+	@ManyToOne(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
 	private Account owner;
 
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	private Picture cover;
 
-	@OneToMany
+	@OneToMany(cascade= CascadeType.ALL)
 	private List<Media> medias;
+	
+	@OneToMany(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+	private List<Account> sharedPeople;
 
 	public Album() {
 		super();
@@ -67,4 +71,14 @@ public class Album {
 	public void setMedias(List<Media> medias) {
 		this.medias = medias;
 	}
+
+	public List<Account> getSharedPeople() {
+		return sharedPeople;
+	}
+
+	public void setSharedPeople(List<Account> sharedPeople) {
+		this.sharedPeople = sharedPeople;
+	}
+	
+	
 }

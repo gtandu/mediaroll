@@ -22,50 +22,61 @@ import fr.mediarollRest.mediarollRest.security.Authority;
 @SuppressWarnings("serial")
 @Entity
 public class Account extends ResourceSupport implements UserDetails {
-	
+
 	@Id
 	private String mail;
 	private String password;
 	private String firstname;
 	private String lastname;
-	
-	@OneToMany(mappedBy="owner", cascade=CascadeType.ALL)
+
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
 	private List<Media> mediaList;
-	
-	@OneToMany(mappedBy="owner", cascade=CascadeType.ALL)
+
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
 	private List<Album> albumList;
-	
+
+	@OneToMany(mappedBy = "owner", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+			CascadeType.REFRESH })
+	private List<Media> sharedMedias;
+
+	@OneToMany(mappedBy = "owner", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+			CascadeType.REFRESH })
+	private List<Album> sharedAlbums;
+
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")
 	private Collection<Authority> authorities;
-	
+
 	public Account() {
 		super();
 	}
-	
+
 	@JsonCreator
-	public Account(@JsonProperty("mail") String mail,@JsonProperty("password") String password,@JsonProperty("firstName") String firstName,@JsonProperty("lastName") String lastName) {
+	public Account(@JsonProperty("mail") String mail, @JsonProperty("password") String password,
+			@JsonProperty("firstName") String firstName, @JsonProperty("lastName") String lastName) {
 		super();
 		this.mail = mail;
 		this.password = password;
 		this.firstname = firstName;
 		this.lastname = lastName;
 	}
-	
+
 	public String getMail() {
 		return mail;
 	}
+
 	public void setMail(String mail) {
 		this.mail = mail;
 	}
-	
+
 	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public String getFirstname() {
 		return firstname;
 	}
@@ -100,30 +111,53 @@ public class Account extends ResourceSupport implements UserDetails {
 		this.albumList = albumList;
 	}
 
+	@JsonIgnore
+	public List<Media> getSharedMedias() {
+		return sharedMedias;
+	}
+
+	public void setSharedMedias(List<Media> sharedMedias) {
+		this.sharedMedias = sharedMedias;
+	}
+
+	@JsonIgnore
+	public List<Album> getSharedAlbums() {
+		return sharedAlbums;
+	}
+
+	public void setSharedAlbums(List<Album> sharedAlbums) {
+		this.sharedAlbums = sharedAlbums;
+	}
+
 	@Override
 	@JsonIgnore
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;
 	}
+
 	@Override
 	public String getUsername() {
 		return mail;
 	}
+
 	@Override
 	@JsonIgnore
 	public boolean isAccountNonExpired() {
 		return true;
 	}
+
 	@Override
 	@JsonIgnore
 	public boolean isAccountNonLocked() {
 		return true;
 	}
+
 	@Override
 	@JsonIgnore
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
+
 	@Override
 	@JsonIgnore
 	public boolean isEnabled() {
@@ -154,7 +188,5 @@ public class Account extends ResourceSupport implements UserDetails {
 			return false;
 		return true;
 	}
-	
-	
-	
+
 }

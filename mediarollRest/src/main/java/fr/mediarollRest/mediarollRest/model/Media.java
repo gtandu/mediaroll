@@ -1,5 +1,6 @@
 package fr.mediarollRest.mediarollRest.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -27,8 +28,8 @@ public abstract class Media {
 	@ManyToOne(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
 	private Account owner;
 
-	@ManyToOne(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
-	private List<Account> SharedPeople;
+	@OneToMany(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+	private List<Account> sharedPeople;
 
 	public Media() {
 		this.name ="";
@@ -36,6 +37,7 @@ public abstract class Media {
 		this.importDate = "";
 		this.filePath = "";
 		this.privateMedia = true;
+		this.sharedPeople = new ArrayList<Account>();
 	}
 	
 	public Media(String mediaName, String mediaPath, String uploadDate) {
@@ -44,6 +46,7 @@ public abstract class Media {
 		this.filePath = mediaPath;
 		this.importDate = uploadDate;
 		this.privateMedia = true;
+		this.sharedPeople = new ArrayList<Account>();
 	}
 
 	public Media(int id, String name, String description, String importDate, String filePath, boolean privateMedia,
@@ -56,7 +59,7 @@ public abstract class Media {
 		this.filePath = filePath;
 		this.privateMedia = privateMedia;
 		this.owner = owner;
-		SharedPeople = sharedPeople;
+		this.sharedPeople = sharedPeople;
 	}
 
 	public int getId() {
@@ -116,10 +119,12 @@ public abstract class Media {
 	}
 
 	public List<Account> getSharedPeople() {
-		return SharedPeople;
+		return sharedPeople;
 	}
 
 	public void setSharedPeople(List<Account> sharedPeople) {
-		SharedPeople = sharedPeople;
+		this.sharedPeople = sharedPeople;
 	}
+
+	
 }

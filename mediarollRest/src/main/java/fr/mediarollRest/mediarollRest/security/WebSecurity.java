@@ -1,11 +1,10 @@
 package fr.mediarollRest.mediarollRest.security;
 
-import static fr.mediarollRest.mediarollRest.constant.Paths.*;
+import static fr.mediarollRest.mediarollRest.constant.Paths.GET_TOKEN;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,7 +20,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-@Profile("sec")
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
 	@Autowired
