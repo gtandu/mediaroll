@@ -1,11 +1,14 @@
 package fr.mediarollRest.mediarollRest.service.implementation;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.model.Picture;
 import fr.mediarollRest.mediarollRest.repository.MediaRepository;
@@ -78,5 +82,27 @@ public class MediaServiceTest {
 
 		// THEN
 		verify(mediaRepository).findAll();
+	}
+
+	@Test
+	public void testFindByIdFound() throws Exception {
+		Long id = 1L;
+		when(mediaRepository.findById(anyLong())).thenReturn(Optional.of(new Picture()));
+		
+		Media media = mediaService.findById(id);
+		
+		assertThat(media).isNotNull();
+		
+		verify(mediaRepository).findById(eq(id));
+	}
+	
+	@Test(expected=MediaNotFoundException.class)
+	public void testFindByIdNotFound() throws Exception {
+		Long id = 1L;
+		when(mediaRepository.findById(anyLong())).thenReturn(Optional.empty());
+		
+		mediaService.findById(id);
+		
+		verify(mediaRepository).findById(eq(id));
 	}
 }

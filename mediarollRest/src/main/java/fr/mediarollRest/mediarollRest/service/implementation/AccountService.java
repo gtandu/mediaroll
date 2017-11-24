@@ -30,8 +30,7 @@ public class AccountService implements IAccountService {
 	@Transactional
 	public boolean deleteByMail(String mail) {
 		int deleteResult = accountRepository.deleteByMail(mail);
-		int trueInt = 1;
-		return deleteResult == trueInt ? true : false;
+		return deleteResult != 0 ? true : false;
 	}
 
 	@Override

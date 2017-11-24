@@ -1,10 +1,14 @@
 package fr.mediarollRest.mediarollRest.web.resource;
 
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS;
+import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -28,6 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Picture;
 import fr.mediarollRest.mediarollRest.service.implementation.AccountService;
@@ -138,6 +143,80 @@ public class MediaResourceTest {
 		verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
 		verify(accountService).findByMail(anyString());
 		verify(mediaManagerService).saveMediaInFileSystem(any(MockMultipartFile.class));
+	}
+
+	@Test
+	@WithMockUser
+	public void testDeleteMediaSuccess() throws Exception {
+		String filePath = "src/test/resources/fileToDelete.txt";
+	    Picture picture = new Picture();
+	    picture.setFilePath(filePath);
+	    Long id = 1L;
+		
+		when(mediaService.findById(anyLong())).thenReturn(picture);
+		when(mediaManagerService.deleteMediaInFileSystem(anyString())).thenReturn(true);
+		when(mediaService.deleteMediaById(anyLong())).thenReturn(true);
+		
+		ResultActions result = mockMvc.perform(delete(MEDIAS+MEDIA_ID, id));
+		result.andExpect(status().isNoContent());
+		
+		verify(mediaService).findById(eq(id));
+		verify(mediaManagerService).deleteMediaInFileSystem(eq(picture.getFilePath()));
+		verify(mediaService).deleteMediaById(eq(id));
+	}
+	
+	@Test
+	@WithMockUser
+	public void testDeleteMediaNotFound() throws Exception {
+		String filePath = "src/test/resources/fileToDelete.txt";
+	    Picture picture = new Picture();
+	    picture.setFilePath(filePath);
+	    Long id = 1L;
+		
+		when(mediaService.findById(anyLong())).thenThrow(new MediaNotFoundException());
+		
+		ResultActions result = mockMvc.perform(delete(MEDIAS+MEDIA_ID, id));
+		result.andExpect(status().isNotFound());
+		
+		verify(mediaService).findById(eq(id));
+	}
+	
+	@Test
+	@WithMockUser
+	public void testDeleteMediaIsNotDeleteInFileSystem() throws Exception {
+		String filePath = "src/test/resources/fileToDelete.txt";
+	    Picture picture = new Picture();
+	    picture.setFilePath(filePath);
+	    Long id = 1L;
+		
+		when(mediaService.findById(anyLong())).thenReturn(picture);
+		when(mediaManagerService.deleteMediaInFileSystem(anyString())).thenReturn(false);
+		
+		ResultActions result = mockMvc.perform(delete(MEDIAS+MEDIA_ID, id));
+		result.andExpect(status().isInternalServerError());
+		
+		verify(mediaService).findById(eq(id));
+		verify(mediaManagerService).deleteMediaInFileSystem(eq(picture.getFilePath()));
+	}
+	
+	@Test
+	@WithMockUser
+	public void testDeleteMediaIsNotDeleteInDb() throws Exception {
+		String filePath = "src/test/resources/fileToDelete.txt";
+	    Picture picture = new Picture();
+	    picture.setFilePath(filePath);
+	    Long id = 1L;
+		
+		when(mediaService.findById(anyLong())).thenReturn(picture);
+		when(mediaManagerService.deleteMediaInFileSystem(anyString())).thenReturn(true);
+		when(mediaService.deleteMediaById(anyLong())).thenReturn(false);
+		
+		ResultActions result = mockMvc.perform(delete(MEDIAS+MEDIA_ID, id));
+		result.andExpect(status().isInternalServerError());
+		
+		verify(mediaService).findById(eq(id));
+		verify(mediaManagerService).deleteMediaInFileSystem(eq(picture.getFilePath()));
+		verify(mediaService).deleteMediaById(eq(id));
 	}
 	
 	

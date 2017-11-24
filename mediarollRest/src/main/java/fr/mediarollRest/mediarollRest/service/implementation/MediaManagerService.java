@@ -23,8 +23,8 @@ import fr.mediarollRest.mediarollRest.service.IMediaManagerService;
 @Service
 public class MediaManagerService implements IMediaManagerService {
 
-	private static final String VIDEOS_FOLDER = "videos";
-	private static final String PICTURES_FOLDER = "pictures";
+	public static final String VIDEOS_FOLDER = "videos";
+	public static final String PICTURES_FOLDER = "pictures";
 
 	@Override
 	public Media saveMediaInFileSystem(MultipartFile media) throws FileUploadException, IOException {

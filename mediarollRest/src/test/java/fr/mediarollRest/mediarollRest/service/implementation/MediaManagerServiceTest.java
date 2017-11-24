@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,24 +41,37 @@ public class MediaManagerServiceTest {
 		mediasFolder = "uploadTest";
 		System.setProperty("medias.folder", mediasFolder);
 		this.fileName = "image.jpg";
-		InputStream fileToUpload = new ClassPathResource(fileName).getInputStream();
-		media = new MockMultipartFile(fileName,fileName, MediaType.JPEG.type(), fileToUpload);
+		this.fileToUpload = new ClassPathResource(fileName).getInputStream();
+		
 	}
 	
 	@Test
-	public void testSaveMediaInFileSystemPictures() throws Exception {
+	public void testSaveMediaInFileSystemPicture() throws Exception {
+		media = new MockMultipartFile(fileName,fileName, MediaType.JPEG.type(), fileToUpload);
 		Media mediaSaveInFileSystem = mediaManagerService.saveMediaInFileSystem(media);
 		
 		assertThat(mediaSaveInFileSystem).isNotNull();
 		assertThat(mediaSaveInFileSystem.getName()).isEqualTo(fileName);
 		assertThat(mediaSaveInFileSystem.getFilePath()).isNotEmpty();
+		assertThat(mediaSaveInFileSystem.getFilePath()).contains(MediaManagerService.PICTURES_FOLDER);
 	}
 	
-	//TODO Test with Video
-
+	@Test
+	public void testSaveMediaInFileSystemVideo() throws Exception {
+		this.fileName = "video.mp4";
+		this.fileToUpload = new ClassPathResource(fileName).getInputStream();
+		media = new MockMultipartFile(fileName,fileName, MediaType.MP4_VIDEO.type(), fileToUpload);
+		Media mediaSaveInFileSystem = mediaManagerService.saveMediaInFileSystem(media);
+		
+		assertThat(mediaSaveInFileSystem).isNotNull();
+		assertThat(mediaSaveInFileSystem.getName()).isEqualTo(fileName);
+		assertThat(mediaSaveInFileSystem.getFilePath()).isNotEmpty();
+		assertThat(mediaSaveInFileSystem.getFilePath()).contains(MediaManagerService.VIDEOS_FOLDER);
+	}
+	
 	@Test
 	public void testIsMedia() throws Exception {
-		
+		media = new MockMultipartFile(fileName,fileName, MediaType.JPEG.type(), fileToUpload);
 		boolean isMedia = mediaManagerService.isMedia(media);
 		
 		assertThat(isMedia).isTrue();
@@ -75,9 +91,30 @@ public class MediaManagerServiceTest {
 
 	@Test
 	public void testGetMediaType() throws Exception {
+		media = new MockMultipartFile(fileName,fileName, MediaType.JPEG.type(), fileToUpload);
 		String mediaType = mediaManagerService.getMediaType(media);
 		
 		assertThat(mediaType).contains((MediaType.JPEG.type()));
+	}
+
+	@Test
+	public void testDeleteMediaInFileSystemSuccess() throws Exception {
+		String filePath = "src/test/resources/fileToDelete.txt";
+		Path newFilePath = Paths.get(filePath);
+	    Files.createFile(newFilePath);
+	    
+		boolean isDeleteInFileSystem = mediaManagerService.deleteMediaInFileSystem(filePath);
+		
+		assertThat(isDeleteInFileSystem).isTrue();
+	}
+	
+	@Test
+	public void testDeleteMediaInFileSystemFailed() throws Exception {
+		String filePath = "src/test/resources/fileToDelete.txt";
+	    
+		boolean isDeleteInFileSystem = mediaManagerService.deleteMediaInFileSystem(filePath);
+		
+		assertThat(isDeleteInFileSystem).isFalse();
 	}
 	
 	

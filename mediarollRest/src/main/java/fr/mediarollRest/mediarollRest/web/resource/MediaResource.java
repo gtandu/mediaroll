@@ -1,6 +1,7 @@
 package fr.mediarollRest.mediarollRest.web.resource;
 
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS;
+import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -83,7 +84,13 @@ public class MediaResource {
 
 	}
 	
-	@RequestMapping(value=MEDIAS+"/{mediaId}",method=RequestMethod.DELETE)
+	@ApiOperation(value = "Delete a media")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Media successfully deleted"),
+            @ApiResponse(code = 404, message = "Media not found in db. Please to check media ID"),
+            @ApiResponse(code = 500, message = "An error occured during the process to delete Media"),
+    })
+	@RequestMapping(value=MEDIAS+MEDIA_ID,method=RequestMethod.DELETE)
 	public ResponseEntity<Void> deleteMedia(@PathVariable("mediaId") Long mediaId){
 		try {
 			Media mediaInDb = mediaService.findById(mediaId);
