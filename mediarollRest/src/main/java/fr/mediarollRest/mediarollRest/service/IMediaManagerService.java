@@ -14,4 +14,6 @@ public interface IMediaManagerService {
 	public boolean isMedia(MultipartFile media);
 
 	String getMediaType(MultipartFile media);
+	
+	public boolean deleteMediaInFileSystem(String filePath);
 }

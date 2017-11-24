@@ -115,4 +115,10 @@ public class MediaManagerService implements IMediaManagerService {
 
 	}
 
+	@Override
+	public boolean deleteMediaInFileSystem(String filePath) {
+		File serverFile = new File(filePath);
+		return serverFile.delete();
+	}
+
 }

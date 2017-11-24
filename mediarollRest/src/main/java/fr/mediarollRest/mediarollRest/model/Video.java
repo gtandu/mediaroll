@@ -18,7 +18,7 @@ public class Video extends Media {
 		super(mediaName, mediaPath, uploadDate);
 	}
 
-	public Video(int id, String name, String description, String importDate, String filePath, boolean privateMedia,
+	public Video(Long id, String name, String description, String importDate, String filePath, boolean privateMedia,
 			Account owner, List<Account> sharedPeople) {
 		super(id, name, description, importDate, filePath, privateMedia, owner, sharedPeople);
 		// TODO Auto-generated constructor stub

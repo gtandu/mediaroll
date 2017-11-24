@@ -10,6 +10,7 @@ import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,10 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.service.implementation.AccountService;
 import fr.mediarollRest.mediarollRest.service.implementation.MediaManagerService;
+import fr.mediarollRest.mediarollRest.service.implementation.MediaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -32,6 +35,9 @@ public class MediaResource {
 
 	@Autowired
 	private AccountService accountService;
+	
+	@Autowired
+	private MediaService mediaService;
 
 	@Autowired
 	private MediaManagerService mediaManagerService;
@@ -74,6 +80,37 @@ public class MediaResource {
 		else {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
+
+	}
+	
+	@RequestMapping(value=MEDIAS+"/{mediaId}",method=RequestMethod.DELETE)
+	public ResponseEntity<Void> deleteMedia(@PathVariable("mediaId") Long mediaId){
+		try {
+			Media mediaInDb = mediaService.findById(mediaId);
+			boolean isDeleteFromFileSystem = mediaManagerService.deleteMediaInFileSystem(mediaInDb.getFilePath());
+			
+			if(isDeleteFromFileSystem) {
+				boolean isDeleteFromDb = mediaService.deleteMediaById(mediaId);
+				
+				if(isDeleteFromDb) {
+					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+				}
+				else
+				{
+					return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}
+			else
+			{
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			
+		}
+		catch(MediaNotFoundException e) {
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		}
+		
+		
 
 	}
 }

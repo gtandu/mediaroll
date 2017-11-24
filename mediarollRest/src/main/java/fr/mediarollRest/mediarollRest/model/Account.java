@@ -1,5 +1,6 @@
 package fr.mediarollRest.mediarollRest.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -13,7 +14,6 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -50,14 +50,14 @@ public class Account extends ResourceSupport implements UserDetails {
 		super();
 	}
 
-	@JsonCreator
-	public Account(@JsonProperty("mail") String mail, @JsonProperty("password") String password,
-			@JsonProperty("firstName") String firstName, @JsonProperty("lastName") String lastName) {
+	public Account(String mail, String password, String firstName, String lastName) {
 		super();
 		this.mail = mail;
 		this.password = password;
 		this.firstname = firstName;
 		this.lastname = lastName;
+		this.albumList = new ArrayList<>();
+		this.mediaList = new ArrayList<>();
 	}
 
 	public String getMail() {
@@ -70,9 +70,10 @@ public class Account extends ResourceSupport implements UserDetails {
 
 	@JsonIgnore
 	public String getPassword() {
-		return password;
+		return this.password;
 	}
 
+	@JsonProperty
 	public void setPassword(String password) {
 		this.password = password;
 	}

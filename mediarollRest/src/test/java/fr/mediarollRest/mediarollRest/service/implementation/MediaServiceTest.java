@@ -1,7 +1,7 @@
 package fr.mediarollRest.mediarollRest.service.implementation;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,28 +39,31 @@ public class MediaServiceTest {
 	}
 
 	@Test
-	public void testDeleteMedia() throws Exception {
+	public void testDeleteMediaByIdSuccess() throws Exception {
 		// WHEN
-		doNothing().when(mediaRepository).delete(any(Picture.class));
+		Long id = 1L;
+		when(mediaRepository.deleteById(eq(id))).thenReturn(1);
 
 		// GIVEN
-		mediaService.deleteMedia(any(Picture.class));
+		mediaService.deleteMediaById(id);
 
 		// THEN
-		verify(mediaRepository).delete(any(Picture.class));
+		verify(mediaRepository).deleteById(eq(id));
 
 	}
-
+	
 	@Test
-	public void testFindByName() throws Exception {
+	public void testDeleteMediaByIdFailed() throws Exception {
 		// WHEN
-		when(mediaRepository.findByName("Pic01")).thenReturn(new Picture());
+		Long id = 1L;
+		when(mediaRepository.deleteById(eq(id))).thenReturn(0);
 
 		// GIVEN
-		mediaService.findByName("Pic01");
+		mediaService.deleteMediaById(id);
 
 		// THEN
-		verify(mediaRepository).findByName("Pic01");
+		verify(mediaRepository).deleteById(eq(id));
+
 	}
 
 	@Test

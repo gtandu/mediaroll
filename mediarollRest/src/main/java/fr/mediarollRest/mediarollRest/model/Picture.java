@@ -16,7 +16,7 @@ public class Picture extends Media {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Picture(int id, String name, String description, String importDate, String filePath, boolean privateMedia,
+	public Picture(Long id, String name, String description, String importDate, String filePath, boolean privateMedia,
 			Account owner, List<Account> sharedPeople) {
 		super(id, name, description, importDate, filePath, privateMedia, owner, sharedPeople);
 		// TODO Auto-generated constructor stub

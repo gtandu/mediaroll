@@ -18,7 +18,7 @@ public abstract class Media {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int id;
+	private Long id;
 	private String name;
 	private String description;
 	private String importDate;
@@ -49,7 +49,7 @@ public abstract class Media {
 		this.sharedPeople = new ArrayList<Account>();
 	}
 
-	public Media(int id, String name, String description, String importDate, String filePath, boolean privateMedia,
+	public Media(Long id, String name, String description, String importDate, String filePath, boolean privateMedia,
 			Account owner, List<Account> sharedPeople) {
 		super();
 		this.id = id;
@@ -62,11 +62,11 @@ public abstract class Media {
 		this.sharedPeople = sharedPeople;
 	}
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
