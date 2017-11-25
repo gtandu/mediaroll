@@ -8,6 +8,7 @@ import fr.mediarollRest.mediarollRest.model.Account;
 public interface IAccountService {
 	
 	public Optional<Account> findByMail(String mail);
+	public Account saveAccountAndEncodePassword(Account account);
 	public Account saveAccount(Account account);
 	public Account updateUser(Account account);
 	public boolean deleteByMail(String mail);

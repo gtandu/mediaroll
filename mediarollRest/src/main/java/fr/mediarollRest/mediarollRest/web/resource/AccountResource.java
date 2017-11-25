@@ -84,7 +84,7 @@ public class AccountResource {
 		if (accountService.isAccountExist(account)) {
 			return new ResponseEntity<>(HttpStatus.CONFLICT);
 		} else {
-			accountService.saveAccount(account);
+			accountService.saveAccountAndEncodePassword(account);
 			return new ResponseEntity<>(HttpStatus.CREATED);
 		}
 	}

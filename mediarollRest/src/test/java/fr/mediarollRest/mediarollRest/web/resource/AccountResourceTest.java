@@ -116,13 +116,13 @@ public class AccountResourceTest {
 	@WithMockUser
 	public void testCreateUserNotExist() throws Exception {
 		when(accountService.isAccountExist(eq(account))).thenReturn(false);
-		when(accountService.saveAccount(eq(account))).thenReturn(account);
+		when(accountService.saveAccountAndEncodePassword(eq(account))).thenReturn(account);
 		
 		String accountJSON = objectMapper.writeValueAsString(account);
 		mockMvc.perform(post(ACCOUNTS).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON)).andExpect(status().isCreated()).andDo(print());
 		
 		verify(accountService).isAccountExist(eq(account));
-		verify(accountService).saveAccount(eq(account));
+		verify(accountService).saveAccountAndEncodePassword(eq(account));
 	}
 	
 	@Test

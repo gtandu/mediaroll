@@ -1,5 +1,6 @@
 package fr.mediarollRest.mediarollRest.service.implementation;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -95,21 +96,21 @@ public class AccountServiceTest {
 	}
 
 	@Test
-	public void testSaveAccount() throws Exception {
-		// WHEN
-		String passwordBeforeEncore = account1.getPassword();
-		String encodedpassword = "azerty123456";
-		
-		when(passwordEncoder.encode(eq(passwordBeforeEncore))).thenReturn(encodedpassword);
-		when(accountRepository.save(eq(account1))).thenReturn(account1);
-
-		// GIVEN
-		accountService.saveAccount(account1);
-
-		// THEN
-		verify(passwordEncoder).encode(passwordBeforeEncore);
-		verify(accountRepository).save(eq(account1));
-	}
+		public void testSaveAccountAndEncodePassword() throws Exception {
+			// WHEN
+			String passwordBeforeEncore = account1.getPassword();
+			String encodedpassword = "azerty123456";
+			
+			when(passwordEncoder.encode(eq(passwordBeforeEncore))).thenReturn(encodedpassword);
+			when(accountRepository.save(eq(account1))).thenReturn(account1);
+	
+			// GIVEN
+			accountService.saveAccountAndEncodePassword(account1);
+	
+			// THEN
+			verify(passwordEncoder).encode(passwordBeforeEncore);
+			verify(accountRepository).save(eq(account1));
+		}
 
 	@Test
 	public void testIsAccountExistTrue() throws Exception {
@@ -160,6 +161,15 @@ public class AccountServiceTest {
 
 		// THEN
 		verify(accountRepository).findByMail(eq(mail));
+	}
+
+	@Test
+	public void testSaveAccount() throws Exception {
+		when(accountRepository.save(any(Account.class))).thenReturn(new Account());
+		
+		accountService.saveAccount(new Account());
+		
+		verify(accountRepository).save(any(Account.class));
 	}
 
 }
