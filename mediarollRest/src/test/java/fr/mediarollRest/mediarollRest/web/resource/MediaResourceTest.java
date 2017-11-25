@@ -34,6 +34,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
+import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.model.Picture;
 import fr.mediarollRest.mediarollRest.service.implementation.AccountService;
 import fr.mediarollRest.mediarollRest.service.implementation.MediaManagerService;
@@ -78,7 +79,7 @@ public class MediaResourceTest {
 		when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
 		when(accountService.findByMail(anyString())).thenReturn(Optional.of(account));
 		when(mediaManagerService.saveMediaInFileSystem(any(MockMultipartFile.class))).thenReturn(new Picture());
-		when(accountService.saveAccount(any(Account.class))).thenReturn(account);
+		when(mediaService.saveMedia(any(Media.class))).thenReturn(new Picture());
 		
 		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
 		result.andExpect(status().isCreated());
@@ -86,7 +87,7 @@ public class MediaResourceTest {
 		verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
 		verify(accountService).findByMail(anyString());
 		verify(mediaManagerService).saveMediaInFileSystem(any(MockMultipartFile.class));
-		verify(accountService).saveAccount(any(Account.class));
+		verify(mediaService).saveMedia(any(Media.class));
 	}
 	
 	@Test

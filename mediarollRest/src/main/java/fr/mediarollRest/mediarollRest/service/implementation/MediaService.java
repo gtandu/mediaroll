@@ -1,6 +1,5 @@
 package fr.mediarollRest.mediarollRest.service.implementation;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,7 @@ public class MediaService implements IMediaService {
 
 	@Autowired
 	private MediaRepository mediaRepository;
-
+	
 	public Media saveMedia(Media media){
 		return mediaRepository.save(media);
 	}
@@ -40,7 +39,21 @@ public class MediaService implements IMediaService {
 		
 	}
 
-	public List<Media> findAll() {
-		return mediaRepository.findAll();
+	@Override
+	public Media updateMediaInfo(Long mediaId, Media media) throws MediaNotFoundException {
+		
+		Optional<Media> optionalMedia = mediaRepository.findById(mediaId);
+		
+		if(optionalMedia.isPresent()){
+			Media mediaFromDb = optionalMedia.get();
+			mediaFromDb.setDescription(media.getDescription());
+			return mediaRepository.save(mediaFromDb);
+		}
+		else
+		{
+			throw new MediaNotFoundException();
+		}
+		
+		
 	}
 }

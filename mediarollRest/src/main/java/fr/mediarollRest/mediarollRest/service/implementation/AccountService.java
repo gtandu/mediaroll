@@ -39,7 +39,7 @@ public class AccountService implements IAccountService {
 	}
 
 	@Override
-	public Account saveAccount(Account account) {
+	public Account saveAccountAndEncodePassword(Account account) {
 		account.setPassword(passwordEncoder.encode(account.getPassword()));
 		return accountRepository.save(account);
 	}
@@ -60,6 +60,12 @@ public class AccountService implements IAccountService {
 			return accountRepository.save(accountFromDb);
 		}
 		return null;
+	}
+
+	@Override
+	public Account saveAccount(Account account) {
+		// TODO Auto-generated method stub
+		return accountRepository.save(account);
 	}
 
 }

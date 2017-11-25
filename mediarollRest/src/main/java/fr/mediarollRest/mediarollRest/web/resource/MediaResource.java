@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,6 +43,24 @@ public class MediaResource {
 
 	@Autowired
 	private MediaManagerService mediaManagerService;
+	
+	@ApiOperation(value = "Update media info")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully updated"),
+            @ApiResponse(code = 400, message = "The file is not a media"),
+    })
+	@RequestMapping(value = MEDIAS+MEDIA_ID, method = RequestMethod.PUT)
+	public ResponseEntity<Media> updateMediaInfo(@PathVariable("mediaId") Long mediaId, @RequestBody Media media){
+		
+		try {
+			Media mediaUpdated = mediaService.updateMediaInfo(mediaId, media);
+			return new ResponseEntity<Media>(mediaUpdated, HttpStatus.OK);
+		} catch (MediaNotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
+		
+	}
 
 	
 	@ApiOperation(value = "Upload a media")
@@ -52,7 +71,7 @@ public class MediaResource {
     })
 	@RequestMapping(value = MEDIAS, method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<Void> uploadMedia(@RequestParam("media") MultipartFile media, Principal principal)
+	public ResponseEntity<Media> uploadMedia(@RequestParam("media") MultipartFile media, Principal principal)
 			throws IOException {
 
 		Media mediaToSave = null;
@@ -66,9 +85,9 @@ public class MediaResource {
 
 				mediaToSave.setOwner(account);
 				account.getMediaList().add(mediaToSave);
-				accountService.saveAccount(account);
+				Media mediaSaved = mediaService.saveMedia(mediaToSave);
 
-				return new ResponseEntity<>(HttpStatus.CREATED);
+				return new ResponseEntity<>(mediaSaved,HttpStatus.CREATED);
 			}
 			catch (IOException e) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -137,6 +137,7 @@ public class Account extends ResourceSupport implements UserDetails {
 	}
 
 	@Override
+	@JsonIgnore
 	public String getUsername() {
 		return mail;
 	}

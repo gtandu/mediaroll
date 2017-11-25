@@ -19,8 +19,8 @@ public class InitData implements ApplicationRunner {
 		Account account1 = new Account("g.tandu@hotmail.fr", "glodie", "Glodie", "Tandu");
 		Account account2 = new Account("test@mail.fr","test","test","test");
 		
-		accountService.saveAccount(account1);
-		accountService.saveAccount(account2);
+		accountService.saveAccountAndEncodePassword(account1);
+		accountService.saveAccountAndEncodePassword(account2);
 		
 		
 	}

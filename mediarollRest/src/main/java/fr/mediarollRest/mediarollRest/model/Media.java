@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,12 +13,21 @@ import javax.persistence.Inheritance;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @Type(name="picture", value = Picture.class), @Type(name="video", value = Video.class), })
 @Entity
 @Inheritance
 public abstract class Media {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String name;
 	private String description;
@@ -25,41 +35,19 @@ public abstract class Media {
 	private String filePath;
 	private boolean privateMedia;
 
-	@ManyToOne(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+	@ManyToOne(fetch= FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
 	private Account owner;
 
-	@OneToMany(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
 	private List<Account> sharedPeople;
-
+	
 	public Media() {
-		this.name ="";
+		this.name = "";
 		this.description = "";
 		this.importDate = "";
 		this.filePath = "";
 		this.privateMedia = true;
 		this.sharedPeople = new ArrayList<Account>();
-	}
-	
-	public Media(String mediaName, String mediaPath, String uploadDate) {
-		this.name = mediaName;
-		this.description="";
-		this.filePath = mediaPath;
-		this.importDate = uploadDate;
-		this.privateMedia = true;
-		this.sharedPeople = new ArrayList<Account>();
-	}
-
-	public Media(Long id, String name, String description, String importDate, String filePath, boolean privateMedia,
-			Account owner, List<Account> sharedPeople) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.importDate = importDate;
-		this.filePath = filePath;
-		this.privateMedia = privateMedia;
-		this.owner = owner;
-		this.sharedPeople = sharedPeople;
 	}
 
 	public Long getId() {
@@ -94,10 +82,12 @@ public abstract class Media {
 		this.importDate = importDate;
 	}
 
+	@JsonIgnore
 	public String getFilePath() {
 		return filePath;
 	}
 
+	@JsonProperty
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
@@ -126,5 +116,4 @@ public abstract class Media {
 		this.sharedPeople = sharedPeople;
 	}
 
-	
 }
