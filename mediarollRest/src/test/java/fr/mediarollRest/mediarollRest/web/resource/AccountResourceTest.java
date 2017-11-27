@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +31,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.mediarollRest.mediarollRest.exception.MailNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.service.IAccountService;
 
@@ -92,18 +92,19 @@ public class AccountResourceTest {
 	@WithMockUser
 	public void testGetUserByMailUserExist() throws Exception {
 		
-		when(accountService.findByMail(eq(mail))).thenReturn(Optional.of(account));
+		when(accountService.findByMail(eq(mail))).thenReturn(account);
 		
 		mockMvc.perform(get(ACCOUNTS+MAIL,mail)).andExpect(status().isOk()).andDo(print()).andReturn();
 		
 		verify(accountService).findByMail(eq(mail));
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
-	@WithMockUser
+	@WithMockUser	
 	public void testGetUserByMailUserNotExist() throws Exception {
 		
-		when(accountService.findByMail(eq(mail))).thenReturn(Optional.empty());
+		when(accountService.findByMail(eq(mail))).thenThrow(MailNotFoundException.class);
 		
 		MvcResult result = mockMvc.perform(get(ACCOUNTS+MAIL,mail)).andExpect(status().isNotFound()).andDo(print()).andReturn();
 		

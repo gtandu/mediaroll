@@ -5,7 +5,6 @@ import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Optional;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import fr.mediarollRest.mediarollRest.exception.MailNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Media;
@@ -46,8 +46,8 @@ public class MediaResource {
 	
 	@ApiOperation(value = "Update media info")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully updated"),
-            @ApiResponse(code = 400, message = "The file is not a media"),
+            @ApiResponse(code = 200, message = "Successfully updated."),
+            @ApiResponse(code = 404, message = "The media is not found. Check ID."),
     })
 	@RequestMapping(value = MEDIAS+MEDIA_ID, method = RequestMethod.PUT)
 	public ResponseEntity<Media> updateMediaInfo(@PathVariable("mediaId") Long mediaId, @RequestBody Media media){
@@ -65,9 +65,9 @@ public class MediaResource {
 	
 	@ApiOperation(value = "Upload a media")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successfully upload"),
-            @ApiResponse(code = 400, message = "The file is not a media"),
-            @ApiResponse(code = 500, message = "Attempt to save file in file system failed"),
+            @ApiResponse(code = 201, message = "Successfully upload."),
+            @ApiResponse(code = 400, message = "The file is not a media."),
+            @ApiResponse(code = 500, message = "Attempt to save file in file system failed."),
     })
 	@RequestMapping(value = MEDIAS, method = RequestMethod.POST)
 	@ResponseBody
@@ -75,10 +75,15 @@ public class MediaResource {
 			throws IOException {
 
 		Media mediaToSave = null;
+		Account account = null;
 
 		if (mediaManagerService.isMedia(media)) {
-			Optional<Account> userOptional = accountService.findByMail(principal.getName());
-			Account account = userOptional.get();
+			
+			try {
+				account = accountService.findByMail(principal.getName());
+			} catch (MailNotFoundException e1) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
 
 			try {
 				mediaToSave = mediaManagerService.saveMediaInFileSystem(media);

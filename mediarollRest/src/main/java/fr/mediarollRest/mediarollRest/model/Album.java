@@ -18,6 +18,8 @@ public class Album {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
+	private String name;
+	
 	@ManyToOne(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
 	private Account owner;
 
@@ -48,6 +50,14 @@ public class Album {
 		this.id = id;
 	}
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public Account getOwner() {
 		return owner;
 	}

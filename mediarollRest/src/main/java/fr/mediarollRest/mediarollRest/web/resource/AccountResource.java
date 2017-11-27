@@ -6,7 +6,6 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.mediarollRest.mediarollRest.exception.MailNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.service.IAccountService;
 import io.swagger.annotations.Api;
@@ -57,15 +57,13 @@ public class AccountResource {
     })
 	@RequestMapping(value = ACCOUNTS+MAIL, method = RequestMethod.GET)
 	public ResponseEntity<Account> getUserByMail(@PathVariable("mail") String mail) {
-		Optional<Account> accountOptional = accountService.findByMail(mail);
-
-		if (accountOptional.isPresent()) {
-			
-			Account account = accountOptional.get();
+		try {
+			Account account = accountService.findByMail(mail);
 			buildLink(mail, account);
 			return new ResponseEntity<>(account, HttpStatus.OK);
-		} else {
+		} catch (MailNotFoundException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
 		}
 	}
 

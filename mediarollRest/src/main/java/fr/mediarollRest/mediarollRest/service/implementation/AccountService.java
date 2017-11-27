@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.mediarollRest.mediarollRest.exception.MailNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.repository.AccountRepository;
 import fr.mediarollRest.mediarollRest.service.IAccountService;
@@ -22,8 +24,17 @@ public class AccountService implements IAccountService {
 	private BCryptPasswordEncoder passwordEncoder;
 
 	@Override
-	public Optional<Account> findByMail(String mail) {
-		return accountRepository.findByMail(mail);
+	public Account findByMail(String mail) throws MailNotFoundException {
+		
+		
+		Optional<Account> optionalAccount = accountRepository.findByMail(mail);
+		if(optionalAccount.isPresent()){
+			return optionalAccount.get();
+		}
+		else
+		{
+			throw new MailNotFoundException();
+		}
 	}
 
 	@Override
@@ -64,7 +75,6 @@ public class AccountService implements IAccountService {
 
 	@Override
 	public Account saveAccount(Account account) {
-		// TODO Auto-generated method stub
 		return accountRepository.save(account);
 	}
 
