@@ -50,4 +50,16 @@ public class AlbumService implements IAlbumService {
 		
 	}
 
+	@Override
+	public Album findAlbumById(Long albumId) throws AlbumNotFoundException {
+		Optional<Album> optionalAlbum = albumRepository.findById(albumId);
+		if(optionalAlbum.isPresent()){
+			return optionalAlbum.get();
+		}
+		else
+		{
+			throw new AlbumNotFoundException();
+		}
+	}
+
 }

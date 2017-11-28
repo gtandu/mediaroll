@@ -19,17 +19,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.mediarollRest.mediarollRest.exception.AlbumNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.MailNotFoundException;
+import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Album;
 import fr.mediarollRest.mediarollRest.model.Media;
+import fr.mediarollRest.mediarollRest.model.Picture;
 import fr.mediarollRest.mediarollRest.service.implementation.AccountService;
 import fr.mediarollRest.mediarollRest.service.implementation.AlbumService;
+import fr.mediarollRest.mediarollRest.service.implementation.MediaService;
 
 @RestController
 public class AlbumResource {
 
 	@Autowired
 	private AlbumService albumService;
+	
+	@Autowired
+	private MediaService mediaService;
 	
 	@Autowired
 	private AccountService accountService;
@@ -75,22 +81,48 @@ public class AlbumResource {
 		}
 	}
 
-	@PutMapping(value = ALBUM_WITH_ID + COVER)
-	public ResponseEntity<Album> addCoverToAlbum(@PathVariable("albumId") Long albumId, @RequestBody Media media) {
+	@PutMapping(value = ALBUM_WITH_ID + COVER + MEDIAS_WITH_ID)
+	public ResponseEntity<Album> addCoverToAlbum(@PathVariable("albumId") Long albumId, @PathVariable("mediaId") Long pictureId) {
 
-		return null;
+		try {
+			Picture picture = (Picture) mediaService.findById(pictureId);
+			
+			Album album = albumService.findAlbumById(albumId);
+			album.setCover(picture);
+			Album savedAlbum = albumService.saveAlbum(album);
+			return new ResponseEntity<Album>(savedAlbum,HttpStatus.CREATED);
+			
+		} catch (MediaNotFoundException e) {
+			return new ResponseEntity<Album>(HttpStatus.NOT_FOUND);
+		} catch (AlbumNotFoundException e) {
+			return new ResponseEntity<Album>(HttpStatus.NOT_FOUND);
+		}
 	}
 
-	@DeleteMapping(value = ALBUM_WITH_ID + COVER)
+	@DeleteMapping(value =  ALBUM_WITH_ID + COVER)
 	public ResponseEntity<Void> deleteCoverToAlbum(@PathVariable("albumId") Long albumId) {
-
-		return null;
+		
+		try {
+			Album album = albumService.findAlbumById(albumId);
+			album.setCover(null);
+			albumService.saveAlbum(album);
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		} catch (AlbumNotFoundException e) {
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		}
 	}
 
-	@PostMapping(value = ALBUM_WITH_ID + MEDIAS)
-	public ResponseEntity<Album> addMediaToAlbum(@PathVariable("albumId") Long albumId, @RequestBody Media media) {
+	@PostMapping(value = ALBUM_WITH_ID + MEDIAS_WITH_ID)
+	public ResponseEntity<Album> addMediaToAlbum(@PathVariable("albumId") Long albumId, @PathVariable("mediaId") Long mediaId) {
 
-		return null;
+		try {
+			Album album = albumService.findAlbumById(albumId);
+			Media media = mediaService.findById(mediaId);
+			album.getMedias().add(media);
+			return new ResponseEntity<Album>(album,HttpStatus.OK);
+		} catch (AlbumNotFoundException | MediaNotFoundException e) {
+			return new ResponseEntity<Album>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@DeleteMapping(value = ALBUM_WITH_ID + MEDIAS_WITH_ID)
