@@ -49,7 +49,7 @@ public class AlbumResource {
 	}
 
 	@PutMapping(value = ALBUM_WITH_ID)
-	public ResponseEntity<Album> editAlbum(@PathVariable("albumId") Long albumId, @RequestBody Album album) {
+	public ResponseEntity<Album> updateAlbum(@PathVariable("albumId") Long albumId, @RequestBody Album album) {
 
 		try {
 			Album albumUpdated = albumService.updateAlbum(albumId, album);
@@ -61,8 +61,18 @@ public class AlbumResource {
 
 	@DeleteMapping(value = ALBUM_WITH_ID)
 	public ResponseEntity<Void> deleteAlbum(@PathVariable("albumId") Long albumId) {
-
-		return null;
+		
+		try {
+			if(albumService.deleteAlbum(albumId)) {
+				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+			}
+			else
+			{
+				return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (AlbumNotFoundException e) {
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@PutMapping(value = ALBUM_WITH_ID + COVER)

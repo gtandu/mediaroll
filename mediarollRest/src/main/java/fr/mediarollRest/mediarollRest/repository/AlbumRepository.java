@@ -11,5 +11,7 @@ import fr.mediarollRest.mediarollRest.model.Album;
 public interface AlbumRepository extends CrudRepository<Album, Long> {
 	
 	Optional<Album> findById(Long id);
+	
+	Integer deleteById(Long id);
 
 }

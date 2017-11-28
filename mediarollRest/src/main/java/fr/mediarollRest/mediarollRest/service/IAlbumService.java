@@ -9,6 +9,8 @@ public interface IAlbumService {
 	
 	public Album updateAlbum(Long albumId, Album album) throws AlbumNotFoundException;
 	
+	public boolean deleteAlbum(Long albumId) throws AlbumNotFoundException;
+	
 	
 	
 

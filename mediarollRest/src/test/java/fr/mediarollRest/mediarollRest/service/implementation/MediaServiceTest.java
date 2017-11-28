@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -84,17 +83,17 @@ public class MediaServiceTest {
 	public void testUpdateMediaInfo() throws Exception {
 		Long mediaId = 1L;
 		Media mediaWithNewInfo = new Picture();
-		Picture mockMediaToUpdate = mock(Picture.class);
+		Picture mediaToUpdate =new Picture();
 		mediaWithNewInfo.setDescription("test description");
 
-		when(mediaRepository.findById(anyLong())).thenReturn(Optional.of(mockMediaToUpdate));
-		when(mediaRepository.save(any(Media.class))).thenReturn(mockMediaToUpdate);
+		when(mediaRepository.findById(anyLong())).thenReturn(Optional.of(mediaToUpdate));
+		when(mediaRepository.save(any(Media.class))).thenReturn(mediaToUpdate);
 		
 		Media mediaUpdated = mediaService.updateMediaInfo(mediaId, mediaWithNewInfo);
 		
 		assertThat(mediaUpdated).isNotNull();
+		assertThat(mediaUpdated.getDescription()).isEqualTo(mediaWithNewInfo.getDescription());
 		
-		verify(mockMediaToUpdate).setDescription(eq(mediaWithNewInfo.getDescription()));
 		verify(mediaRepository).findById(eq(mediaId));
 		verify(mediaRepository).save(any(Media.class));
 	}
@@ -110,5 +109,16 @@ public class MediaServiceTest {
 		mediaService.updateMediaInfo(mediaId, media);
 		
 		verify(mediaRepository).findById(eq(mediaId));
+	}
+
+	@Test
+	public void testSaveMedia() throws Exception {
+		Picture picture = new Picture();
+		
+		when(mediaRepository.save(any(Picture.class))).thenReturn(new Picture());
+		
+		mediaService.saveMedia(picture);
+		
+		verify(mediaRepository).save(any(Picture.class));
 	}
 }
