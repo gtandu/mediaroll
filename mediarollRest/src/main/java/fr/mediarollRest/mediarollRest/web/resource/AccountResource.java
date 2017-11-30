@@ -6,8 +6,12 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.util.List;
+import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +34,13 @@ public class AccountResource {
 
 	@Autowired
 	private IAccountService accountService;
+	
+	@Autowired
+	private MessageSource messageSource;
+	
+    private static final Logger logger = LoggerFactory.getLogger(AccountResource.class);
+
+	
 
 	@ApiOperation(value = "View a list of accounts")
     @ApiResponses(value = {
@@ -40,11 +51,11 @@ public class AccountResource {
 	public ResponseEntity<List<Account>> findAll() {
 		List<Account> accountsList = accountService.findAll();
 		if (accountsList.isEmpty()) {
+			logger.info("Account list is empty. Add an account");
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} else {
 			for (Account account : accountsList) {
 				account.add(linkTo(methodOn(AccountResource.class).getUserByMail(account.getMail())).withSelfRel());
-
 			}
 			return new ResponseEntity<>(accountsList, HttpStatus.OK);
 		}
@@ -62,6 +73,7 @@ public class AccountResource {
 			buildLink(mail, account);
 			return new ResponseEntity<>(account, HttpStatus.OK);
 		} catch (AccountNotFoundException e) {
+			logger.error(messageSource.getMessage("error.account.not.found",null, Locale.FRANCE), mail);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
 		}
@@ -80,6 +92,7 @@ public class AccountResource {
 	@RequestMapping(value = ACCOUNTS, method = RequestMethod.POST)
 	public ResponseEntity<Void> createUser(@RequestBody Account account) {
 		if (accountService.isAccountExist(account)) {
+			logger.error(messageSource.getMessage("error.account.not.found",null, Locale.FRANCE), account.getMail());
 			return new ResponseEntity<>(HttpStatus.CONFLICT);
 		} else {
 			accountService.saveAccountAndEncodePassword(account);
@@ -100,6 +113,7 @@ public class AccountResource {
 		if (userUpdated != null) {
 			return new ResponseEntity<>(userUpdated, HttpStatus.OK);
 		} else {
+			logger.error(messageSource.getMessage("error.account.not.found",null, Locale.FRANCE), account.getMail());
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
@@ -116,6 +130,7 @@ public class AccountResource {
 		if (deleteStatus) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} else {
+			logger.error(messageSource.getMessage("error.account.not.found",null, Locale.FRANCE), mail);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 

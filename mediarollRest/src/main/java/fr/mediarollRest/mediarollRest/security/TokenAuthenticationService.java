@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +27,7 @@ public class TokenAuthenticationService {
     static final String SECRET = "ThisIsASecret";
     static final String TOKEN_PREFIX = "Token";
     static final String HEADER_STRING = "Authorization";
+    private static final Logger logger = LoggerFactory.getLogger(TokenAuthenticationService.class);
 
     static void addAuthentication(HttpServletResponse res, String username) throws IOException {
         String JWT = Jwts.builder()
@@ -34,6 +37,7 @@ public class TokenAuthenticationService {
                 .compact();
         Token token = new Token(JWT);
         ObjectMapper mapper = new ObjectMapper();
+        logger.info("Account : {} & Token : {}", username, JWT);
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
         res.getWriter().write(mapper.writeValueAsString(token));
     }

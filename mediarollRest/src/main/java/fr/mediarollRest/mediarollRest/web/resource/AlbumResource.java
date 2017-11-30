@@ -20,28 +20,28 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.mediarollRest.mediarollRest.exception.AlbumNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
+import fr.mediarollRest.mediarollRest.exception.AlbumNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Album;
 import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.model.Picture;
-import fr.mediarollRest.mediarollRest.service.implementation.AccountService;
-import fr.mediarollRest.mediarollRest.service.implementation.AlbumService;
-import fr.mediarollRest.mediarollRest.service.implementation.MediaService;
+import fr.mediarollRest.mediarollRest.service.IAccountService;
+import fr.mediarollRest.mediarollRest.service.IAlbumService;
+import fr.mediarollRest.mediarollRest.service.IMediaService;
 
 @RestController
 public class AlbumResource {
 
 	@Autowired
-	private AlbumService albumService;
+	private IAlbumService albumService;
 
 	@Autowired
-	private MediaService mediaService;
+	private IMediaService mediaService;
 
 	@Autowired
-	private AccountService accountService;
+	private IAccountService accountService;
 	
 	@GetMapping(value = ALBUM_WITH_ID)
 	public ResponseEntity<Album> getAlbum(@PathVariable("albumId") Long albumId) {
