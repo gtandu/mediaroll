@@ -5,9 +5,13 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import fr.mediarollRest.mediarollRest.security.model.Token;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -28,7 +32,10 @@ public class TokenAuthenticationService {
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
                 .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
-        res.getWriter().write(TOKEN_PREFIX + " " + JWT);
+        Token token = new Token(JWT);
+        ObjectMapper mapper = new ObjectMapper();
+        res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        res.getWriter().write(mapper.writeValueAsString(token));
     }
 
     static Authentication getAuthentication(HttpServletRequest request) {

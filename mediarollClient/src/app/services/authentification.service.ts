@@ -22,7 +22,7 @@ export class AuthentificationService {
             .map((response: Response) => {
                 // login successful if there's a jwt token in the response
                 console.log(response);
-                let token = response._body;
+                let token = response.json().token;
                 if (token) {
                     console.log(token);
 
