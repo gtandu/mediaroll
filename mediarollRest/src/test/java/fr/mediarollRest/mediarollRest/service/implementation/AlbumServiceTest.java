@@ -113,4 +113,37 @@ public class AlbumServiceTest {
 		verify(albumRepository).findById(eq(albumId));
 	}
 
+	@Test
+	public void testFindAlbumByMail() throws Exception {
+		// WHEN
+
+		Long albumId = 1L;
+		
+		when(albumRepository.findById(eq(albumId))).thenReturn(Optional.of(new Album()));
+		
+
+		// GIVEN
+		albumService.findAlbumById(albumId);
+
+		// THEN
+		verify(albumRepository).findById(eq(albumId));
+
+	}
+	
+	@Test(expected=AlbumNotFoundException.class)
+	public void testFindAlbumByMailThrowAccountNotFoundException() throws Exception {
+		// WHEN
+
+		Long albumId = 1L;
+		
+		when(albumRepository.findById(eq(albumId))).thenReturn(Optional.empty());
+
+		// GIVEN
+		albumService.findAlbumById(albumId);
+
+		// THEN
+		verify(albumRepository).findById(eq(albumId));
+
+	}
+
 }

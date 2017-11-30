@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.mediarollRest.mediarollRest.exception.MailNotFoundException;
+import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.service.IAccountService;
 import io.swagger.annotations.Api;
@@ -61,7 +61,7 @@ public class AccountResource {
 			Account account = accountService.findByMail(mail);
 			buildLink(mail, account);
 			return new ResponseEntity<>(account, HttpStatus.OK);
-		} catch (MailNotFoundException e) {
+		} catch (AccountNotFoundException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
 		}

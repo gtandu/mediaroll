@@ -34,7 +34,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.mediarollRest.mediarollRest.exception.MailNotFoundException;
+import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Media;
@@ -159,7 +159,7 @@ public class MediaResourceTest {
 		
 		boolean isMedia = true;
 		when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
-		when(accountService.findByMail(anyString())).thenThrow(MailNotFoundException.class);
+		when(accountService.findByMail(anyString())).thenThrow(AccountNotFoundException.class);
 		
 		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
 		result.andExpect(status().isNotFound());

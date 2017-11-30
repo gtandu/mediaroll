@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import fr.mediarollRest.mediarollRest.exception.MailNotFoundException;
+import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Media;
@@ -81,7 +81,7 @@ public class MediaResource {
 			
 			try {
 				account = accountService.findByMail(principal.getName());
-			} catch (MailNotFoundException e1) {
+			} catch (AccountNotFoundException e1) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
 

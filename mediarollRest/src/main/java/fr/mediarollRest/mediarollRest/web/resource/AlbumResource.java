@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.mediarollRest.mediarollRest.exception.AlbumNotFoundException;
-import fr.mediarollRest.mediarollRest.exception.MailNotFoundException;
+import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Album;
@@ -61,13 +62,13 @@ public class AlbumResource {
 			album.setOwner(account);
 			Album albumSaved = albumService.saveAlbum(album);
 			return new ResponseEntity<Album>(albumSaved, HttpStatus.OK);
-		} catch (MailNotFoundException e) {
+		} catch (AccountNotFoundException e) {
 			return new ResponseEntity<Album>(HttpStatus.NOT_FOUND);
 		}
 
 	}
 
-	@PutMapping(value = ALBUM_WITH_ID)
+	@PatchMapping(value = ALBUM_WITH_ID)
 	public ResponseEntity<Album> updateAlbum(@PathVariable("albumId") Long albumId, @RequestBody Album album) {
 
 		try {
@@ -111,20 +112,7 @@ public class AlbumResource {
 		}
 	}
 
-	@DeleteMapping(value = ALBUM_WITH_ID + COVER)
-	public ResponseEntity<Void> deleteCoverToAlbum(@PathVariable("albumId") Long albumId) {
-
-		try {
-			Album album = albumService.findAlbumById(albumId);
-			album.setCover(null);
-			albumService.saveAlbum(album);
-			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-		} catch (AlbumNotFoundException e) {
-			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
-		}
-	}
-
-	@PostMapping(value = ALBUM_WITH_ID + MEDIAS_WITH_ID)
+	@PutMapping(value = ALBUM_WITH_ID + MEDIAS_WITH_ID)
 	public ResponseEntity<Album> addMediaToAlbum(@PathVariable("albumId") Long albumId,
 			@PathVariable("mediaId") Long mediaId) {
 
@@ -137,7 +125,7 @@ public class AlbumResource {
 			} else {
 				album.getMedias().add(media);
 				Album albumSaved = albumService.saveAlbum(album);
-				return new ResponseEntity<Album>(albumSaved, HttpStatus.OK);
+				return new ResponseEntity<Album>(albumSaved, HttpStatus.CREATED);
 			}
 
 		} catch (AlbumNotFoundException e) {
@@ -170,7 +158,7 @@ public class AlbumResource {
 		}
 	}
 
-	@PostMapping(value = ALBUM_WITH_ID + ACCOUNT_WITH_MAIL)
+	@PutMapping(value = ALBUM_WITH_ID + ACCOUNT_WITH_MAIL)
 	public ResponseEntity<Album> addUserToSharedList(Principal principal, @PathVariable("albumId") Long albumId,
 			@PathVariable("mail") String mail) {
 		
@@ -187,19 +175,19 @@ public class AlbumResource {
 			} else {
 				album.getSharedPeople().add(account);
 				Album albumSaved = albumService.saveAlbum(album);
-				return new ResponseEntity<Album>(albumSaved, HttpStatus.OK);
+				return new ResponseEntity<Album>(albumSaved, HttpStatus.CREATED);
 			}
 		} catch (AlbumNotFoundException e) {
 			return new ResponseEntity<Album>(HttpStatus.NOT_FOUND);
-		} catch (MailNotFoundException e) {
+		} catch (AccountNotFoundException e) {
 			return new ResponseEntity<Album>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@DeleteMapping(value = ALBUM_WITH_ID + ACCOUNT_WITH_MAIL)
-	public ResponseEntity<Album> deleteUserFromSharedList(@PathVariable("albumId") Long albumId,
+	public ResponseEntity<Album> deleteUserFromSharedList(Principal principal, @PathVariable("albumId") Long albumId,
 			@PathVariable("mail") String mail) {
-
+		
 		try {
 			Album album = albumService.findAlbumById(albumId);
 			Account account = accountService.findByMail(mail);
@@ -214,7 +202,7 @@ public class AlbumResource {
 			
 		} catch (AlbumNotFoundException e) {
 			return new ResponseEntity<Album>(HttpStatus.NOT_FOUND);
-		} catch (MailNotFoundException e) {
+		} catch (AccountNotFoundException e) {
 			return new ResponseEntity<Album>(HttpStatus.NOT_FOUND);
 		}
 	}

@@ -31,7 +31,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.mediarollRest.mediarollRest.exception.MailNotFoundException;
+import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.service.IAccountService;
 
@@ -104,7 +104,7 @@ public class AccountResourceTest {
 	@WithMockUser	
 	public void testGetUserByMailUserNotExist() throws Exception {
 		
-		when(accountService.findByMail(eq(mail))).thenThrow(MailNotFoundException.class);
+		when(accountService.findByMail(eq(mail))).thenThrow(AccountNotFoundException.class);
 		
 		MvcResult result = mockMvc.perform(get(ACCOUNTS+MAIL,mail)).andExpect(status().isNotFound()).andDo(print()).andReturn();
 		

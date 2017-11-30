@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.repository.AccountRepository;
 
@@ -47,6 +48,20 @@ public class AccountServiceTest {
 		// WHEN
 
 		when(accountRepository.findByMail(eq(mail))).thenReturn(Optional.of(account1));
+
+		// GIVEN
+		accountService.findByMail(mail);
+
+		// THEN
+		verify(accountRepository).findByMail(eq(mail));
+
+	}
+	
+	@Test(expected=AccountNotFoundException.class)
+	public void testFindByMailThrowAccountNotFoundException() throws Exception {
+		// WHEN
+
+		when(accountRepository.findByMail(eq(mail))).thenReturn(Optional.empty());
 
 		// GIVEN
 		accountService.findByMail(mail);
