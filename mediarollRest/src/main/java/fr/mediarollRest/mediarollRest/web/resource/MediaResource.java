@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.apache.tika.io.IOUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
@@ -50,6 +52,9 @@ public class MediaResource {
 
 	@Autowired
 	private MediaManagerService mediaManagerService;
+	
+    private static final Logger logger = LoggerFactory.getLogger(AccountResource.class);
+
 
 	@GetMapping(MEDIAS)
 	public ResponseEntity<List<Media>> getAllMedias(Principal principal) {
@@ -104,7 +109,7 @@ public class MediaResource {
 			@ApiResponse(code = 500, message = "Attempt to save file in file system failed."), })
 	@RequestMapping(value = MEDIAS, method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<Media> uploadMedia(@RequestParam("media") MultipartFile media, Principal principal)
+	public ResponseEntity<Media> uploadMedia(@RequestParam("file") MultipartFile media, Principal principal)
 			throws IOException {
 
 		Media mediaToSave = null;

@@ -6,11 +6,15 @@ import { MediarollRoutingModule } from "./mediaroll-routing.module";
 import { AuthGuard } from '../guards/auth-guard.service';
 
 import { MediaService } from "../services/media/media.service";
+import { FileUploadModule } from 'ng2-file-upload';
+
+
 
 @NgModule({
   imports: [
     CommonModule,
-    MediarollRoutingModule
+    MediarollRoutingModule,
+    FileUploadModule
   ],
   declarations: [
     HomeComponent
