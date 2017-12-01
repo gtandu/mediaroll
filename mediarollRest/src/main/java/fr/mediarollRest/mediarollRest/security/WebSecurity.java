@@ -1,6 +1,8 @@
 package fr.mediarollRest.mediarollRest.security;
 
 import static fr.mediarollRest.mediarollRest.constant.Paths.GET_TOKEN;
+import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS_WITH_ID;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +34,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.cors().and().csrf().disable().authorizeRequests()
 				.antMatchers(HttpMethod.POST, GET_TOKEN).permitAll()
-				.antMatchers("/h2-console/**").permitAll()
+				.antMatchers("/h2-console/**", MEDIAS_WITH_ID).permitAll()
 				.antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**").permitAll()
 				.anyRequest().authenticated().and()
 				.addFilterBefore(new JWTLoginFilter(GET_TOKEN, authenticationManager()),

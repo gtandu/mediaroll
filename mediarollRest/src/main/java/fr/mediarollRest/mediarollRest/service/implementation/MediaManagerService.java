@@ -2,8 +2,11 @@ package fr.mediarollRest.mediarollRest.service.implementation;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -15,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.net.MediaType;
 
+import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.model.Picture;
 import fr.mediarollRest.mediarollRest.model.Video;
@@ -113,6 +117,14 @@ public class MediaManagerService implements IMediaManagerService {
 		}
 		return detectedType;
 
+	}
+	
+	public InputStream getInputStreamFromMedia(Media media) throws MediaNotFoundException {
+		try {
+			return new FileInputStream(media.getFilePath());
+		} catch (FileNotFoundException e) {
+			throw new MediaNotFoundException();
+		}
 	}
 
 	@Override

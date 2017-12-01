@@ -5,6 +5,8 @@ import { HomeComponent } from "./home/home.component";
 import { MediarollRoutingModule } from "./mediaroll-routing.module";
 import { AuthGuard } from '../guards/auth-guard.service';
 
+import { MediaService } from "../services/media/media.service";
+
 @NgModule({
   imports: [
     CommonModule,
@@ -13,6 +15,6 @@ import { AuthGuard } from '../guards/auth-guard.service';
   declarations: [
     HomeComponent
   ],
-  providers: [AuthGuard]
+  providers: [AuthGuard, MediaService]
 })
 export class MediarollModule {}

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
-// const URL = '/api/';
-const URL = 'http://localhost:8080/medias';
+import { MediaService } from "../../services/media/media.service";
+import { Media } from '../../models/media';
 
 @Component({
   selector: 'app-home',
@@ -9,10 +8,21 @@ const URL = 'http://localhost:8080/medias';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  medias: Media[] = [];
 
-  constructor(
-  ) { }
+  constructor(private mediaService : MediaService) { }
 
-  ngOnInit() {  }
+  ngOnInit() {
+   
+    this.mediaService.getAllMedias().subscribe(medias => {
+      console.log(medias);
+      this.medias = medias;
+  }); 
+
+  }
+
+  ngAfterViewChecked() {
+    //$('.materialboxed').materialbox();
+}
 
 }

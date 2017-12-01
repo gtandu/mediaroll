@@ -7,10 +7,12 @@ import 'rxjs/add/operator/catch'
 @Injectable()
 export class AuthentificationService {
     public token: string;
+    public server: string;
 
     constructor(private http: Http) {
         var currentUser = JSON.parse(localStorage.getItem('currentUser'));
         this.token = currentUser && currentUser.token;
+        this.server = "http://localhost:8080";
     }
 
     login(mail: String, password: String): Observable<Boolean> {
@@ -18,7 +20,7 @@ export class AuthentificationService {
         let headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
 
-        return this.http.post('http://localhost:8080/api-token', body, options)
+        return this.http.post(this.server+'/api-token', body, options)
             .map((response: Response) => {
                 // login successful if there's a jwt token in the response
                 console.log(response);
