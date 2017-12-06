@@ -84,7 +84,7 @@ public class MediaManagerService implements IMediaManagerService {
 				throw new IOException("You failed to upload " + randomUUIDFileName + " => " + e.getMessage());
 			}
 		} else {
-			throw new FileUploadException("You failed to upload " + media.getOriginalFilename() + " because the file was empty.");
+			throw new FileUploadException();
 		}
 
 	}

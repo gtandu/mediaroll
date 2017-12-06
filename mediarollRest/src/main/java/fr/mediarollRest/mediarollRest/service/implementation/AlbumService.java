@@ -1,5 +1,6 @@
 package fr.mediarollRest.mediarollRest.service.implementation;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.mediarollRest.mediarollRest.exception.AlbumNotFoundException;
+import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Album;
 import fr.mediarollRest.mediarollRest.repository.AlbumRepository;
 import fr.mediarollRest.mediarollRest.service.IAlbumService;
@@ -61,5 +63,12 @@ public class AlbumService implements IAlbumService {
 			throw new AlbumNotFoundException();
 		}
 	}
+
+	@Override
+	public List<Album> findAlbumByOwner(Account account) {
+		return albumRepository.findByOwner(account);
+	}
+	
+	
 
 }

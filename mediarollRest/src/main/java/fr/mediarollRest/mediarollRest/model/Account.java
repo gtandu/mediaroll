@@ -10,7 +10,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.springframework.hateoas.ResourceSupport;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,7 +20,7 @@ import fr.mediarollRest.mediarollRest.security.Authority;
 
 @SuppressWarnings("serial")
 @Entity
-public class Account extends ResourceSupport implements UserDetails {
+public class Account implements UserDetails {
 
 	@Id
 	private String mail;

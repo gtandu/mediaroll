@@ -1,6 +1,9 @@
 package fr.mediarollRest.mediarollRest.service;
 
+import java.util.List;
+
 import fr.mediarollRest.mediarollRest.exception.AlbumNotFoundException;
+import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Album;
 
 public interface IAlbumService {
@@ -12,6 +15,8 @@ public interface IAlbumService {
 	public boolean deleteAlbum(Long albumId) throws AlbumNotFoundException;
 	
 	public Album findAlbumById(Long albumId) throws AlbumNotFoundException;
+	
+	public List<Album> findAlbumByOwner(Account account);
 	
 	
 	
