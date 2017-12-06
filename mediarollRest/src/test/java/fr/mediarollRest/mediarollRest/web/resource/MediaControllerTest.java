@@ -365,7 +365,7 @@ public class MediaControllerTest {
 
 		ResultActions result = mockMvc.perform(get(MEDIAS_WITH_ID, mediaId));
 
-		result.andExpect(status().isOk());
+		result.andExpect(status().isNotFound());
 		result.andDo(print());
 		
 		verify(mediaService).findById(eq(mediaId));
