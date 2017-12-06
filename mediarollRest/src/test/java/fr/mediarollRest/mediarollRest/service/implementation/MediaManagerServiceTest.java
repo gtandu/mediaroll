@@ -18,7 +18,9 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import com.google.common.net.MediaType;
 
+import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Media;
+import fr.mediarollRest.mediarollRest.model.Picture;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MediaManagerServiceTest {
@@ -115,6 +117,25 @@ public class MediaManagerServiceTest {
 		boolean isDeleteInFileSystem = mediaManagerService.deleteMediaInFileSystem(filePath);
 		
 		assertThat(isDeleteInFileSystem).isFalse();
+	}
+
+	@Test
+	public void testGetInputStreamFromMedia() throws Exception {
+		Picture picture = new Picture();
+		picture.setFilePath("src/test/resources/image.jpg");
+		
+		InputStream inputStreamFromMedia = mediaManagerService.getInputStreamFromMedia(picture);
+		
+		assertThat(inputStreamFromMedia).isNotNull();
+	
+	}
+	
+	@Test(expected=MediaNotFoundException.class)
+	public void testGetInputStreamFromMediaThrowsFileNotFoundException() throws Exception {
+		Picture picture = new Picture();
+		picture.setFilePath("notFound");
+		
+		mediaManagerService.getInputStreamFromMedia(picture);
 	}
 	
 	

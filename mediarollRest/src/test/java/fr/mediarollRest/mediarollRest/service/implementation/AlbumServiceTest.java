@@ -6,6 +6,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import fr.mediarollRest.mediarollRest.exception.AlbumNotFoundException;
+import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Album;
 import fr.mediarollRest.mediarollRest.repository.AlbumRepository;
 
@@ -100,7 +102,6 @@ public class AlbumServiceTest {
 		verify(albumRepository).deleteById(eq(albumId));
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test(expected=AlbumNotFoundException.class)
 	public void testDeleteAlbumThrowAlbumNotFoundException() throws Exception {
 		
@@ -144,6 +145,18 @@ public class AlbumServiceTest {
 		// THEN
 		verify(albumRepository).findById(eq(albumId));
 
+	}
+
+	@Test
+	public void testFindAlbumByOwner() throws Exception {
+		
+		Account account = new Account();
+		
+		when(albumRepository.findByOwner(any(Account.class))).thenReturn(new ArrayList<>());
+		
+		albumService.findAlbumByOwner(account);
+		
+		verify(albumRepository).findByOwner(any(Account.class));
 	}
 
 }
