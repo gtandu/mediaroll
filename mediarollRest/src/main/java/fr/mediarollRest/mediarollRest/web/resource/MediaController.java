@@ -7,6 +7,7 @@ import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -116,39 +117,45 @@ public class MediaController {
 			@ApiResponse(code = 500, message = "Attempt to save file in file system failed."), })
 	@RequestMapping(value = MEDIAS, method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<Media> uploadMedia(@RequestParam("file") MultipartFile media, Principal principal)
+	public ResponseEntity<List<Media>> uploadMedias(@RequestParam("file") MultipartFile[] mediaList, Principal principal)
 			throws IOException {
 
 		Media mediaToSave = null;
+		ArrayList<Media> mediasSavedList = new ArrayList<>();
 		Account account = null;
 		String mail = principal.getName();
 
-		if (mediaManagerService.isMedia(media)) {
+		for (MultipartFile media : mediaList) {
+			if (mediaManagerService.isMedia(media)) {
 
-			try {
-				account = accountService.findByMail(mail);
-				mediaToSave = mediaManagerService.saveMediaInFileSystem(media);
-				mediaToSave.setOwner(account);
-				account.getMediaList().add(mediaToSave);
+				try {
+					account = accountService.findByMail(mail);
+					mediaToSave = mediaManagerService.saveMediaInFileSystem(media);
+					mediaToSave.setOwner(account);
+					account.getMediaList().add(mediaToSave);
 
-				Media mediaSaved = mediaService.saveMedia(mediaToSave);
+					Media mediaSaved = mediaService.saveMedia(mediaToSave);
+					
+					mediasSavedList.add(mediaSaved);
 
-				return new ResponseEntity<Media>(mediaSaved, HttpStatus.CREATED);
-			} catch (AccountNotFoundException e) {
-				logger.error(messageSource.getMessage("error.account.not.found", null, Locale.FRANCE), mail);
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			} catch (IOException e) {
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			} catch (FileUploadException e) {
-				logger.error(messageSource.getMessage("error.upload.media", null, Locale.FRANCE), media.getOriginalFilename());
+				} catch (AccountNotFoundException e) {
+					logger.error(messageSource.getMessage("error.account.not.found", null, Locale.FRANCE), mail);
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				} catch (IOException e) {
+					return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+				} catch (FileUploadException e) {
+					logger.error(messageSource.getMessage("error.upload.media", null, Locale.FRANCE), media.getOriginalFilename());
+					return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+				}
+			}
+
+			else {
+				logger.error(messageSource.getMessage("error.upload.media.type", null, Locale.FRANCE), media.getOriginalFilename());
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 		}
+		return new ResponseEntity<List<Media>>(mediasSavedList, HttpStatus.CREATED);
 
-		else {
-			logger.error(messageSource.getMessage("error.upload.media.type", null, Locale.FRANCE), media.getOriginalFilename());
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
 
 	}
 

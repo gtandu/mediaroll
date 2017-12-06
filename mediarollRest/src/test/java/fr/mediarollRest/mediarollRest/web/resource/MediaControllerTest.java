@@ -75,112 +75,112 @@ public class MediaControllerTest {
 	}
 
 	@Test
-	@WithMockUser
-	public void testUploadMedia() throws Exception {
-
-		Account account = new Account();
-		account.setMediaList(new ArrayList<>());
-		boolean isMedia = true;
-
-		when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
-		when(accountService.findByMail(anyString())).thenReturn(account);
-		when(mediaManagerService.saveMediaInFileSystem(any(MockMultipartFile.class))).thenReturn(new Picture());
-		when(mediaService.saveMedia(any(Media.class))).thenReturn(new Picture());
-
-		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
-		
-		result.andExpect(status().isCreated());
-		result.andDo(print());
-
-		verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
-		verify(accountService).findByMail(anyString());
-		verify(mediaManagerService).saveMediaInFileSystem(any(MockMultipartFile.class));
-		verify(mediaService).saveMedia(any(Media.class));
-	}
-
-	@Test
-	@WithMockUser
-	public void testUploadMediaNotAllowed() throws Exception {
-
-		Account account = new Account();
-		account.setMediaList(new ArrayList<>());
-		boolean isMEdia = false;
-
-		when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMEdia);
-
-		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
-		
-		result.andExpect(status().isBadRequest());
-		result.andDo(print());
-
-		verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
-	}
+		@WithMockUser
+		public void testUploadMedias() throws Exception {
+	
+			Account account = new Account();
+			account.setMediaList(new ArrayList<>());
+			boolean isMedia = true;
+	
+			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
+			when(accountService.findByMail(anyString())).thenReturn(account);
+			when(mediaManagerService.saveMediaInFileSystem(any(MockMultipartFile.class))).thenReturn(new Picture());
+			when(mediaService.saveMedia(any(Media.class))).thenReturn(new Picture());
+	
+			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
+			
+			result.andExpect(status().isCreated());
+			result.andDo(print());
+	
+			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
+			verify(accountService).findByMail(anyString());
+			verify(mediaManagerService).saveMediaInFileSystem(any(MockMultipartFile.class));
+			verify(mediaService).saveMedia(any(Media.class));
+		}
 
 	@Test
-	@WithMockUser
-	public void testUploadMediaThrowFileUploadException() throws Exception {
-
-		Account account = new Account();
-		account.setMediaList(new ArrayList<>());
-
-		boolean isMedia = true;
-		when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
-		when(accountService.findByMail(anyString())).thenReturn(account);
-		when(mediaManagerService.saveMediaInFileSystem(any(MockMultipartFile.class)))
-				.thenThrow(new FileUploadException());
-
-		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
-		
-		result.andExpect(status().isBadRequest());
-		result.andDo(print());
-
-		verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
-		verify(accountService).findByMail(anyString());
-		verify(mediaManagerService).saveMediaInFileSystem(any(MockMultipartFile.class));
-	}
+		@WithMockUser
+		public void testUploadMediasNotAllowed() throws Exception {
+	
+			Account account = new Account();
+			account.setMediaList(new ArrayList<>());
+			boolean isMEdia = false;
+	
+			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMEdia);
+	
+			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
+			
+			result.andExpect(status().isBadRequest());
+			result.andDo(print());
+	
+			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
+		}
 
 	@Test
-	@WithMockUser
-	public void testUploadMediaThrowIOException() throws Exception {
+		@WithMockUser
+		public void testUploadMediasThrowFileUploadException() throws Exception {
+	
+			Account account = new Account();
+			account.setMediaList(new ArrayList<>());
+	
+			boolean isMedia = true;
+			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
+			when(accountService.findByMail(anyString())).thenReturn(account);
+			when(mediaManagerService.saveMediaInFileSystem(any(MockMultipartFile.class)))
+					.thenThrow(new FileUploadException());
+	
+			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
+			
+			result.andExpect(status().isBadRequest());
+			result.andDo(print());
+	
+			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
+			verify(accountService).findByMail(anyString());
+			verify(mediaManagerService).saveMediaInFileSystem(any(MockMultipartFile.class));
+		}
 
-		Account account = new Account();
-		account.setMediaList(new ArrayList<>());
-
-		boolean isMedia = true;
-		when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
-		when(accountService.findByMail(anyString())).thenReturn(account);
-		when(mediaManagerService.saveMediaInFileSystem(any(MockMultipartFile.class))).thenThrow(new IOException());
-
-		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
-		
-		result.andExpect(status().isInternalServerError());
-		result.andDo(print());
-
-		verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
-		verify(accountService).findByMail(anyString());
-		verify(mediaManagerService).saveMediaInFileSystem(any(MockMultipartFile.class));
-	}
+	@Test
+		@WithMockUser
+		public void testUploadMediasThrowIOException() throws Exception {
+	
+			Account account = new Account();
+			account.setMediaList(new ArrayList<>());
+	
+			boolean isMedia = true;
+			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
+			when(accountService.findByMail(anyString())).thenReturn(account);
+			when(mediaManagerService.saveMediaInFileSystem(any(MockMultipartFile.class))).thenThrow(new IOException());
+	
+			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
+			
+			result.andExpect(status().isInternalServerError());
+			result.andDo(print());
+	
+			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
+			verify(accountService).findByMail(anyString());
+			verify(mediaManagerService).saveMediaInFileSystem(any(MockMultipartFile.class));
+		}
 
 	@SuppressWarnings("unchecked")
-	@Test
-	@WithMockUser
-	public void testUploadMediaThrowMailNotFoundException() throws Exception {
-
-		Account account = new Account();
-		account.setMediaList(new ArrayList<>());
-
-		boolean isMedia = true;
-		when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
-		when(accountService.findByMail(anyString())).thenThrow(AccountNotFoundException.class);
-
-		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
-		
-		result.andExpect(status().isNotFound());
-		result.andDo(print());
-
-		verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
-		verify(accountService).findByMail(anyString());
-	}
+		@Test
+		@WithMockUser
+		public void testUploadMediasThrowMailNotFoundException() throws Exception {
+	
+			Account account = new Account();
+			account.setMediaList(new ArrayList<>());
+	
+			boolean isMedia = true;
+			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
+			when(accountService.findByMail(anyString())).thenThrow(AccountNotFoundException.class);
+	
+			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
+			
+			result.andExpect(status().isNotFound());
+			result.andDo(print());
+	
+			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
+			verify(accountService).findByMail(anyString());
+		}
 
 	@Test
 	@WithMockUser
