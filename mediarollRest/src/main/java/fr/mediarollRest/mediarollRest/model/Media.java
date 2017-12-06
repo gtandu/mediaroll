@@ -13,7 +13,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;

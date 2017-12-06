@@ -1,5 +1,6 @@
 package fr.mediarollRest.mediarollRest.exception;
 
+@SuppressWarnings("serial")
 public class AlbumNotFoundException extends Exception {
 
 	public AlbumNotFoundException() {
