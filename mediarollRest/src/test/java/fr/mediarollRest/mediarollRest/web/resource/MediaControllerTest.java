@@ -356,7 +356,7 @@ public class MediaControllerTest {
 	}
 	
 	@SuppressWarnings("unchecked")
-	@Test(expected=MediaNotFoundException.class)
+	@Test
 	@WithMockUser
 	public void testGetImageAsResponseEntityThrowsMediaNotFoundException() throws Exception {
 		Long mediaId = 1L;
