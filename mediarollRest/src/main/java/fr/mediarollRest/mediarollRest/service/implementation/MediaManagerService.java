@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class MediaManagerService implements IMediaManagerService {
 
 				// Create the file on server
 				UUID uuid = UUID.randomUUID();
-				randomUUIDFileName = uuid.toString();
+				randomUUIDFileName = uuid.toString() + '.' + FilenameUtils.getExtension(media.getOriginalFilename());
 				File serverFile = new File(dir.getAbsolutePath() + File.separator + randomUUIDFileName);
 
 				while (serverFile.exists()) {
