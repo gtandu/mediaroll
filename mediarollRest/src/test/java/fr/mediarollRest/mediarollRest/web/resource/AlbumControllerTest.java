@@ -674,7 +674,6 @@ public class AlbumControllerTest {
 		verify(albumService, never()).saveAlbum(any(Album.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	@WithMockUser("test@mail.fr")
 	public void testGetAllAlbums() throws Exception {
