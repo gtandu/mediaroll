@@ -12,8 +12,13 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
+import org.springframework.hateoas.Link;
+import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -34,6 +39,10 @@ public abstract class Media {
 	private String filePath;
 	private boolean privateMedia;
 
+	@JsonInclude
+	@Transient
+	private List<Link> links;
+
 	@ManyToOne(fetch= FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
 	private Account owner;
 
@@ -47,6 +56,7 @@ public abstract class Media {
 		this.filePath = "";
 		this.privateMedia = true;
 		this.sharedPeople = new ArrayList<Account>();
+		this.links = new ArrayList<>();
 	}
 
 	public Long getId() {
@@ -114,5 +124,16 @@ public abstract class Media {
 	public void setSharedPeople(List<Account> sharedPeople) {
 		this.sharedPeople = sharedPeople;
 	}
+
+	public List<Link> getLinks() {
+		return links;
+	}
+
+	public void add(Link link) {
+		Assert.notNull(link, "Link must not be null!");
+		this.links.add(link);
+	}
+	
+	
 
 }

@@ -7,9 +7,9 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Service;
 
-import fr.mediarollRest.mediarollRest.beans.AlbumResource;
 import fr.mediarollRest.mediarollRest.model.Album;
-import fr.mediarollRest.mediarollRest.web.resource.AlbumController;
+import fr.mediarollRest.mediarollRest.resource.AlbumResource;
+import fr.mediarollRest.mediarollRest.web.controller.AlbumController;
 
 @Service
 public class AlbumAssembler extends ResourceAssemblerSupport<Album, AlbumResource> {

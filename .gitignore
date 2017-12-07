@@ -25,4 +25,4 @@ nbdist/
 
 ### MediaRoll ###
 medias/
-mediarollRest.log
+*.log

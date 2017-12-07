@@ -7,9 +7,9 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Service;
 
-import fr.mediarollRest.mediarollRest.beans.AccountResource;
 import fr.mediarollRest.mediarollRest.model.Account;
-import fr.mediarollRest.mediarollRest.web.resource.AccountController;
+import fr.mediarollRest.mediarollRest.resource.AccountResource;
+import fr.mediarollRest.mediarollRest.web.controller.AccountController;
 
 @Service
 public class AccountAssembler extends ResourceAssemblerSupport<Account, AccountResource> {
