@@ -23,7 +23,6 @@ export class HomeComponent implements OnInit {
 
   }
 
-
   public uploader;
   options: FileUploaderOptions = {
     url: this.authService.server + '/medias',

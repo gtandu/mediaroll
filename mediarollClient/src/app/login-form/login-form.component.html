@@ -1,22 +1,24 @@
 <div class="container-fluid">
+    <div class="logo">
+           <h1 class="title">MediaRoll</h1>
+    </div>
     <div class="row">
-        <div class="col s12 m12 l3 offset-l4">
+        <div class="col s12 m12 l4 offset-l4">
             <div class="card-panel">
-                <h4 class="center-align">Bienvenue sur Mediaroll</h4>
+                <h3 class="center-align">Connexion</h3>
+                <h4 class="center-align">Accédez à toutes vos photos</h4>
                 <div class="row">
                     <form class="col s12" name="form" (ngSubmit)="f.form.valid && login()" #f="ngForm" novalidate>
                         <div class="row">
                             <div class="input-field col s12">
-                                <i class="material-icons prefix">account_circle</i>
-                                <input id="email" type="email" name="email" class="validate" placeholder="Saisissez votre adresse email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" [(ngModel)]="model.email" #email="ngModel" [ngClass]="{ 'invalid': f.submitted && !email.valid }">
+                                <input id="email" type="email" name="email" placeholder="Saisissez votre adresse mail" class="validate" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" [(ngModel)]="model.email" #email="ngModel" [ngClass]="{ 'invalid': f.submitted && !email.valid }">
                                 <label for="email" class="active" data-error="L'adresse email saisie est incorrecte">Email</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
-                                <i class="material-icons prefix">lock</i>
-                                <input id="password" type="password" name="password" class="validate" placeholder="Saisissez votre mot de passe" required [(ngModel)]="model.password" #password="ngModel" [ngClass]="{ 'invalid': f.submitted && !password.valid }">
-                                <label for="password" class="active" data-error="Aucun mot de passe n'a été saisie">Password</label>
+                                <input id="password" type="password" name="password" placeholder="Saisissez votre mot de passe" class="validate" required [(ngModel)]="model.password" #password="ngModel" [ngClass]="{ 'invalid': f.submitted && !password.valid }">
+                                <label for="password" class="active" data-error="Aucun mot de passe n'a été saisie">Mot de Passe</label>
                             </div>
                         </div>
                         <div class="row">
@@ -36,8 +38,9 @@
                                     </div>
                                 </div>
                                 <ng-template #elseBlock>
-                                    <div class="input-field col s12">
-                                        <button class="btn waves-effect waves-light right" type="submit" name="action">Submit
+                                    <div class="input-field col s12 center">
+                                        <button class="btn waves-effect waves-light blue darken-1" 
+                                        type="submit" name="action">Connexion
                               <i class="mdi-content-send right"></i>
                             </button>
                                     </div>
