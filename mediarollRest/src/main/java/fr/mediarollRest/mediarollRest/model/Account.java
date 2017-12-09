@@ -10,7 +10,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -23,11 +22,14 @@ import fr.mediarollRest.mediarollRest.security.Authority;
 @Entity
 public class Account implements UserDetails {
 
+	// 1000 MB -> 1GB
+	public static final double STORAGE_SPACE_SIZE = 1000.0;
 	@Id
 	private String mail;
 	private String password;
 	private String firstname;
 	private String lastname;
+	private double storageSpace;
 
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
 	private List<Media> mediaList;
@@ -58,6 +60,7 @@ public class Account implements UserDetails {
 		this.lastname = lastName;
 		this.albumList = new ArrayList<>();
 		this.mediaList = new ArrayList<>();
+		this.storageSpace = STORAGE_SPACE_SIZE;
 	}
 
 	public String getMail() {
@@ -128,6 +131,14 @@ public class Account implements UserDetails {
 
 	public void setSharedAlbums(List<Album> sharedAlbums) {
 		this.sharedAlbums = sharedAlbums;
+	}
+	
+	public double getStorageSpace() {
+		return storageSpace;
+	}
+
+	public void setStorageSpace(double storageSpace) {
+		this.storageSpace = storageSpace;
 	}
 
 	@Override

@@ -1,11 +1,14 @@
 package fr.mediarollRest.mediarollRest.service.implementation;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -50,14 +53,17 @@ public class AccountServiceTest {
 		when(accountRepository.findByMail(eq(mail))).thenReturn(Optional.of(account1));
 
 		// GIVEN
-		accountService.findByMail(mail);
+		Account account = accountService.findByMail(mail);
+		
+		assertThat(account).isNotNull();
+		
 
 		// THEN
 		verify(accountRepository).findByMail(eq(mail));
 
 	}
-	
-	@Test(expected=AccountNotFoundException.class)
+
+	@Test(expected = AccountNotFoundException.class)
 	public void testFindByMailThrowAccountNotFoundException() throws Exception {
 		// WHEN
 
@@ -78,7 +84,9 @@ public class AccountServiceTest {
 		when(accountRepository.deleteByMail(eq(mail))).thenReturn(deleteOperationSuccess);
 
 		// GIVEN
-		accountService.deleteByMail(mail);
+		boolean isDeleted = accountService.deleteByMail(mail);
+
+		assertThat(isDeleted).isTrue();
 
 		// THEN
 		verify(accountRepository).deleteByMail(eq(mail));
@@ -91,7 +99,9 @@ public class AccountServiceTest {
 		when(accountRepository.deleteByMail(eq(mail))).thenReturn(deleteOperationFailed);
 
 		// GIVEN
-		accountService.deleteByMail(mail);
+		boolean isDeleted = accountService.deleteByMail(mail);
+
+		assertThat(isDeleted).isFalse();
 
 		// THEN
 		verify(accountRepository).deleteByMail(eq(mail));
@@ -103,7 +113,9 @@ public class AccountServiceTest {
 		when(accountRepository.findAll()).thenReturn(Arrays.asList(account1, account2));
 
 		// GIVEN
-		accountService.findAll();
+		List<Account> accountsList = accountService.findAll();
+
+		assertThat(accountsList).isNotEmpty();
 
 		// THEN
 		verify(accountRepository).findAll();
@@ -111,29 +123,33 @@ public class AccountServiceTest {
 	}
 
 	@Test
-		public void testSaveAccountAndEncodePassword() throws Exception {
-			// WHEN
-			String passwordBeforeEncore = account1.getPassword();
-			String encodedpassword = "azerty123456";
-			
-			when(passwordEncoder.encode(eq(passwordBeforeEncore))).thenReturn(encodedpassword);
-			when(accountRepository.save(eq(account1))).thenReturn(account1);
-	
-			// GIVEN
-			accountService.saveAccountAndEncodePassword(account1);
-	
-			// THEN
-			verify(passwordEncoder).encode(passwordBeforeEncore);
-			verify(accountRepository).save(eq(account1));
-		}
+	public void testSaveAccountAndEncodePassword() throws Exception {
+		// WHEN
+		String passwordBeforeEncore = account1.getPassword();
+		String encodedpassword = "azerty123456";
+
+		when(passwordEncoder.encode(eq(passwordBeforeEncore))).thenReturn(encodedpassword);
+		when(accountRepository.save(eq(account1))).thenReturn(account1);
+
+		// GIVEN
+		Account savedAccount = accountService.saveAccountAndEncodePassword(account1);
+
+		assertThat(savedAccount).isNotNull();
+
+		// THEN
+		verify(passwordEncoder).encode(passwordBeforeEncore);
+		verify(accountRepository).save(eq(account1));
+	}
 
 	@Test
-	public void testIsAccountExistTrue() throws Exception {
+	public void testAccountExistTrue() throws Exception {
 		// WHEN
 		when(accountRepository.findByMail(eq(mail))).thenReturn(Optional.of(account1));
 
 		// GIVEN
-		accountService.isAccountExist(account1);
+		boolean accountExist = accountService.accountExist(account1);
+
+		assertThat(accountExist).isTrue();
 
 		// THEN
 		verify(accountRepository).findByMail(eq(mail));
@@ -141,12 +157,14 @@ public class AccountServiceTest {
 	}
 
 	@Test
-	public void testIsAccountExistFalse() throws Exception {
+	public void testAccountExistFalse() throws Exception {
 		// WHEN
 		when(accountRepository.findByMail(eq(mail))).thenReturn(Optional.empty());
 
 		// GIVEN
-		accountService.isAccountExist(account1);
+		boolean accountExist = accountService.accountExist(account1);
+
+		assertThat(accountExist).isFalse();
 
 		// THEN
 		verify(accountRepository).findByMail(eq(mail));
@@ -166,7 +184,7 @@ public class AccountServiceTest {
 		verify(accountRepository).save(eq(account1));
 	}
 
-	@Test
+	@Test(expected = AccountNotFoundException.class)
 	public void testUpdateUserWithUserNotExist() throws Exception {
 		// WHEN
 		when(accountRepository.findByMail(eq(mail))).thenReturn(Optional.empty());
@@ -176,14 +194,53 @@ public class AccountServiceTest {
 
 		// THEN
 		verify(accountRepository).findByMail(eq(mail));
+		verify(accountRepository, never()).save(eq(account1));
 	}
 
 	@Test
 	public void testSaveAccount() throws Exception {
 		when(accountRepository.save(any(Account.class))).thenReturn(new Account());
-		
-		accountService.saveAccount(new Account());
-		
+
+		Account savedAccount = accountService.saveAccount(new Account());
+
+		assertThat(savedAccount).isNotNull();
+
+		verify(accountRepository).save(any(Account.class));
+	}
+
+	@Test
+	public void testIncreaseStorageSpace() throws Exception {
+
+		// 1MB
+		long fileSize = 1000000;
+		double expectedStorageSpace = account1.getStorageSpace() + (fileSize / Account.STORAGE_SPACE_SIZE);
+		Account savedAccount = new Account();
+		savedAccount.setStorageSpace(expectedStorageSpace);
+
+		when(accountRepository.save(any(Account.class))).thenReturn(savedAccount);
+
+		double currentStorageSpace = accountService.increaseStorageSpace(account1, fileSize);
+
+		assertThat(currentStorageSpace).isEqualTo(expectedStorageSpace);
+
+		verify(accountRepository).save(any(Account.class));
+
+	}
+
+	@Test
+	public void testDecreaseStorageSpace() throws Exception {
+		// 1MB
+		long fileSize = 1000000;
+		double expectedStorageSpace = account1.getStorageSpace() - (fileSize / Account.STORAGE_SPACE_SIZE);
+		Account savedAccount = new Account();
+		savedAccount.setStorageSpace(expectedStorageSpace);
+
+		when(accountRepository.save(any(Account.class))).thenReturn(savedAccount);
+
+		double currentStorageSpace = accountService.decreaseStorageSpace(account1, fileSize);
+
+		assertThat(currentStorageSpace).isEqualTo(expectedStorageSpace);
+
 		verify(accountRepository).save(any(Account.class));
 	}
 

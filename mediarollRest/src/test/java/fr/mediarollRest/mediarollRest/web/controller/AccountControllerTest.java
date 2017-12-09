@@ -135,7 +135,7 @@ public class AccountControllerTest {
 	public void testCreateUserNotExist() throws Exception {
 		String accountJSON = objectMapper.writeValueAsString(account);
 
-		when(accountService.isAccountExist(eq(account))).thenReturn(false);
+		when(accountService.accountExist(eq(account))).thenReturn(false);
 		when(accountService.saveAccountAndEncodePassword(eq(account))).thenReturn(account);
 		when(accountAssembler.toResource(any(Account.class))).thenReturn(new AccountResource(account));
 
@@ -144,7 +144,7 @@ public class AccountControllerTest {
 
 		result.andExpect(status().isCreated()).andDo(print());
 
-		verify(accountService).isAccountExist(eq(account));
+		verify(accountService).accountExist(eq(account));
 		verify(accountService).saveAccountAndEncodePassword(eq(account));
 		verify(accountAssembler).toResource(any(Account.class));
 	}
@@ -154,14 +154,14 @@ public class AccountControllerTest {
 	public void testCreateUserAlreadyExist() throws Exception {
 		String accountJSON = objectMapper.writeValueAsString(account);
 
-		when(accountService.isAccountExist(eq(account))).thenReturn(true);
+		when(accountService.accountExist(eq(account))).thenReturn(true);
 
 		ResultActions result = mockMvc
 				.perform(post(ACCOUNTS).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON));
 
 		result.andExpect(status().isConflict()).andDo(print());
 
-		verify(accountService).isAccountExist(eq(account));
+		verify(accountService).accountExist(eq(account));
 		verify(accountAssembler, never()).toResource(any(Account.class));
 	}
 
@@ -188,7 +188,7 @@ public class AccountControllerTest {
 	public void testUpdateUserNotExist() throws Exception {
 
 		String accountJSON = objectMapper.writeValueAsString(account);
-		when(accountService.updateUser(eq(account))).thenReturn(null);
+		when(accountService.updateUser(eq(account))).thenThrow(new AccountNotFoundException());
 
 		ResultActions result = mockMvc.perform(put(ACCOUNTS).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON));
 			

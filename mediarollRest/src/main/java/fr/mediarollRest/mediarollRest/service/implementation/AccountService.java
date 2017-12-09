@@ -9,12 +9,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
+import fr.mediarollRest.mediarollRest.exception.SpaceAvailableNotEnoughException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.repository.AccountRepository;
 import fr.mediarollRest.mediarollRest.service.IAccountService;
 
 @Service
 public class AccountService implements IAccountService {
+
+	private static final double BYTES_TO_MB = 1000000.0;
 
 	@Autowired
 	private AccountRepository accountRepository;
@@ -55,13 +58,13 @@ public class AccountService implements IAccountService {
 	}
 
 	@Override
-	public boolean isAccountExist(Account account) {
+	public boolean accountExist(Account account) {
 		Optional<Account> accountFromDb = accountRepository.findByMail(account.getMail());
 		return accountFromDb.isPresent();
 	}
 
 	@Override
-	public Account updateUser(Account account) {
+	public Account updateUser(Account account) throws AccountNotFoundException {
 		Optional<Account> accountOptional = accountRepository.findByMail(account.getMail());
 		if (accountOptional.isPresent()) {
 			Account accountFromDb = accountOptional.get();
@@ -69,12 +72,36 @@ public class AccountService implements IAccountService {
 			accountFromDb.setLastname(account.getLastname());
 			return accountRepository.save(accountFromDb);
 		}
-		return null;
+		else {
+			throw new AccountNotFoundException();
+		}
 	}
 
 	@Override
 	public Account saveAccount(Account account) {
 		return accountRepository.save(account);
 	}
+
+	@Override
+	public double increaseStorageSpace(Account account, long fileSize) {
+		double currentStorageSpace = account.getStorageSpace();
+		currentStorageSpace += fileSize / BYTES_TO_MB;
+		account.setStorageSpace(currentStorageSpace);
+		Account savedAccount = saveAccount(account);
+		return savedAccount.getStorageSpace();
+	}
+
+	@Override
+	public double decreaseStorageSpace(Account account, long fileSize) throws SpaceAvailableNotEnoughException {
+		double currentStorageSpace = account.getStorageSpace();
+		currentStorageSpace -= fileSize / BYTES_TO_MB;
+		if(currentStorageSpace <= 0) {
+			throw new SpaceAvailableNotEnoughException();
+		}
+		account.setStorageSpace(currentStorageSpace);
+		Account savedAccount = saveAccount(account);
+		return savedAccount.getStorageSpace();
+	}
+
 
 }

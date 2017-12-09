@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +94,7 @@ public class AccountController {
     })
 	@RequestMapping(value = ACCOUNTS, method = RequestMethod.POST)
 	public ResponseEntity<AccountResource> createUser(@RequestBody Account account) {
-		if (accountService.isAccountExist(account)) {
+		if (accountService.accountExist(account)) {
 			logger.error(messageSource.getMessage("error.account.not.found",null, Locale.FRANCE), account.getMail());
 			return new ResponseEntity<>(HttpStatus.CONFLICT);
 		} else {
@@ -114,12 +112,12 @@ public class AccountController {
 	@RequestMapping(value = ACCOUNTS, method = RequestMethod.PUT)
 	public ResponseEntity<AccountResource> updateUser(@RequestBody Account account) {
 
-		Account accountUpdated = accountService.updateUser(account);
-
-		if (accountUpdated != null) {
+		Account accountUpdated;
+		try {
+			accountUpdated = accountService.updateUser(account);
 			AccountResource accountResource = accountAssembler.toResource(accountUpdated);
 			return new ResponseEntity<>(accountResource, HttpStatus.OK);
-		} else {
+		} catch (AccountNotFoundException e) {
 			logger.error(messageSource.getMessage("error.account.not.found",null, Locale.FRANCE), account.getMail());
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

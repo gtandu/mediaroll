@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
+import fr.mediarollRest.mediarollRest.exception.SpaceAvailableNotEnoughException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.service.implementation.AccountService;
@@ -137,10 +138,9 @@ public class MediaController {
 
 				try {
 					account = accountService.findByMail(mail);
-					mediaToSave = mediaManagerService.saveMediaInFileSystem(media);
+					mediaToSave = mediaManagerService.saveMediaInFileSystem(account, media);
 					mediaToSave.setOwner(account);
 					account.getMediaList().add(mediaToSave);
-
 					Media mediaSaved = mediaService.saveMedia(mediaToSave);
 					
 					buildLink(principal, mediaSaved);
@@ -154,12 +154,15 @@ public class MediaController {
 				} catch (FileUploadException e) {
 					logger.error(messageSource.getMessage("error.upload.media", null, Locale.FRANCE), media.getOriginalFilename());
 					return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+				} catch (SpaceAvailableNotEnoughException e) {
+					logger.error(messageSource.getMessage("error.storage.space", null, Locale.FRANCE),account.getMail(), account.getStorageSpace());
+					return new ResponseEntity<>(HttpStatus.INSUFFICIENT_STORAGE);
 				}
 			}
 
 			else {
 				logger.error(messageSource.getMessage("error.upload.media.type", null, Locale.FRANCE), media.getOriginalFilename());
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 			}
 		}
 		return new ResponseEntity<List<Media>>(mediasSavedList, HttpStatus.CREATED);
@@ -172,14 +175,14 @@ public class MediaController {
 			@ApiResponse(code = 404, message = "Media not found in db. Please to check media ID"),
 			@ApiResponse(code = 500, message = "An error occured during the process to delete Media"), })
 	@RequestMapping(value = MEDIAS + MEDIA_ID, method = RequestMethod.DELETE)
-	public ResponseEntity<Void> deleteMedia(@PathVariable("mediaId") Long mediaId) {
+	public ResponseEntity<Void> deleteMedia(Principal principal, @PathVariable("mediaId") Long mediaId) {
 		try {
 			Media mediaInDb = mediaService.findById(mediaId);
-			boolean isDeleteFromFileSystem = mediaManagerService.deleteMediaInFileSystem(mediaInDb.getFilePath());
-
+			Account account = accountService.findByMail(principal.getName());
+			boolean isDeleteFromFileSystem = mediaManagerService.deleteMediaInFileSystem(account, mediaInDb.getFilePath());
+			
 			if (isDeleteFromFileSystem) {
 				boolean isDeleteFromDb = mediaService.deleteMediaById(mediaId);
-
 				if (isDeleteFromDb) {
 					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 				} else {
@@ -191,6 +194,9 @@ public class MediaController {
 
 		} catch (MediaNotFoundException e) {
 			logger.error(messageSource.getMessage("error.media.not.found", null, Locale.FRANCE), mediaId);
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		} catch (AccountNotFoundException e) {
+			logger.error(messageSource.getMessage("error.account.not.found", null, Locale.FRANCE), principal.getName());
 			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 		}
 

@@ -46,7 +46,6 @@ import fr.mediarollRest.mediarollRest.model.Picture;
 import fr.mediarollRest.mediarollRest.service.implementation.AccountService;
 import fr.mediarollRest.mediarollRest.service.implementation.MediaManagerService;
 import fr.mediarollRest.mediarollRest.service.implementation.MediaService;
-import fr.mediarollRest.mediarollRest.web.controller.MediaController;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(MediaController.class)
@@ -85,7 +84,7 @@ public class MediaControllerTest {
 	
 			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
 			when(accountService.findByMail(anyString())).thenReturn(account);
-			when(mediaManagerService.saveMediaInFileSystem(any(MockMultipartFile.class))).thenReturn(new Picture());
+			when(mediaManagerService.saveMediaInFileSystem(any(Account.class),any(MockMultipartFile.class))).thenReturn(new Picture());
 			when(mediaService.saveMedia(any(Media.class))).thenReturn(new Picture());
 	
 			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
@@ -95,7 +94,7 @@ public class MediaControllerTest {
 	
 			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
 			verify(accountService).findByMail(anyString());
-			verify(mediaManagerService).saveMediaInFileSystem(any(MockMultipartFile.class));
+			verify(mediaManagerService).saveMediaInFileSystem(any(Account.class),any(MockMultipartFile.class));
 			verify(mediaService).saveMedia(any(Media.class));
 		}
 
@@ -111,7 +110,7 @@ public class MediaControllerTest {
 	
 			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
 			
-			result.andExpect(status().isBadRequest());
+			result.andExpect(status().isUnsupportedMediaType());
 			result.andDo(print());
 	
 			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
@@ -127,7 +126,7 @@ public class MediaControllerTest {
 			boolean isMedia = true;
 			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
 			when(accountService.findByMail(anyString())).thenReturn(account);
-			when(mediaManagerService.saveMediaInFileSystem(any(MockMultipartFile.class)))
+			when(mediaManagerService.saveMediaInFileSystem(any(Account.class),any(MockMultipartFile.class)))
 					.thenThrow(new FileUploadException());
 	
 			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
@@ -137,7 +136,7 @@ public class MediaControllerTest {
 	
 			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
 			verify(accountService).findByMail(anyString());
-			verify(mediaManagerService).saveMediaInFileSystem(any(MockMultipartFile.class));
+			verify(mediaManagerService).saveMediaInFileSystem(any(Account.class),any(MockMultipartFile.class));
 		}
 
 	@Test
@@ -150,7 +149,7 @@ public class MediaControllerTest {
 			boolean isMedia = true;
 			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
 			when(accountService.findByMail(anyString())).thenReturn(account);
-			when(mediaManagerService.saveMediaInFileSystem(any(MockMultipartFile.class))).thenThrow(new IOException());
+			when(mediaManagerService.saveMediaInFileSystem(any(Account.class),any(MockMultipartFile.class))).thenThrow(new IOException());
 	
 			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
 			
@@ -159,7 +158,7 @@ public class MediaControllerTest {
 	
 			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
 			verify(accountService).findByMail(anyString());
-			verify(mediaManagerService).saveMediaInFileSystem(any(MockMultipartFile.class));
+			verify(mediaManagerService).saveMediaInFileSystem(any(Account.class),any(MockMultipartFile.class));
 		}
 
 	@SuppressWarnings("unchecked")
@@ -192,7 +191,7 @@ public class MediaControllerTest {
 		Long id = 1L;
 
 		when(mediaService.findById(anyLong())).thenReturn(picture);
-		when(mediaManagerService.deleteMediaInFileSystem(anyString())).thenReturn(true);
+		when(mediaManagerService.deleteMediaInFileSystem(any(Account.class),anyString())).thenReturn(true);
 		when(mediaService.deleteMediaById(anyLong())).thenReturn(true);
 
 		ResultActions result = mockMvc.perform(delete(MEDIAS + MEDIA_ID, id));
@@ -201,7 +200,7 @@ public class MediaControllerTest {
 		result.andDo(print());
 
 		verify(mediaService).findById(eq(id));
-		verify(mediaManagerService).deleteMediaInFileSystem(eq(picture.getFilePath()));
+		verify(mediaManagerService).deleteMediaInFileSystem(any(Account.class),eq(picture.getFilePath()));
 		verify(mediaService).deleteMediaById(eq(id));
 	}
 
@@ -232,7 +231,7 @@ public class MediaControllerTest {
 		Long id = 1L;
 
 		when(mediaService.findById(anyLong())).thenReturn(picture);
-		when(mediaManagerService.deleteMediaInFileSystem(anyString())).thenReturn(false);
+		when(mediaManagerService.deleteMediaInFileSystem(any(Account.class),anyString())).thenReturn(false);
 
 		ResultActions result = mockMvc.perform(delete(MEDIAS + MEDIA_ID, id));
 		
@@ -240,7 +239,7 @@ public class MediaControllerTest {
 		result.andDo(print());
 
 		verify(mediaService).findById(eq(id));
-		verify(mediaManagerService).deleteMediaInFileSystem(eq(picture.getFilePath()));
+		verify(mediaManagerService).deleteMediaInFileSystem(any(Account.class),eq(picture.getFilePath()));
 	}
 
 	@Test
@@ -252,7 +251,7 @@ public class MediaControllerTest {
 		Long id = 1L;
 
 		when(mediaService.findById(anyLong())).thenReturn(picture);
-		when(mediaManagerService.deleteMediaInFileSystem(anyString())).thenReturn(true);
+		when(mediaManagerService.deleteMediaInFileSystem(any(Account.class),anyString())).thenReturn(true);
 		when(mediaService.deleteMediaById(anyLong())).thenReturn(false);
 
 		ResultActions result = mockMvc.perform(delete(MEDIAS + MEDIA_ID, id));
@@ -261,7 +260,7 @@ public class MediaControllerTest {
 		result.andDo(print());
 
 		verify(mediaService).findById(eq(id));
-		verify(mediaManagerService).deleteMediaInFileSystem(eq(picture.getFilePath()));
+		verify(mediaManagerService).deleteMediaInFileSystem(any(Account.class),eq(picture.getFilePath()));
 		verify(mediaService).deleteMediaById(eq(id));
 	}
 
