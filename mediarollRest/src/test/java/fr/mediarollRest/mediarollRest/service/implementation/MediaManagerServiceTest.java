@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.net.MediaType;
 
@@ -35,13 +36,14 @@ public class MediaManagerServiceTest {
 	private MediaManagerService mediaManagerService;
 
 	@Mock
+	private MediaService mediaService;
+
+	@Mock
 	private AccountService accountService;
 
 	private InputStream fileToUpload;
 
 	private String fileName;
-
-	private String mediasFolder;
 
 	private MockMultipartFile media;
 
@@ -51,8 +53,6 @@ public class MediaManagerServiceTest {
 	public void init() throws IOException {
 		this.account = new Account();
 		account.setStorageSpace(100);
-		mediasFolder = "uploadTest";
-		System.setProperty("medias.folder", mediasFolder);
 		this.fileName = "image.jpg";
 		this.fileToUpload = new ClassPathResource(fileName).getInputStream();
 
@@ -61,6 +61,7 @@ public class MediaManagerServiceTest {
 	@Test
 	public void testSaveMediaInFileSystemPicture() throws Exception {
 		media = new MockMultipartFile(fileName, fileName, MediaType.JPEG.type(), fileToUpload);
+		when(mediaService.getMediaType(any(MultipartFile.class))).thenReturn("image/jpeg");
 		when(accountService.decreaseStorageSpace(any(Account.class), anyLong())).thenReturn(100.0);
 		Media mediaSaveInFileSystem = mediaManagerService.saveMediaInFileSystem(account, media);
 
@@ -69,6 +70,7 @@ public class MediaManagerServiceTest {
 		assertThat(mediaSaveInFileSystem.getFilePath()).isNotEmpty();
 		assertThat(mediaSaveInFileSystem.getFilePath()).contains(MediaManagerService.PICTURES_FOLDER);
 
+		verify(mediaService).getMediaType(any(MultipartFile.class));
 		verify(accountService).decreaseStorageSpace(any(Account.class), anyLong());
 	}
 
@@ -77,40 +79,18 @@ public class MediaManagerServiceTest {
 		this.fileName = "video.mp4";
 		this.fileToUpload = new ClassPathResource(fileName).getInputStream();
 		media = new MockMultipartFile(fileName, fileName, MediaType.MP4_VIDEO.type(), fileToUpload);
+
+		when(mediaService.getMediaType(any(MultipartFile.class))).thenReturn("video/mp4");
+		when(accountService.decreaseStorageSpace(any(Account.class), anyLong())).thenReturn(100.0);
 		Media mediaSaveInFileSystem = mediaManagerService.saveMediaInFileSystem(account, media);
 
 		assertThat(mediaSaveInFileSystem).isNotNull();
 		assertThat(mediaSaveInFileSystem.getName()).isEqualTo(fileName);
 		assertThat(mediaSaveInFileSystem.getFilePath()).isNotEmpty();
 		assertThat(mediaSaveInFileSystem.getFilePath()).contains(MediaManagerService.VIDEOS_FOLDER);
-	}
 
-	@Test
-	public void testIsMedia() throws Exception {
-		media = new MockMultipartFile(fileName, fileName, MediaType.JPEG.type(), fileToUpload);
-		boolean isMedia = mediaManagerService.isMedia(media);
-
-		assertThat(isMedia).isTrue();
-	}
-
-	@Test
-	public void testIsNotMedia() throws Exception {
-
-		this.fileName = "test.pdf";
-		this.fileToUpload = new ClassPathResource(fileName).getInputStream();
-		MockMultipartFile pdfFile = new MockMultipartFile(fileName, fileName, MediaType.PDF.type(), fileToUpload);
-
-		boolean isMedia = mediaManagerService.isMedia(pdfFile);
-
-		assertThat(isMedia).isFalse();
-	}
-
-	@Test
-	public void testGetMediaType() throws Exception {
-		media = new MockMultipartFile(fileName, fileName, MediaType.JPEG.type(), fileToUpload);
-		String mediaType = mediaManagerService.getMediaType(media);
-
-		assertThat(mediaType).contains((MediaType.JPEG.type()));
+		verify(mediaService).getMediaType(any(MultipartFile.class));
+		verify(accountService).decreaseStorageSpace(any(Account.class), anyLong());
 	}
 
 	@Test
@@ -146,18 +126,18 @@ public class MediaManagerServiceTest {
 		Picture picture = new Picture();
 		picture.setFilePath("src/test/resources/image.jpg");
 
-		InputStream inputStreamFromMedia = mediaManagerService.getInputStreamFromMedia(picture);
+		InputStream inputStreamFromMedia = mediaManagerService.getInputStreamFromMedia(picture.getFilePath());
 
 		assertThat(inputStreamFromMedia).isNotNull();
 
 	}
 
 	@Test(expected = MediaNotFoundException.class)
-	public void testGetInputStreamFromMediaThrowsFileNotFoundException() throws Exception {
+	public void testGetInputStreamFromMediaThrowFileNotFoundException() throws Exception {
 		Picture picture = new Picture();
 		picture.setFilePath("notFound");
 
-		mediaManagerService.getInputStreamFromMedia(picture);
+		mediaManagerService.getInputStreamFromMedia(picture.getFilePath());
 	}
 
 }

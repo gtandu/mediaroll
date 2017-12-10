@@ -1,11 +1,20 @@
 package fr.mediarollRest.mediarollRest.service.implementation;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 
+import org.apache.tika.Tika;
+import org.apache.tika.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.google.common.net.MediaType;
+
+import fr.mediarollRest.mediarollRest.constant.Constantes;
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.repository.MediaRepository;
@@ -16,44 +25,106 @@ public class MediaService implements IMediaService {
 
 	@Autowired
 	private MediaRepository mediaRepository;
-	
-	public Media saveMedia(Media media){
+
+	@Autowired
+	private MediaManagerService mediaManagerService;
+
+	public Media saveMedia(Media media) {
 		return mediaRepository.save(media);
 	}
-	
+
 	@Transactional
+	@Override
 	public boolean deleteMediaById(Long id) {
-		return mediaRepository.deleteById(id) != 0 ? true: false;
+		return mediaRepository.deleteById(id) != 0 ? true : false;
 	}
-	
+
+	@Override
 	public Media findById(Long id) throws MediaNotFoundException {
 		Optional<Media> optionalMedia = mediaRepository.findById(id);
-		
-		if(optionalMedia.isPresent()) {
+
+		if (optionalMedia.isPresent()) {
 			return optionalMedia.get();
-		}
-		else
-		{
+		} else {
 			throw new MediaNotFoundException();
+		}
+
+	}
+
+	@Override
+	public Media updateMediaInfo(Long mediaId, Media media) throws MediaNotFoundException {
+
+		Optional<Media> optionalMedia = mediaRepository.findById(mediaId);
+
+		if (optionalMedia.isPresent()) {
+			Media mediaFromDb = optionalMedia.get();
+			mediaFromDb.setDescription(media.getDescription());
+			return mediaRepository.save(mediaFromDb);
+		} else {
+			throw new MediaNotFoundException();
+		}
+
+	}
+
+	@Override
+	public String getMediaType(InputStream in) throws IOException {
+		Tika tika = new Tika();
+		String detectedType = "";
+		try {
+			detectedType = tika.detect(in);
+		} catch (IOException e) {
+			throw new IOException(e.getMessage());
+		}
+		return detectedType;
+
+	}
+
+	@Override
+	public String encodeBase64(Media media) throws MediaNotFoundException, IOException{
+		InputStream in;
+		try {
+			in = mediaManagerService.getInputStreamFromMedia(media.getFilePath());
+			byte[] mediaByte = IOUtils.toByteArray(in);
+			String mediaBase64Encoded = Base64Utils.encodeToString(mediaByte);
+
+			String mediaSrcUrl  = String.format(Constantes.URL_MEDIAS_SRC_BASE64, this.getMediaType(in), mediaBase64Encoded);
+			
+			media.setEncodedMedia(mediaSrcUrl);
+			
+			return media.getEncodedMedia();
+		} catch (MediaNotFoundException e) {
+			throw new MediaNotFoundException(e.getMessage());
+		} catch (IOException e) {
+			throw new IOException(e.getMessage());
 		}
 		
 	}
 
 	@Override
-	public Media updateMediaInfo(Long mediaId, Media media) throws MediaNotFoundException {
-		
-		Optional<Media> optionalMedia = mediaRepository.findById(mediaId);
-		
-		if(optionalMedia.isPresent()){
-			Media mediaFromDb = optionalMedia.get();
-			mediaFromDb.setDescription(media.getDescription());
-			return mediaRepository.save(mediaFromDb);
+	public String getMediaType(MultipartFile media) throws IOException {
+		Tika tika = new Tika();
+		String detectedType = "";
+		try {
+			detectedType = tika.detect(media.getBytes());
+		} catch (IOException e) {
+			throw new IOException(e.getMessage());
 		}
-		else
-		{
-			throw new MediaNotFoundException();
+		return detectedType;
+
+	}
+	
+	@Override
+	public boolean isMedia(MultipartFile media) throws IOException {
+		String detectedType;
+		try {
+			detectedType = getMediaType(media);
+			return detectedType.contains(MediaType.ANY_IMAGE_TYPE.type())
+					|| detectedType.contains(MediaType.ANY_VIDEO_TYPE.type()) ? true : false;
+		} catch (IOException e) {
+			throw new IOException(e.getMessage());
 		}
+
 		
-		
+
 	}
 }

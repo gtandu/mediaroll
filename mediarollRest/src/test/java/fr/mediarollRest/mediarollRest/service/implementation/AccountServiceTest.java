@@ -19,7 +19,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import fr.mediarollRest.mediarollRest.constant.Constantes;
 import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
+import fr.mediarollRest.mediarollRest.exception.SpaceAvailableNotEnoughException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.repository.AccountRepository;
 
@@ -231,7 +233,7 @@ public class AccountServiceTest {
 	public void testDecreaseStorageSpace() throws Exception {
 		// 1MB
 		long fileSize = 1000000;
-		double expectedStorageSpace = account1.getStorageSpace() - (fileSize / Account.STORAGE_SPACE_SIZE);
+		double expectedStorageSpace = account1.getStorageSpace() - (fileSize / Constantes.BYTES_TO_MB);
 		Account savedAccount = new Account();
 		savedAccount.setStorageSpace(expectedStorageSpace);
 
@@ -240,6 +242,23 @@ public class AccountServiceTest {
 		double currentStorageSpace = accountService.decreaseStorageSpace(account1, fileSize);
 
 		assertThat(currentStorageSpace).isEqualTo(expectedStorageSpace);
+
+		verify(accountRepository).save(any(Account.class));
+	}
+	
+	@Test(expected=SpaceAvailableNotEnoughException.class)
+	public void testDecreaseStorageSpaceThrowSpaceAvailableNotEnoughException() throws Exception {
+		// 1MB
+		long fileSize = 5000000;
+		account1.setStorageSpace(1.0);
+		double expectedStorageSpace = account1.getStorageSpace() - (fileSize / Constantes.BYTES_TO_MB);
+		Account savedAccount = new Account();
+		savedAccount.setStorageSpace(expectedStorageSpace);
+
+		when(accountRepository.save(any(Account.class))).thenReturn(savedAccount);
+
+		accountService.decreaseStorageSpace(account1, fileSize);
+
 
 		verify(accountRepository).save(any(Account.class));
 	}

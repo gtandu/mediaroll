@@ -1,7 +1,6 @@
 package fr.mediarollRest.mediarollRest.web.controller;
 
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS;
-import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS_WITH_ID;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -40,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
+import fr.mediarollRest.mediarollRest.exception.SpaceAvailableNotEnoughException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.model.Picture;
@@ -75,112 +75,137 @@ public class MediaControllerTest {
 	}
 
 	@Test
-		@WithMockUser
-		public void testUploadMedias() throws Exception {
-	
-			Account account = new Account();
-			account.setMediaList(new ArrayList<>());
-			boolean isMedia = true;
-	
-			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
-			when(accountService.findByMail(anyString())).thenReturn(account);
-			when(mediaManagerService.saveMediaInFileSystem(any(Account.class),any(MockMultipartFile.class))).thenReturn(new Picture());
-			when(mediaService.saveMedia(any(Media.class))).thenReturn(new Picture());
-	
-			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
-			
-			result.andExpect(status().isCreated());
-			result.andDo(print());
-	
-			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
-			verify(accountService).findByMail(anyString());
-			verify(mediaManagerService).saveMediaInFileSystem(any(Account.class),any(MockMultipartFile.class));
-			verify(mediaService).saveMedia(any(Media.class));
-		}
+	@WithMockUser
+	public void testUploadMedias() throws Exception {
+
+		Account account = new Account();
+		account.setMediaList(new ArrayList<>());
+		boolean isMedia = true;
+
+		when(mediaService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
+		when(accountService.findByMail(anyString())).thenReturn(account);
+		when(mediaManagerService.saveMediaInFileSystem(any(Account.class), any(MockMultipartFile.class)))
+				.thenReturn(new Picture());
+		when(mediaService.saveMedia(any(Media.class))).thenReturn(new Picture());
+
+		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
+
+		result.andExpect(status().isCreated());
+		result.andDo(print());
+
+		verify(mediaService).isMedia(any(MockMultipartFile.class));
+		verify(accountService).findByMail(anyString());
+		verify(mediaManagerService).saveMediaInFileSystem(any(Account.class), any(MockMultipartFile.class));
+		verify(mediaService).saveMedia(any(Media.class));
+	}
 
 	@Test
-		@WithMockUser
-		public void testUploadMediasNotAllowed() throws Exception {
-	
-			Account account = new Account();
-			account.setMediaList(new ArrayList<>());
-			boolean isMEdia = false;
-	
-			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMEdia);
-	
-			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
-			
-			result.andExpect(status().isUnsupportedMediaType());
-			result.andDo(print());
-	
-			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
-		}
+	@WithMockUser
+	public void testUploadMediasNotAllowed() throws Exception {
+
+		Account account = new Account();
+		account.setMediaList(new ArrayList<>());
+		boolean isMEdia = false;
+
+		when(mediaService.isMedia(any(MockMultipartFile.class))).thenReturn(isMEdia);
+
+		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
+
+		result.andExpect(status().isUnsupportedMediaType());
+		result.andDo(print());
+
+		verify(mediaService).isMedia(any(MockMultipartFile.class));
+	}
 
 	@Test
-		@WithMockUser
-		public void testUploadMediasThrowFileUploadException() throws Exception {
-	
-			Account account = new Account();
-			account.setMediaList(new ArrayList<>());
-	
-			boolean isMedia = true;
-			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
-			when(accountService.findByMail(anyString())).thenReturn(account);
-			when(mediaManagerService.saveMediaInFileSystem(any(Account.class),any(MockMultipartFile.class)))
-					.thenThrow(new FileUploadException());
-	
-			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
-			
-			result.andExpect(status().isBadRequest());
-			result.andDo(print());
-	
-			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
-			verify(accountService).findByMail(anyString());
-			verify(mediaManagerService).saveMediaInFileSystem(any(Account.class),any(MockMultipartFile.class));
-		}
+	@WithMockUser
+	public void testUploadMediasThrowFileUploadException() throws Exception {
+
+		Account account = new Account();
+		account.setMediaList(new ArrayList<>());
+
+		boolean isMedia = true;
+		when(mediaService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
+		when(accountService.findByMail(anyString())).thenReturn(account);
+		when(mediaManagerService.saveMediaInFileSystem(any(Account.class), any(MockMultipartFile.class)))
+				.thenThrow(new FileUploadException());
+
+		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
+
+		result.andExpect(status().isBadRequest());
+		result.andDo(print());
+
+		verify(mediaService).isMedia(any(MockMultipartFile.class));
+		verify(accountService).findByMail(anyString());
+		verify(mediaManagerService).saveMediaInFileSystem(any(Account.class), any(MockMultipartFile.class));
+	}
 
 	@Test
-		@WithMockUser
-		public void testUploadMediasThrowIOException() throws Exception {
+	@WithMockUser
+	public void testUploadMediasThrowIOException() throws Exception {
+
+		Account account = new Account();
+		account.setMediaList(new ArrayList<>());
+
+		boolean isMedia = true;
+		when(mediaService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
+		when(accountService.findByMail(anyString())).thenReturn(account);
+		when(mediaManagerService.saveMediaInFileSystem(any(Account.class), any(MockMultipartFile.class)))
+				.thenThrow(new IOException());
+
+		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
+
+		result.andExpect(status().isInternalServerError());
+		result.andDo(print());
+
+		verify(mediaService).isMedia(any(MockMultipartFile.class));
+		verify(accountService).findByMail(anyString());
+		verify(mediaManagerService).saveMediaInFileSystem(any(Account.class), any(MockMultipartFile.class));
+	}
 	
-			Account account = new Account();
-			account.setMediaList(new ArrayList<>());
-	
-			boolean isMedia = true;
-			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
-			when(accountService.findByMail(anyString())).thenReturn(account);
-			when(mediaManagerService.saveMediaInFileSystem(any(Account.class),any(MockMultipartFile.class))).thenThrow(new IOException());
-	
-			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
-			
-			result.andExpect(status().isInternalServerError());
-			result.andDo(print());
-	
-			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
-			verify(accountService).findByMail(anyString());
-			verify(mediaManagerService).saveMediaInFileSystem(any(Account.class),any(MockMultipartFile.class));
-		}
+	@Test
+	@WithMockUser
+	public void testUploadMediasThrowSpaceAvailableNotEnoughException() throws Exception {
+
+		Account account = new Account();
+		account.setMediaList(new ArrayList<>());
+
+		boolean isMedia = true;
+		when(mediaService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
+		when(accountService.findByMail(anyString())).thenReturn(account);
+		when(mediaManagerService.saveMediaInFileSystem(any(Account.class), any(MockMultipartFile.class)))
+				.thenThrow(new SpaceAvailableNotEnoughException());
+
+		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
+
+		result.andExpect(status().isInsufficientStorage());
+		result.andDo(print());
+
+		verify(mediaService).isMedia(any(MockMultipartFile.class));
+		verify(accountService).findByMail(anyString());
+		verify(mediaManagerService).saveMediaInFileSystem(any(Account.class), any(MockMultipartFile.class));
+	}
 
 	@SuppressWarnings("unchecked")
-		@Test
-		@WithMockUser
-		public void testUploadMediasThrowMailNotFoundException() throws Exception {
-	
-			Account account = new Account();
-			account.setMediaList(new ArrayList<>());
-	
-			boolean isMedia = true;
-			when(mediaManagerService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
-			when(accountService.findByMail(anyString())).thenThrow(AccountNotFoundException.class);
-	
-			ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
-			
-			result.andExpect(status().isNotFound());
-			result.andDo(print());
-	
-			verify(mediaManagerService).isMedia(any(MockMultipartFile.class));
-			verify(accountService).findByMail(anyString());
-		}
+	@Test
+	@WithMockUser
+	public void testUploadMediasThrowMailNotFoundException() throws Exception {
+
+		Account account = new Account();
+		account.setMediaList(new ArrayList<>());
+
+		boolean isMedia = true;
+		when(mediaService.isMedia(any(MockMultipartFile.class))).thenReturn(isMedia);
+		when(accountService.findByMail(anyString())).thenThrow(AccountNotFoundException.class);
+
+		ResultActions result = mockMvc.perform(fileUpload((MEDIAS)).file(media));
+
+		result.andExpect(status().isNotFound());
+		result.andDo(print());
+
+		verify(mediaService).isMedia(any(MockMultipartFile.class));
+		verify(accountService).findByMail(anyString());
+	}
 
 	@Test
 	@WithMockUser
@@ -191,17 +216,41 @@ public class MediaControllerTest {
 		Long id = 1L;
 
 		when(mediaService.findById(anyLong())).thenReturn(picture);
-		when(mediaManagerService.deleteMediaInFileSystem(any(Account.class),anyString())).thenReturn(true);
+		when(accountService.findByMail(anyString())).thenReturn(new Account());
+		when(mediaManagerService.deleteMediaInFileSystem(any(Account.class), anyString())).thenReturn(true);
 		when(mediaService.deleteMediaById(anyLong())).thenReturn(true);
 
 		ResultActions result = mockMvc.perform(delete(MEDIAS + MEDIA_ID, id));
-		
+
 		result.andExpect(status().isNoContent());
 		result.andDo(print());
 
 		verify(mediaService).findById(eq(id));
-		verify(mediaManagerService).deleteMediaInFileSystem(any(Account.class),eq(picture.getFilePath()));
+		verify(accountService).findByMail(anyString());
+		verify(mediaManagerService).deleteMediaInFileSystem(any(Account.class), eq(picture.getFilePath()));
 		verify(mediaService).deleteMediaById(eq(id));
+	}
+	
+	@Test
+	@WithMockUser
+	public void testDeleteMediaThrowAccountNotFoundException() throws Exception {
+		String filePath = "src/test/resources/fileToDelete.txt";
+		Picture picture = new Picture();
+		picture.setFilePath(filePath);
+		Long id = 1L;
+
+		when(mediaService.findById(anyLong())).thenReturn(picture);
+		when(accountService.findByMail(anyString())).thenThrow(new AccountNotFoundException());
+
+		ResultActions result = mockMvc.perform(delete(MEDIAS + MEDIA_ID, id));
+
+		result.andExpect(status().isNotFound());
+		result.andDo(print());
+
+		verify(mediaService).findById(eq(id));
+		verify(accountService).findByMail(anyString());
+		verify(mediaManagerService, never()).deleteMediaInFileSystem(any(Account.class), eq(picture.getFilePath()));
+		verify(mediaService, never()).deleteMediaById(eq(id));
 	}
 
 	@Test
@@ -215,7 +264,7 @@ public class MediaControllerTest {
 		when(mediaService.findById(anyLong())).thenThrow(new MediaNotFoundException());
 
 		ResultActions result = mockMvc.perform(delete(MEDIAS + MEDIA_ID, id));
-		
+
 		result.andExpect(status().isNotFound());
 		result.andDo(print());
 
@@ -231,15 +280,17 @@ public class MediaControllerTest {
 		Long id = 1L;
 
 		when(mediaService.findById(anyLong())).thenReturn(picture);
-		when(mediaManagerService.deleteMediaInFileSystem(any(Account.class),anyString())).thenReturn(false);
+		when(accountService.findByMail(anyString())).thenReturn(new Account());
+		when(mediaManagerService.deleteMediaInFileSystem(any(Account.class), anyString())).thenReturn(false);
 
 		ResultActions result = mockMvc.perform(delete(MEDIAS + MEDIA_ID, id));
-		
+
 		result.andExpect(status().isInternalServerError());
 		result.andDo(print());
 
 		verify(mediaService).findById(eq(id));
-		verify(mediaManagerService).deleteMediaInFileSystem(any(Account.class),eq(picture.getFilePath()));
+		verify(accountService).findByMail(anyString());
+		verify(mediaManagerService).deleteMediaInFileSystem(any(Account.class), eq(picture.getFilePath()));
 	}
 
 	@Test
@@ -251,16 +302,18 @@ public class MediaControllerTest {
 		Long id = 1L;
 
 		when(mediaService.findById(anyLong())).thenReturn(picture);
-		when(mediaManagerService.deleteMediaInFileSystem(any(Account.class),anyString())).thenReturn(true);
+		when(accountService.findByMail(anyString())).thenReturn(new Account());
+		when(mediaManagerService.deleteMediaInFileSystem(any(Account.class), anyString())).thenReturn(true);
 		when(mediaService.deleteMediaById(anyLong())).thenReturn(false);
 
 		ResultActions result = mockMvc.perform(delete(MEDIAS + MEDIA_ID, id));
-		
+
 		result.andExpect(status().isInternalServerError());
 		result.andDo(print());
 
 		verify(mediaService).findById(eq(id));
-		verify(mediaManagerService).deleteMediaInFileSystem(any(Account.class),eq(picture.getFilePath()));
+		verify(accountService).findByMail(anyString());
+		verify(mediaManagerService).deleteMediaInFileSystem(any(Account.class), eq(picture.getFilePath()));
 		verify(mediaService).deleteMediaById(eq(id));
 	}
 
@@ -277,7 +330,7 @@ public class MediaControllerTest {
 
 		ResultActions result = mockMvc.perform(put(MEDIAS + MEDIA_ID, id).contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(pictureToUpdate)));
-		
+
 		result.andExpect(status().isOk());
 		result.andDo(print());
 
@@ -297,7 +350,7 @@ public class MediaControllerTest {
 
 		ResultActions result = mockMvc.perform(put(MEDIAS + MEDIA_ID, id).contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(pictureToUpdate)));
-		
+
 		result.andExpect(status().isNotFound());
 		result.andDo(print());
 
@@ -324,14 +377,13 @@ public class MediaControllerTest {
 		verify(accountService).findByMail(eq(mailAccount));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	@WithMockUser("test@mail.fr")
-	public void testGetAllMediasUserNotFound() throws Exception {
+	public void testGetAllMediasThrowAccountNotFoundException() throws Exception {
 
 		String mailAccount = "test@mail.fr";
 
-		when(accountService.findByMail(eq(mailAccount))).thenThrow(AccountNotFoundException.class);
+		when(accountService.findByMail(eq(mailAccount))).thenThrow(new AccountNotFoundException());
 
 		ResultActions result = mockMvc.perform(get(MEDIAS));
 
@@ -342,38 +394,47 @@ public class MediaControllerTest {
 	}
 
 	@Test
-	@WithMockUser
-	public void testGetImageAsResponseEntity() throws Exception {
-		Long mediaId = 1L;
-		InputStream pictureStream = new ClassPathResource(fileName).getInputStream();
-		
-		when(mediaService.findById(eq(mediaId))).thenReturn(new Picture());
-		when(mediaManagerService.getInputStreamFromMedia(any(Media.class))).thenReturn(pictureStream);
+	@WithMockUser("test@mail.fr")
+	public void testGetAllMediasThrowMediaNotFoundException() throws Exception {
 
-		ResultActions result = mockMvc.perform(get(MEDIAS_WITH_ID, mediaId));
+		String mailAccount = "test@mail.fr";
 
-		result.andExpect(status().isOk());
-		result.andDo(print());
-		
-		verify(mediaService).findById(eq(mediaId));
-		verify(mediaManagerService).getInputStreamFromMedia(any(Media.class));
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Test
-	@WithMockUser
-	public void testGetImageAsResponseEntityThrowsMediaNotFoundException() throws Exception {
-		Long mediaId = 1L;
-		
-		when(mediaService.findById(eq(mediaId))).thenThrow(MediaNotFoundException.class);
+		Account account = new Account();
+		ArrayList<Media> mediaList = new ArrayList<>();
+		mediaList.add(new Picture());
+		account.setMediaList(mediaList);
+		when(accountService.findByMail(eq(mailAccount))).thenReturn(account);
+		when(mediaService.encodeBase64(any(Media.class))).thenThrow(new MediaNotFoundException());
 
-		ResultActions result = mockMvc.perform(get(MEDIAS_WITH_ID, mediaId));
+		ResultActions result = mockMvc.perform(get(MEDIAS));
 
 		result.andExpect(status().isNotFound());
 		result.andDo(print());
-		
-		verify(mediaService).findById(eq(mediaId));
-		verify(mediaManagerService, never()).getInputStreamFromMedia(any(Media.class));
+
+		verify(accountService).findByMail(eq(mailAccount));
+		verify(mediaService).encodeBase64(any(Media.class));
+	}
+
+	@Test
+	@WithMockUser("test@mail.fr")
+	public void testGetAllMediasThrowIOException() throws Exception {
+
+		String mailAccount = "test@mail.fr";
+
+		Account account = new Account();
+		ArrayList<Media> mediaList = new ArrayList<>();
+		mediaList.add(new Picture());
+		account.setMediaList(mediaList);
+		when(accountService.findByMail(eq(mailAccount))).thenReturn(account);
+		when(mediaService.encodeBase64(any(Media.class))).thenThrow(new IOException());
+
+		ResultActions result = mockMvc.perform(get(MEDIAS));
+
+		result.andExpect(status().isNotFound());
+		result.andDo(print());
+
+		verify(accountService).findByMail(eq(mailAccount));
+		verify(mediaService).encodeBase64(any(Media.class));
 	}
 
 }

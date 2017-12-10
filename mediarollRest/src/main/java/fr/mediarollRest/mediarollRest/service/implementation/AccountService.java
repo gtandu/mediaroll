@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.mediarollRest.mediarollRest.constant.Constantes;
 import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.SpaceAvailableNotEnoughException;
 import fr.mediarollRest.mediarollRest.model.Account;
@@ -17,7 +18,7 @@ import fr.mediarollRest.mediarollRest.service.IAccountService;
 @Service
 public class AccountService implements IAccountService {
 
-	private static final double BYTES_TO_MB = 1000000.0;
+	
 
 	@Autowired
 	private AccountRepository accountRepository;
@@ -85,7 +86,7 @@ public class AccountService implements IAccountService {
 	@Override
 	public double increaseStorageSpace(Account account, long fileSize) {
 		double currentStorageSpace = account.getStorageSpace();
-		currentStorageSpace += fileSize / BYTES_TO_MB;
+		currentStorageSpace += fileSize / Constantes.BYTES_TO_MB;
 		account.setStorageSpace(currentStorageSpace);
 		Account savedAccount = saveAccount(account);
 		return savedAccount.getStorageSpace();
@@ -94,7 +95,7 @@ public class AccountService implements IAccountService {
 	@Override
 	public double decreaseStorageSpace(Account account, long fileSize) throws SpaceAvailableNotEnoughException {
 		double currentStorageSpace = account.getStorageSpace();
-		currentStorageSpace -= fileSize / BYTES_TO_MB;
+		currentStorageSpace -= fileSize / Constantes.BYTES_TO_MB;
 		if(currentStorageSpace <= 0) {
 			throw new SpaceAvailableNotEnoughException();
 		}

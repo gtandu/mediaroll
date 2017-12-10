@@ -1,26 +1,21 @@
 package fr.mediarollRest.mediarollRest.web.controller;
 
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS;
-import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS_WITH_ID;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.tika.io.IOUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,7 +58,7 @@ public class MediaController {
 	private MessageSource messageSource;
 
 	private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
-
+	
 	@GetMapping(MEDIAS)
 	public ResponseEntity<List<Media>> getAllMedias(Principal principal) {
 		String mail = principal.getName();
@@ -71,33 +66,19 @@ public class MediaController {
 			Account account = accountService.findByMail(mail);
 			List<Media> mediaList = account.getMediaList();
 			for (Media media : mediaList) {
+				mediaService.encodeBase64(media);
 				buildLink(principal, media);
 			}
 			return new ResponseEntity<>(mediaList, HttpStatus.OK);
 		} catch (AccountNotFoundException e) {
 			logger.error(messageSource.getMessage("error.account.not.found", null, Locale.FRANCE), mail);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-
-	}
-
-	@GetMapping(MEDIAS_WITH_ID)
-	public ResponseEntity<byte[]> getImageAsResponseEntity(@PathVariable("mediaId") Long mediaId) {
-		HttpHeaders headers = new HttpHeaders();
-		Media mediaFromDb = null;
-		try {
-			mediaFromDb = mediaService.findById(mediaId);
-			InputStream in = mediaManagerService.getInputStreamFromMedia(mediaFromDb);
-			
-			byte[] media = IOUtils.toByteArray(in);
-			headers.setCacheControl(CacheControl.noCache().getHeaderValue());
-			
-			return new ResponseEntity<>(media, headers, HttpStatus.OK);
-		} catch (MediaNotFoundException e) {
-			logger.error(messageSource.getMessage("error.media.not.found", null, Locale.FRANCE), mediaId);
-			return new ResponseEntity<byte[]>(HttpStatus.NOT_FOUND);
 		} catch (IOException e) {
-			return new ResponseEntity<byte[]>(HttpStatus.INTERNAL_SERVER_ERROR);
+			logger.error(e.getMessage());
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} catch (MediaNotFoundException e) {
+			logger.error(messageSource.getMessage("error.media.not.found", null, Locale.FRANCE), mail);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
 	}
@@ -134,7 +115,7 @@ public class MediaController {
 		String mail = principal.getName();
 
 		for (MultipartFile media : mediaList) {
-			if (mediaManagerService.isMedia(media)) {
+			if (mediaService.isMedia(media)) {
 
 				try {
 					account = accountService.findByMail(mail);
@@ -203,7 +184,7 @@ public class MediaController {
 	}
 	
 	private void buildLink(Principal principal, Media media) {
-		media.add(linkTo(methodOn(MediaController.class).getImageAsResponseEntity(media.getId())).withSelfRel());
+		//media.add(linkTo(methodOn(MediaController.class).getImageAsResponseEntity(media.getId())).withSelfRel());
 		media.add(linkTo(methodOn(MediaController.class).getAllMedias(principal)).withRel("media lists"));
 	}
 }

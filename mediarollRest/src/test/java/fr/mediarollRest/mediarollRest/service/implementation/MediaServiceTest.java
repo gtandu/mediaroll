@@ -7,13 +7,22 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.mock.web.MockMultipartFile;
+
+import com.google.common.net.MediaType;
 
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Media;
@@ -25,9 +34,25 @@ public class MediaServiceTest {
 
 	@Mock
 	private MediaRepository mediaRepository;
+	
+	@Mock
+	private MediaManagerService mediaManagerService;
 
 	@InjectMocks
 	private MediaService mediaService;
+	
+	private InputStream fileToUpload;
+
+	private String fileName;
+
+	private MockMultipartFile media;
+
+	@Before
+	public void init() throws IOException {
+		this.fileName = "image.jpg";
+		this.fileToUpload = new ClassPathResource(fileName).getInputStream();
+
+	}
 
 	@Test
 	public void testDeleteMediaByIdSuccess() throws Exception {
@@ -121,4 +146,70 @@ public class MediaServiceTest {
 		
 		verify(mediaRepository).save(any(Picture.class));
 	}
+	
+	@Test
+	public void testIsMedia() throws Exception {
+		media = new MockMultipartFile(fileName, fileName, MediaType.JPEG.type(), fileToUpload);
+		boolean isMedia = mediaService.isMedia(media);
+
+		assertThat(isMedia).isTrue();
+	}
+
+	@Test
+	public void testIsNotMedia() throws Exception {
+
+		this.fileName = "test.pdf";
+		this.fileToUpload = new ClassPathResource(fileName).getInputStream();
+		MockMultipartFile pdfFile = new MockMultipartFile(fileName, fileName, MediaType.PDF.type(), fileToUpload);
+
+		boolean isMedia = mediaService.isMedia(pdfFile);
+
+		assertThat(isMedia).isFalse();
+	}
+	
+	@Test
+	public void testGetMediaTypeMultipartFile() throws Exception {
+		media = new MockMultipartFile(fileName, fileName, MediaType.JPEG.type(), fileToUpload);
+		String mediaType = mediaService.getMediaType(media);
+
+		assertThat(mediaType).contains((MediaType.JPEG.type()));
+	}
+
+	@Test
+	public void testGetMediaTypeInputStream() throws Exception {
+		this.fileToUpload = new ClassPathResource(fileName).getInputStream();
+		String mediaType = mediaService.getMediaType(fileToUpload);
+
+		assertThat(mediaType).contains((MediaType.JPEG.type()));
+	}
+
+	@Test
+	public void testEncodeBase64() throws Exception {
+		String filePath = "src/test/resources/image.jpg";
+		Picture picture = new Picture();
+		picture.setFilePath(filePath);
+		
+		when(mediaManagerService.getInputStreamFromMedia(eq(picture.getFilePath()))).thenReturn(new BufferedInputStream(new FileInputStream(picture.getFilePath())));
+
+		String encodeBase64 = mediaService.encodeBase64(picture);
+		
+		assertThat(encodeBase64).isNotEmpty();
+		
+		verify(mediaManagerService).getInputStreamFromMedia(eq(picture.getFilePath()));
+	}
+	
+	@Test(expected=MediaNotFoundException.class)
+	public void testEncodeBase64ThrowMediaNotFoundException() throws Exception {
+		String filePath = "src/test/resources/image.jpg";
+		Picture picture = new Picture();
+		picture.setFilePath(filePath);
+		
+		when(mediaManagerService.getInputStreamFromMedia(eq(picture.getFilePath()))).thenThrow(new MediaNotFoundException());
+
+		mediaService.encodeBase64(picture);
+		
+		verify(mediaManagerService).getInputStreamFromMedia(eq(picture.getFilePath()));
+	}
+
+
 }

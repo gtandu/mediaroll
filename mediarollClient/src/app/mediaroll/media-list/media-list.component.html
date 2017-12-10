@@ -1,0 +1,6 @@
+<div *ngFor="let media of medias">
+    <img *ngIf="media.type == 'picture' else elseBlock" class="materialboxed" width="350" [src]='mediaUrl(media.encodedMedia)'>
+    <ng-template #elseBlock>
+        <video width="350" [src]='mediaUrl(media.encodedMedia)' controls></video>
+    </ng-template>
+</div>

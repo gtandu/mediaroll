@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(name="picture", value = Picture.class), @Type(name="video", value = Video.class), })
+@JsonSubTypes({ @Type(name = "picture", value = Picture.class), @Type(name = "video", value = Video.class), })
 @Entity
 @Inheritance
 public abstract class Media {
@@ -38,17 +38,21 @@ public abstract class Media {
 	private String importDate;
 	private String filePath;
 	private boolean privateMedia;
+	@JsonInclude
+	@Transient
+	private String encodedMedia;
 
 	@JsonInclude
 	@Transient
 	private List<Link> links;
 
-	@ManyToOne(fetch= FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+			CascadeType.REFRESH })
 	private Account owner;
 
 	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
 	private List<Account> sharedPeople;
-	
+
 	public Media() {
 		this.name = "";
 		this.description = "";
@@ -101,6 +105,14 @@ public abstract class Media {
 		this.filePath = filePath;
 	}
 
+	public String getEncodedMedia() {
+		return encodedMedia;
+	}
+
+	public void setEncodedMedia(String encodedMedia) {
+		this.encodedMedia = encodedMedia;
+	}
+
 	public boolean isPrivateMedia() {
 		return privateMedia;
 	}
@@ -133,7 +145,5 @@ public abstract class Media {
 		Assert.notNull(link, "Link must not be null!");
 		this.links.add(link);
 	}
-	
-	
 
 }

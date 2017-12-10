@@ -4,4 +4,5 @@ export class Media{
     name: string;
     description: string;
     importDate: string;
+    encodedMedia: string;
 }
