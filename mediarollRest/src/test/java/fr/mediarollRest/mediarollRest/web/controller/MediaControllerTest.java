@@ -2,6 +2,7 @@ package fr.mediarollRest.mediarollRest.web.controller;
 
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
+import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS_WITH_ID;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
@@ -162,7 +163,7 @@ public class MediaControllerTest {
 		verify(accountService).findByMail(anyString());
 		verify(mediaManagerService).saveMediaInFileSystem(any(Account.class), any(MockMultipartFile.class));
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void testUploadMediasThrowSpaceAvailableNotEnoughException() throws Exception {
@@ -230,7 +231,7 @@ public class MediaControllerTest {
 		verify(mediaManagerService).deleteMediaInFileSystem(any(Account.class), eq(picture.getFilePath()));
 		verify(mediaService).deleteMediaById(eq(id));
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void testDeleteMediaThrowAccountNotFoundException() throws Exception {
@@ -435,6 +436,59 @@ public class MediaControllerTest {
 
 		verify(accountService).findByMail(eq(mailAccount));
 		verify(mediaService).encodeBase64(any(Media.class));
+	}
+
+	@Test
+	@WithMockUser
+	public void testGetMediaById() throws Exception {
+
+		Long mediaId = 1L;
+		when(mediaService.findById(eq(mediaId))).thenReturn(new Picture());
+		when(mediaService.encodeBase64(any(Media.class))).thenReturn("encodedBase");
+
+		ResultActions result = mockMvc.perform(get(MEDIAS_WITH_ID, mediaId));
+
+		result.andExpect(status().isOk());
+		result.andDo(print());
+
+		verify(mediaService).findById(eq(mediaId));
+		verify(mediaService).encodeBase64(any(Media.class));
+
+	}
+
+	@Test
+	@WithMockUser
+	public void testGetMediaByIdThrowMediaNotFoundException() throws Exception {
+
+		Long mediaId = 1L;
+		when(mediaService.findById(eq(mediaId))).thenThrow(new MediaNotFoundException());
+
+		ResultActions result = mockMvc.perform(get(MEDIAS_WITH_ID, mediaId));
+
+		result.andExpect(status().isNotFound());
+		result.andDo(print());
+
+		verify(mediaService).findById(eq(mediaId));
+		verify(mediaService, never()).encodeBase64(any(Media.class));
+
+	}
+	
+	@Test
+	@WithMockUser
+	public void testGetMediaByIdThrowIOException() throws Exception {
+
+		Long mediaId = 1L;
+		when(mediaService.findById(eq(mediaId))).thenReturn(new Picture());
+		when(mediaService.encodeBase64(any(Media.class))).thenThrow(new IOException());
+
+		ResultActions result = mockMvc.perform(get(MEDIAS_WITH_ID, mediaId));
+
+		result.andExpect(status().isInternalServerError());
+		result.andDo(print());
+
+		verify(mediaService).findById(eq(mediaId));
+		verify(mediaService).encodeBase64(any(Media.class));
+
 	}
 
 }

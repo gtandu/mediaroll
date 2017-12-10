@@ -1,6 +1,7 @@
 package fr.mediarollRest.mediarollRest.web.controller;
 
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS;
+import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS_WITH_ID;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -18,11 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,6 +61,28 @@ public class MediaController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 	
+	@ApiOperation(value = "Get media info")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved media"),
+			@ApiResponse(code = 404, message = "The media is not found."),
+			@ApiResponse(code = 500, message = "An error occured during encode base64")})
+	@GetMapping(MEDIAS_WITH_ID)
+	public ResponseEntity<Media> getMediaById(@PathVariable("mediaId") Long mediaId){
+		
+		try {
+			Media media = mediaService.findById(mediaId);
+			media.setEncodedMedia(mediaService.encodeBase64(media));
+			return new ResponseEntity<Media>(media, HttpStatus.OK);
+		} catch (MediaNotFoundException e) {
+			logger.error(messageSource.getMessage("error.media.not.found", null, Locale.FRANCE), mediaId);
+			return new ResponseEntity<Media>(HttpStatus.NOT_FOUND);
+		} catch (IOException e) {
+			return new ResponseEntity<Media>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@ApiOperation(value = "Get all medias")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 404, message = "The account/media is not found.") })
 	@GetMapping(MEDIAS)
 	public ResponseEntity<List<Media>> getAllMedias(Principal principal) {
 		String mail = principal.getName();
@@ -85,8 +109,8 @@ public class MediaController {
 
 	@ApiOperation(value = "Update media info")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully updated."),
-			@ApiResponse(code = 404, message = "The media is not found. Check ID."), })
-	@RequestMapping(value = MEDIAS + MEDIA_ID, method = RequestMethod.PUT)
+			@ApiResponse(code = 404, message = "The media is not found. Check ID.") })
+	@PutMapping(value = MEDIAS + MEDIA_ID)
 	public ResponseEntity<Media> updateMediaInfo(Principal principal, @PathVariable("mediaId") Long mediaId, @RequestBody Media media) {
 
 		try {
@@ -103,8 +127,10 @@ public class MediaController {
 	@ApiOperation(value = "Upload a media")
 	@ApiResponses(value = { @ApiResponse(code = 201, message = "Successfully upload."),
 			@ApiResponse(code = 400, message = "The file is not a media."),
-			@ApiResponse(code = 500, message = "Attempt to save file in file system failed."), })
-	@RequestMapping(value = MEDIAS, method = RequestMethod.POST)
+			@ApiResponse(code = 404, message = "Account is not found in Db."),
+			@ApiResponse(code = 500, message = "Attempt to save file in file system failed."),
+			@ApiResponse(code = 507, message = "Insufficient storage space in system") })
+	@PostMapping(value = MEDIAS)
 	@ResponseBody
 	public ResponseEntity<List<Media>> uploadMedias(@RequestParam("file") MultipartFile[] mediaList, Principal principal)
 			throws IOException {
@@ -153,9 +179,9 @@ public class MediaController {
 
 	@ApiOperation(value = "Delete a media")
 	@ApiResponses(value = { @ApiResponse(code = 204, message = "Media successfully deleted"),
-			@ApiResponse(code = 404, message = "Media not found in db. Please to check media ID"),
+			@ApiResponse(code = 404, message = "Account/Media not found in db. Please check media ID"),
 			@ApiResponse(code = 500, message = "An error occured during the process to delete Media"), })
-	@RequestMapping(value = MEDIAS + MEDIA_ID, method = RequestMethod.DELETE)
+	@DeleteMapping(value = MEDIAS + MEDIA_ID)
 	public ResponseEntity<Void> deleteMedia(Principal principal, @PathVariable("mediaId") Long mediaId) {
 		try {
 			Media mediaInDb = mediaService.findById(mediaId);
@@ -184,7 +210,7 @@ public class MediaController {
 	}
 	
 	private void buildLink(Principal principal, Media media) {
-		//media.add(linkTo(methodOn(MediaController.class).getImageAsResponseEntity(media.getId())).withSelfRel());
+		media.add(linkTo(methodOn(MediaController.class).getMediaById(media.getId())).withSelfRel());
 		media.add(linkTo(methodOn(MediaController.class).getAllMedias(principal)).withRel("media lists"));
 	}
 }
