@@ -1,0 +1,96 @@
+div
+{
+    font-family: 'Champagne & Limousines';
+}
+
+.row
+{
+    margin: 2px;
+}
+
+.container-fluid
+{
+    margin-top : 8%;
+    margin-bottom : 4%;
+    margin-left: 0;
+    margin-right: 0
+}
+
+.title
+{
+    font-family: 'Journey to Thailand';
+    font-size: 40px;
+    font-weight: normal;
+    text-align: center;
+    margin: 5px 0 5px;
+}
+
+
+h3
+{
+    font-size: 22px;
+    font-weight: normal;
+    text-align: center;
+    font-weight: bold;
+    color: #333333;
+    margin: 5px 0 5px;
+}
+
+h4
+{
+    font-size: 16px;
+    font-weight: normal;
+    text-align: center;
+    color: #333333;
+    font-style: italic;
+    margin: 5px 0 15px;
+}
+
+.card-panel
+{
+    background-color: #F5F6F7;
+    box-shadow: 0 0 8px #A7A6A9;
+}
+
+.btn
+{
+    align-content: right;
+}
+
+/* label color */
+.input-field label {
+    font-weight: bold;
+  }
+  /* label focus color */
+  .input-field input[type=text]:focus + label {
+    color: #1E88E5;
+  }
+  /* label underline focus color */
+  .input-field input[type=text]:focus {
+    border-bottom: 1px solid #1E88E5;
+    box-shadow: 0 1px 0 0 #1E88E5;
+  }
+  /* valid color */
+  .input-field input[type=text].valid {
+    border-bottom: 1px solid #1E88E5;
+    box-shadow: 0 1px 0 0 #1E88E5;
+  }
+  /* invalid color */
+  .input-field input[type=text].invalid {
+    border-bottom: 1px solid red;
+    box-shadow: 0 1px 0 0 red;
+  }
+
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus
+  input:-webkit-autofill, 
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    transition: background-color 5000s ease-in-out 0s;
+  }

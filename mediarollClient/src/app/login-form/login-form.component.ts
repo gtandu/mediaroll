@@ -16,6 +16,7 @@ export class LoginFormComponent implements OnInit {
 
   ngOnInit() {
     this.authService.logout();
+    document.body.classList.add('login-background');
   }
 
   login(){
@@ -28,6 +29,7 @@ export class LoginFormComponent implements OnInit {
           console.log("TOKEN OK REDIRECT APP");
           this.errorMsg = null;
           this.loader = true;
+          document.body.classList.remove('login-background')
           this.router.navigate(['/mediaroll/home']);
         } else {
           // login failed
@@ -36,7 +38,7 @@ export class LoginFormComponent implements OnInit {
       },
       error => {
         if(error.status === 401){
-          this.errorMsg = "L'email ou le mot de passe est incorrecte !"
+          this.errorMsg = "L'email ou le mot de passe est incorrect !"
         }
         else{
           this.errorMsg = "Une erreur technique est survenue !"

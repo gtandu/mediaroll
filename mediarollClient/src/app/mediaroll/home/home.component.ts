@@ -17,6 +17,7 @@ export class HomeComponent implements OnInit {
 
   public hasBaseDropZoneOver = false;
   public hasAnotherDropZoneOver = false;
+
   public uploader;
 
   options: FileUploaderOptions = {
