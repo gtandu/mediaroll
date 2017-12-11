@@ -22,7 +22,7 @@ export class MediaListComponent implements OnInit {
   }
 
   ngAfterViewChecked() {
-    //$('.materialboxed').materialbox();
+    ($('.materialboxed') as any).materialbox();
   }
 
   mediaUrl(encodedMedia: string){
