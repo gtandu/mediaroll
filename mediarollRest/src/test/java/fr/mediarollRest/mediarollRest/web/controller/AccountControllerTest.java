@@ -142,7 +142,7 @@ public class AccountControllerTest {
 		ResultActions result = mockMvc
 				.perform(post(ACCOUNTS).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON));
 
-		result.andExpect(status().isCreated()).andDo(print());
+		result.andExpect(status().isOk()).andDo(print());
 
 		verify(accountService).accountExist(eq(account));
 		verify(accountService).saveAccountAndEncodePassword(eq(account));

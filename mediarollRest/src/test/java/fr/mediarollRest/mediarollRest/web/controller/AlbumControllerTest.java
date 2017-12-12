@@ -290,7 +290,7 @@ public class AlbumControllerTest {
 		when(albumAssembler.toResource(any(Album.class))).thenReturn(new AlbumResource(new Album()));
 
 
-		ResultActions result = mockMvc.perform(put(ALBUM_WITH_ID + MEDIAS_WITH_ID, albumId, pictureId));
+		ResultActions result = mockMvc.perform(post(ALBUM_WITH_ID + MEDIAS_WITH_ID, albumId, pictureId));
 
 		result.andExpect(status().isCreated());
 
@@ -315,7 +315,7 @@ public class AlbumControllerTest {
 		when(albumService.findAlbumById(eq(albumId))).thenReturn(album);
 		when(mediaService.findById(eq(pictureId))).thenReturn(picture);
 
-		ResultActions result = mockMvc.perform(put(ALBUM_WITH_ID + MEDIAS_WITH_ID, albumId, pictureId));
+		ResultActions result = mockMvc.perform(post(ALBUM_WITH_ID + MEDIAS_WITH_ID, albumId, pictureId));
 
 		result.andExpect(status().isConflict());
 
@@ -336,7 +336,7 @@ public class AlbumControllerTest {
 
 		when(albumService.findAlbumById(eq(albumId))).thenThrow(AlbumNotFoundException.class);
 
-		ResultActions result = mockMvc.perform(put(ALBUM_WITH_ID + MEDIAS_WITH_ID, albumId, pictureId));
+		ResultActions result = mockMvc.perform(post(ALBUM_WITH_ID + MEDIAS_WITH_ID, albumId, pictureId));
 
 		result.andExpect(status().isNotFound());
 
@@ -358,7 +358,7 @@ public class AlbumControllerTest {
 		when(albumService.findAlbumById(eq(albumId))).thenReturn(album);
 		when(mediaService.findById(eq(pictureId))).thenThrow(MediaNotFoundException.class);
 
-		ResultActions result = mockMvc.perform(put(ALBUM_WITH_ID + MEDIAS_WITH_ID, albumId, pictureId));
+		ResultActions result = mockMvc.perform(post(ALBUM_WITH_ID + MEDIAS_WITH_ID, albumId, pictureId));
 
 		result.andExpect(status().isNotFound());
 
@@ -481,7 +481,7 @@ public class AlbumControllerTest {
 		when(albumAssembler.toResource(any(Album.class))).thenReturn(new AlbumResource(new Album()));
 
 
-		ResultActions result = mockMvc.perform(put(ALBUM_WITH_ID + ACCOUNT_WITH_MAIL, albumId, mail));
+		ResultActions result = mockMvc.perform(post(ALBUM_WITH_ID + ACCOUNT_WITH_MAIL, albumId, mail));
 
 		result.andExpect(status().isCreated());
 
@@ -498,7 +498,7 @@ public class AlbumControllerTest {
 		Long albumId = 1L;
 		String mail = "owner@mail.fr";
 		
-		ResultActions result = mockMvc.perform(put(ALBUM_WITH_ID + ACCOUNT_WITH_MAIL, albumId, mail));
+		ResultActions result = mockMvc.perform(post(ALBUM_WITH_ID + ACCOUNT_WITH_MAIL, albumId, mail));
 
 		result.andExpect(status().isConflict());
 		
@@ -522,7 +522,7 @@ public class AlbumControllerTest {
 		when(albumService.findAlbumById(eq(albumId))).thenReturn(album);
 		when(accountService.findByMail(eq(mail))).thenReturn(account);
 
-		ResultActions result = mockMvc.perform(put(ALBUM_WITH_ID + ACCOUNT_WITH_MAIL, albumId, mail));
+		ResultActions result = mockMvc.perform(post(ALBUM_WITH_ID + ACCOUNT_WITH_MAIL, albumId, mail));
 
 		result.andExpect(status().isConflict());
 
@@ -542,7 +542,7 @@ public class AlbumControllerTest {
 
 		when(albumService.findAlbumById(eq(albumId))).thenThrow(AlbumNotFoundException.class);
 
-		ResultActions result = mockMvc.perform(put(ALBUM_WITH_ID + ACCOUNT_WITH_MAIL, albumId, mail));
+		ResultActions result = mockMvc.perform(post(ALBUM_WITH_ID + ACCOUNT_WITH_MAIL, albumId, mail));
 
 		result.andExpect(status().isNotFound());
 
@@ -563,7 +563,7 @@ public class AlbumControllerTest {
 		when(albumService.findAlbumById(eq(albumId))).thenReturn(album);
 		when(accountService.findByMail(eq(mail))).thenThrow(AccountNotFoundException.class);
 
-		ResultActions result = mockMvc.perform(put(ALBUM_WITH_ID + ACCOUNT_WITH_MAIL, albumId, mail));
+		ResultActions result = mockMvc.perform(post(ALBUM_WITH_ID + ACCOUNT_WITH_MAIL, albumId, mail));
 
 		result.andExpect(status().isNotFound());
 

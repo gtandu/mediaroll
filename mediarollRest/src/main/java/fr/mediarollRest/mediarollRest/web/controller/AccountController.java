@@ -30,7 +30,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@Api(value="accounts", description="Operations pertaining to accounts in MediaRoll")
+@Api(value="Account", description="Operations pertaining to accounts in MediaRoll")
 public class AccountController {
 
 	@Autowired
@@ -57,7 +57,7 @@ public class AccountController {
 		
 		List<Account> accountsList = accountService.findAll();
 		if (accountsList.isEmpty()) {
-			logger.info("Account list is empty. Add an account");
+			logger.error("Account list is empty. Add an account");
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} else {
 			for (Account account : accountsList) {
@@ -89,7 +89,7 @@ public class AccountController {
 
 	@ApiOperation(value = "Create a user account")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "User created"),
+            @ApiResponse(code = 200, message = "User created"),
             @ApiResponse(code = 409, message = "User already exist in database"),
     })
 	@RequestMapping(value = ACCOUNTS, method = RequestMethod.POST)
@@ -100,7 +100,7 @@ public class AccountController {
 		} else {
 			Account accountSaved = accountService.saveAccountAndEncodePassword(account);
 			AccountResource accountResource = accountAssembler.toResource(accountSaved);
-			return new ResponseEntity<>(accountResource, HttpStatus.CREATED);
+			return new ResponseEntity<>(accountResource, HttpStatus.OK);
 		}
 	}
 

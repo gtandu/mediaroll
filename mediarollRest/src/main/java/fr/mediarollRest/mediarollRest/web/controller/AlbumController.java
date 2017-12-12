@@ -34,8 +34,13 @@ import fr.mediarollRest.mediarollRest.service.IAccountService;
 import fr.mediarollRest.mediarollRest.service.IAlbumService;
 import fr.mediarollRest.mediarollRest.service.IMediaService;
 import fr.mediarollRest.mediarollRest.web.resource.assembler.AlbumAssembler;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
+@Api(value = "Album", description = "Operations pertaining to album in MediaRoll")
 public class AlbumController {
 
 	@Autowired
@@ -50,6 +55,9 @@ public class AlbumController {
 	@Autowired
 	private AlbumAssembler albumAssembler;
 
+	@ApiOperation(value = "Get album info")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved album"),
+			@ApiResponse(code = 404, message = "The album is not found.") })
 	@GetMapping(value = ALBUM_WITH_ID)
 	public ResponseEntity<AlbumResource> getAlbum(@PathVariable("albumId") Long albumId) {
 
@@ -59,14 +67,15 @@ public class AlbumController {
 			return new ResponseEntity<>(albumResource, HttpStatus.OK);
 		} catch (AlbumNotFoundException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
 		}
 	}
 
+	@ApiOperation(value = "Get album info")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved albums"),
+			@ApiResponse(code = 404, message = "The albums are not found.") })
 	@GetMapping(ALBUMS)
 	public ResponseEntity<List<AlbumResource>> getAllAlbums(Principal principal) {
 
-		
 		ArrayList<AlbumResource> albumsResourceList = new ArrayList<>();
 		try {
 			Account account = accountService.findByMail(principal.getName());
@@ -81,6 +90,9 @@ public class AlbumController {
 		}
 	}
 
+	@ApiOperation(value = "Create album")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved album"),
+			@ApiResponse(code = 404, message = "The user is not found.") })
 	@PostMapping(value = ALBUMS)
 	public ResponseEntity<AlbumResource> createAlbum(Principal user, @RequestBody Album album) {
 		try {
@@ -95,6 +107,9 @@ public class AlbumController {
 
 	}
 
+	@ApiOperation(value = "Update album info")
+	@ApiResponses(value = { @ApiResponse(code = 201, message = "Album updated."),
+			@ApiResponse(code = 404, message = "Album is not found.") })
 	@PatchMapping(value = ALBUM_WITH_ID)
 	public ResponseEntity<AlbumResource> updateAlbum(@PathVariable("albumId") Long albumId, @RequestBody Album album) {
 
@@ -107,6 +122,10 @@ public class AlbumController {
 		}
 	}
 
+	@ApiOperation(value = "Delete album")
+	@ApiResponses(value = { @ApiResponse(code = 204, message = "Album updated."),
+			@ApiResponse(code = 404, message = "Album is not found."),
+			@ApiResponse(code = 500, message = "An error occured during process to delete album")})
 	@DeleteMapping(value = ALBUM_WITH_ID)
 	public ResponseEntity<Void> deleteAlbum(@PathVariable("albumId") Long albumId) {
 
@@ -121,6 +140,10 @@ public class AlbumController {
 		}
 	}
 
+	@ApiOperation(value = "Delete album")
+	@ApiResponses(value = { @ApiResponse(code = 201, message = "Album updated."),
+			@ApiResponse(code = 404, message = "Media is not found."),
+			@ApiResponse(code = 404, message = "Album is not found.")})
 	@PutMapping(value = ALBUM_WITH_ID + COVER + MEDIAS_WITH_ID)
 	public ResponseEntity<AlbumResource> addCoverToAlbum(@PathVariable("albumId") Long albumId,
 			@PathVariable("mediaId") Long pictureId) {
@@ -133,7 +156,6 @@ public class AlbumController {
 			AlbumResource albumResource = albumAssembler.toResource(savedAlbum);
 			
 			return new ResponseEntity<AlbumResource>(albumResource, HttpStatus.CREATED);
-
 		} catch (MediaNotFoundException e) {
 			return new ResponseEntity<AlbumResource>(HttpStatus.NOT_FOUND);
 		} catch (AlbumNotFoundException e) {
@@ -141,7 +163,12 @@ public class AlbumController {
 		}
 	}
 
-	@PutMapping(value = ALBUM_WITH_ID + MEDIAS_WITH_ID)
+	@ApiOperation(value = "Add media to album")
+	@ApiResponses(value = { @ApiResponse(code = 201, message = "Album updated."),
+			@ApiResponse(code = 409, message = "Media is already in the album."),
+			@ApiResponse(code = 404, message = "Media is not found."),
+			@ApiResponse(code = 404, message = "Album is not found.")})
+	@PostMapping(value = ALBUM_WITH_ID + MEDIAS_WITH_ID)
 	public ResponseEntity<AlbumResource> addMediaToAlbum(@PathVariable("albumId") Long albumId,
 			@PathVariable("mediaId") Long mediaId) {
 
@@ -165,6 +192,11 @@ public class AlbumController {
 		}
 	}
 
+	@ApiOperation(value = "Delete media to album")
+	@ApiResponses(value = { @ApiResponse(code = 204, message = "The media is deleted from the album"),
+			@ApiResponse(code = 404, message = "Media is not found in the album."),
+			@ApiResponse(code = 404, message = "Album is not found."),
+			@ApiResponse(code = 404, message = "Media is not found.")})
 	@DeleteMapping(value = ALBUM_WITH_ID + MEDIAS_WITH_ID)
 	public ResponseEntity<AlbumResource> deleteMediaFromAlbum(@PathVariable("albumId") Long albumId,
 			@PathVariable("mediaId") Long mediaId) {
@@ -189,7 +221,13 @@ public class AlbumController {
 		}
 	}
 
-	@PutMapping(value = ALBUM_WITH_ID + ACCOUNT_WITH_MAIL)
+	@ApiOperation(value = "Add user to shared list.")
+	@ApiResponses(value = { @ApiResponse(code = 201, message = "The user is succesfully add to shared list."),
+			@ApiResponse(code = 409, message = "The shared list already contains the account"),
+			@ApiResponse(code = 409, message = "You can't add your account to shared list."),
+			@ApiResponse(code = 404, message = "Album is not found."),
+			@ApiResponse(code = 404, message = "Media is not found.")})
+	@PostMapping(value = ALBUM_WITH_ID + ACCOUNT_WITH_MAIL)
 	public ResponseEntity<AlbumResource> addUserToSharedList(Principal principal, @PathVariable("albumId") Long albumId,
 			@PathVariable("mail") String mail) {
 
@@ -216,9 +254,14 @@ public class AlbumController {
 		}
 	}
 
+	@ApiOperation(value = "Delete user from shared list.")
+	@ApiResponses(value = { @ApiResponse(code = 204, message = "The user is succesfully delete from shared list."),
+			@ApiResponse(code = 404, message = "The shared list already contains the account"),
+			@ApiResponse(code = 404, message = "Album is not found."),
+			@ApiResponse(code = 404, message = "Media is not found.")})
 	@DeleteMapping(value = ALBUM_WITH_ID + ACCOUNT_WITH_MAIL)
-	public ResponseEntity<AlbumResource> deleteUserFromSharedList(Principal principal, @PathVariable("albumId") Long albumId,
-			@PathVariable("mail") String mail) {
+	public ResponseEntity<AlbumResource> deleteUserFromSharedList(Principal principal,
+			@PathVariable("albumId") Long albumId, @PathVariable("mail") String mail) {
 
 		try {
 			Album album = albumService.findAlbumById(albumId);
