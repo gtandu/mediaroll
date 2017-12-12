@@ -42,6 +42,7 @@ testem.log
 Thumbs.db
 
 #Angular
+/
 package-lock.json
 package.json
 mediarollRest.log

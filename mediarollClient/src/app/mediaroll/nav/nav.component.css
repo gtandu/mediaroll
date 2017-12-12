@@ -1,0 +1,21 @@
+nav{
+    padding-left : 5%;
+    padding-right : 2%;
+    display: block;
+    position: fixed;
+}
+
+.logo
+{
+    font-family: 'Journey';
+    font-size: 28px;
+}
+
+div
+{
+    font-family: 'Champagne';
+}
+
+li{
+    padding-left: 2%;
+}
