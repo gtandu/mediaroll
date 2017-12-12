@@ -24,7 +24,4 @@ public class InitData implements ApplicationRunner {
 		
 		
 	}
-	
-	
-
 }
