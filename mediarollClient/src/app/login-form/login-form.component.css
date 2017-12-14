@@ -1,6 +1,8 @@
+/* CSS Definition */
+
 div
 {
-    font-family: 'Champagne & Limousines';
+    font-family: 'Champagne';
 }
 
 .row
@@ -18,18 +20,15 @@ div
 
 .title
 {
-    font-family: 'Journey to Thailand';
+    font-family: 'Journey';
     font-size: 40px;
-    font-weight: normal;
     text-align: center;
     margin: 5px 0 5px;
 }
 
-
 h3
 {
     font-size: 22px;
-    font-weight: normal;
     text-align: center;
     font-weight: bold;
     color: #333333;

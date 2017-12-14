@@ -9,7 +9,8 @@ import { MediaService } from '../services/media/media.service';
 import { FileUploadModule } from 'ng2-file-upload';
 import { MediaListComponent } from './media-list/media-list.component';
 
-
+import { NavComponent } from './nav/nav.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 @NgModule({
   imports: [
@@ -19,7 +20,9 @@ import { MediaListComponent } from './media-list/media-list.component';
   ],
   declarations: [
     HomeComponent,
-    MediaListComponent
+    MediaListComponent,
+    NavComponent,
+    SidebarComponent
   ],
   providers: [AuthGuard, MediaService]
 })

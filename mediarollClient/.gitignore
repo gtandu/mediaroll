@@ -40,3 +40,9 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+#Angular
+/
+package-lock.json
+package.json
+mediarollRest.log

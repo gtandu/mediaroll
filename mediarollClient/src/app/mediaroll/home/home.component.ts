@@ -42,5 +42,4 @@ export class HomeComponent implements OnInit {
     this.hasAnotherDropZoneOver = e;
   }
 
-
 }

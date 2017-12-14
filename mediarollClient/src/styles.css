@@ -7,3 +7,43 @@
     background-attachment: fixed;
     background-size: cover;
 }
+
+/* Font Definition */
+/* Champagne & Limousines */
+
+@font-face {
+	font-family: "Champagne";
+	src: url("/assets/fonts/champagne.ttf");
+}
+
+@font-face {
+	font-family: "Champagne";
+	font-style: italic;
+	src: url("/assets/fonts/champagne-italic.ttf");
+}
+
+@font-face {
+	font-family: "Champagne";
+	font-weight: bold;
+	src: url("/assets/fonts/champagne-bold.ttf");
+}
+
+@font-face {
+	font-family: "Champagne";
+    font-weight: bold;
+    font-style: italic;
+	src: url("/assets/fonts/champagne-bold-italic.ttf");
+}
+
+/* Journey to Thailand */
+
+@font-face {
+	font-family: "Journey";
+	src: url("/assets/fonts/journey.ttf");
+}
+
+@font-face {
+    font-family: "Journey";
+    font-weight: lighter;
+	src: url("/assets/fonts/journey-light.ttf");
+}
