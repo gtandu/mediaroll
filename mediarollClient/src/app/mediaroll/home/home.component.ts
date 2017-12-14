@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit {
     url: this.authService.server + '/medias',
     authToken: 'Token ' + this.authService.token,
     authTokenHeader: 'Authorization',
-    autoUpload: true
+    autoUpload: false
   };
 
   constructor(private authService: AuthentificationService) {
