@@ -24,6 +24,7 @@ export class HomeComponent implements OnInit {
     url: this.authService.server + '/medias',
     authToken: 'Token ' + this.authService.token,
     authTokenHeader: 'Authorization',
+    autoUpload: true
   };
 
   constructor(private authService: AuthentificationService) {
@@ -40,6 +41,10 @@ export class HomeComponent implements OnInit {
 
   public fileOverAnother(e: any): void {
     this.hasAnotherDropZoneOver = e;
+  }
+
+  test(uploader: FileUploader){
+    console.log(uploader);
   }
 
 }

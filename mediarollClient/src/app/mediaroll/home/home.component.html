@@ -10,7 +10,7 @@
     <div class="row">
 
         <div class="folder-path">
-                <h3>Bibliothèque</h3>
+            <h3>Bibliothèque</h3>
         </div>
 
         <div class="col-md-3">
@@ -18,16 +18,11 @@
             <h3>Select files</h3>
 
             <div ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}" (fileOver)="fileOverBase($event)" [uploader]="uploader" class="well my-drop-zone">
-                Base drop zone
-            </div>
-
-            <div ng2FileDrop [ngClass]="{'another-file-over-class': hasAnotherDropZoneOver}" (fileOver)="fileOverAnother($event)" [uploader]="uploader" class="well my-drop-zone">
-                Another drop zone
+                <p>Faites glisser votre fichier ici</p>
             </div>
 
             Multiple
-            <input type="file" ng2FileSelect [uploader]="uploader" multiple /><br/> Single
-            <input type="file" name="media" (change)="uploader.queue[0].upload()" ng2FileSelect [uploader]=" uploader " />
+            <input type="file" ng2FileSelect [uploader]="uploader" (change)="test(uploader)" multiple /><br/> Single
         </div>
 
         <div class="col-md-9 " style="margin-bottom: 40px ">
@@ -48,18 +43,18 @@
                 <tbody>
                     <tr *ngFor="let item of uploader.queue ">
                         <td><strong>{{ item?.file?.name }}</strong></td>
-                        <td *ngIf="uploader.isHTML5 " nowrap>{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
-                        <td *ngIf="uploader.isHTML5 ">
+                        <td>{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
+                        <td>
                             <div class="progress " style="margin-bottom: 0; ">
-                                <div class="progress-bar " role="progressbar " [ngStyle]="{ 'width': item.progress + '%' } "></div>
+                                <div class="determinate " [ngStyle]="{ 'width': item.progress + '%' } "></div>
                             </div>
                         </td>
                         <td class="text-center ">
-                            <span *ngIf="item.isSuccess "><i class="glyphicon glyphicon-ok "></i></span>
-                            <span *ngIf="item.isCancel "><i class="glyphicon glyphicon-ban-circle "></i></span>
-                            <span *ngIf="item.isError "><i class="glyphicon glyphicon-remove "></i></span>
+                            <span *ngIf="item.isSuccess "><i class="material-icons">check_circle</i></span>
+                            <span *ngIf="item.isCancel "><i class="material-icons">warning</i></span>
+                            <span *ngIf="item.isError "><i class="material-icons">error</i></span>
                         </td>
-                        <td nowrap>
+                        <td>
                             <button type="button " class="btn btn-success btn-xs " (click)="item.upload() " [disabled]="item.isReady || item.isUploading || item.isSuccess ">
                             <span class="glyphicon glyphicon-upload " draggable="true"></span> Upload
                         </button>
