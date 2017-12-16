@@ -1,11 +1,14 @@
 .side-nav{
-    margin-top:64px; 
+    margin-top:67px;
 }
 
-.subheader
-{
+.subheader{
     font-size: 18px;
     font-weight: bold;
     color: #333333;
     margin : 0;
+}
+
+.link{
+    font-size: 16px;
 }
