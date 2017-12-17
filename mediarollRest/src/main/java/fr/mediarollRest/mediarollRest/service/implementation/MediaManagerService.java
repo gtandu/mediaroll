@@ -1,12 +1,12 @@
 package fr.mediarollRest.mediarollRest.service.implementation;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -104,9 +104,9 @@ public class MediaManagerService implements IMediaManagerService {
 	}
 
 	@Override
-	public BufferedInputStream getInputStreamFromMedia(String filePath) throws MediaNotFoundException{
+	public InputStream getInputStreamFromMedia(String filePath) throws MediaNotFoundException{
 		try {
-			return new BufferedInputStream(new FileInputStream(filePath));
+			return new FileInputStream(filePath);
 		} catch (FileNotFoundException e) {
 			throw new MediaNotFoundException(e.getMessage());
 		}

@@ -1,7 +1,8 @@
 package fr.mediarollRest.mediarollRest.service.implementation;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Optional;
 
 import org.apache.tika.Tika;
@@ -25,9 +26,6 @@ public class MediaService implements IMediaService {
 
 	@Autowired
 	private MediaRepository mediaRepository;
-
-	@Autowired
-	private MediaManagerService mediaManagerService;
 
 	public Media saveMedia(Media media) {
 		return mediaRepository.save(media);
@@ -67,11 +65,11 @@ public class MediaService implements IMediaService {
 	}
 
 	@Override
-	public String getMediaType(InputStream in) throws IOException {
+	public String getMediaType(File file) throws IOException {
 		Tika tika = new Tika();
 		String detectedType = "";
 		try {
-			detectedType = tika.detect(in);
+			detectedType = tika.detect(file);
 		} catch (IOException e) {
 			throw new IOException(e.getMessage());
 		}
@@ -81,19 +79,19 @@ public class MediaService implements IMediaService {
 
 	@Override
 	public String encodeBase64(Media media) throws MediaNotFoundException, IOException{
-		InputStream in;
+		FileInputStream in;
 		try {
-			in = mediaManagerService.getInputStreamFromMedia(media.getFilePath());
+			File file = new File(media.getFilePath());
+			in = new FileInputStream(file);
+			//in = mediaManagerService.getInputStreamFromMedia(media.getFilePath());
 			byte[] mediaByte = IOUtils.toByteArray(in);
 			String mediaBase64Encoded = Base64Utils.encodeToString(mediaByte);
 
-			String mediaSrcUrl  = String.format(Constantes.URL_MEDIAS_SRC_BASE64, this.getMediaType(in), mediaBase64Encoded);
+			String mediaSrcUrl  = String.format(Constantes.URL_MEDIAS_SRC_BASE64, this.getMediaType(file), mediaBase64Encoded);
 			
 			media.setEncodedMedia(mediaSrcUrl);
 			
 			return media.getEncodedMedia();
-		} catch (MediaNotFoundException e) {
-			throw new MediaNotFoundException(e.getMessage());
 		} catch (IOException e) {
 			throw new IOException(e.getMessage());
 		}

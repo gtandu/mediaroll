@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -176,8 +177,8 @@ public class MediaServiceTest {
 	}
 
 	@Test
-	public void testGetMediaTypeInputStream() throws Exception {
-		this.fileToUpload = new ClassPathResource(fileName).getInputStream();
+	public void testGetMediaTypeFile() throws Exception {
+		File fileToUpload = new ClassPathResource(fileName).getFile();
 		String mediaType = mediaService.getMediaType(fileToUpload);
 
 		assertThat(mediaType).contains((MediaType.JPEG.type()));
@@ -188,27 +189,11 @@ public class MediaServiceTest {
 		String filePath = "src/test/resources/image.jpg";
 		Picture picture = new Picture();
 		picture.setFilePath(filePath);
-		
-		when(mediaManagerService.getInputStreamFromMedia(eq(picture.getFilePath()))).thenReturn(new BufferedInputStream(new FileInputStream(picture.getFilePath())));
 
 		String encodeBase64 = mediaService.encodeBase64(picture);
 		
 		assertThat(encodeBase64).isNotEmpty();
 		
-		verify(mediaManagerService).getInputStreamFromMedia(eq(picture.getFilePath()));
-	}
-	
-	@Test(expected=MediaNotFoundException.class)
-	public void testEncodeBase64ThrowMediaNotFoundException() throws Exception {
-		String filePath = "src/test/resources/image.jpg";
-		Picture picture = new Picture();
-		picture.setFilePath(filePath);
-		
-		when(mediaManagerService.getInputStreamFromMedia(eq(picture.getFilePath()))).thenThrow(new MediaNotFoundException());
-
-		mediaService.encodeBase64(picture);
-		
-		verify(mediaManagerService).getInputStreamFromMedia(eq(picture.getFilePath()));
 	}
 
 

@@ -1,5 +1,5 @@
 <div class="row">
-    <div *ngFor="let media of medias" class="col s2">
+    <div *ngFor="let media of medias" class="col s3">
         <img *ngIf="media.type == 'picture' else elseBlock" class="materialboxed" width="250" [src]='mediaUrl(media.encodedMedia)'>
         <ng-template #elseBlock>
             <video width="250" [src]='mediaUrl(media.encodedMedia)' controls></video>
