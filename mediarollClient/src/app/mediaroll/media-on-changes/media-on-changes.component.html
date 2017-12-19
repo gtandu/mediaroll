@@ -1,0 +1,8 @@
+<div *ngIf="mediasUploaded">
+    <div *ngFor="let media of mediasUploaded" class="col s4 media">
+        <img *ngIf="media.type == 'picture' else elseBlock" class="materialboxed" width="400" [src]='mediaUrl(media.id)'>
+        <ng-template #elseBlock>
+            <video class="responsive-video" width="400" [src]='mediaUrl(media.id)' controls></video>
+        </ng-template>
+    </div>
+</div>

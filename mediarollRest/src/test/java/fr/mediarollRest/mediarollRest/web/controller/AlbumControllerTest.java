@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -218,7 +219,7 @@ public class AlbumControllerTest {
 	@Test
 	@WithMockUser
 	public void testAddCoverToAlbum() throws Exception {
-		Long pictureId = 1L;
+		String pictureId = UUID.randomUUID().toString();
 		Long albumId = 1L;
 
 		when(mediaService.findById(eq(pictureId))).thenReturn(new Picture());
@@ -242,7 +243,7 @@ public class AlbumControllerTest {
 	@Test
 	@WithMockUser
 	public void testAddCoverToAlbumThrowMediaNotFoundException() throws Exception {
-		Long pictureId = 1L;
+		String pictureId = UUID.randomUUID().toString();
 		Long albumId = 1L;
 
 		when(mediaService.findById(eq(pictureId))).thenThrow(MediaNotFoundException.class);
@@ -260,7 +261,7 @@ public class AlbumControllerTest {
 	@Test
 	@WithMockUser
 	public void testAddCoverToAlbumThrowAlbumNotFoundException() throws Exception {
-		Long pictureId = 1L;
+		String pictureId = UUID.randomUUID().toString();
 		Long albumId = 1L;
 
 		when(mediaService.findById(eq(pictureId))).thenReturn(new Picture());
@@ -278,7 +279,7 @@ public class AlbumControllerTest {
 	@Test
 	@WithMockUser
 	public void testAddMediaToAlbum() throws Exception {
-		Long pictureId = 1L;
+		String pictureId = UUID.randomUUID().toString();
 		Long albumId = 1L;
 
 		Album album = new Album();
@@ -304,7 +305,7 @@ public class AlbumControllerTest {
 	@Test
 	@WithMockUser
 	public void testAddMediaToAlbumAlreadyExist() throws Exception {
-		Long pictureId = 1L;
+		String pictureId = UUID.randomUUID().toString();
 		Long albumId = 1L;
 		Picture picture = new Picture();
 		picture.setId(pictureId);
@@ -328,7 +329,7 @@ public class AlbumControllerTest {
 	@Test
 	@WithMockUser
 	public void testAddMediaToAlbumThrowAlbumNotFoundException() throws Exception {
-		Long pictureId = 1L;
+		String pictureId = UUID.randomUUID().toString();
 		Long albumId = 1L;
 
 		Album album = new Album();
@@ -349,7 +350,7 @@ public class AlbumControllerTest {
 	@Test
 	@WithMockUser
 	public void testAddMediaToAlbumThrowMediaNotFoundException() throws Exception {
-		Long pictureId = 1L;
+		String pictureId = UUID.randomUUID().toString();
 		Long albumId = 1L;
 
 		Album album = new Album();
@@ -370,7 +371,7 @@ public class AlbumControllerTest {
 	@Test
 	@WithMockUser
 	public void testDeleteMediaFromAlbum() throws Exception {
-		Long pictureId = 1L;
+		String pictureId = UUID.randomUUID().toString();
 		Long albumId = 1L;
 		Picture picture = new Picture();
 		picture.setId(pictureId);
@@ -397,7 +398,7 @@ public class AlbumControllerTest {
 	@Test
 	@WithMockUser
 	public void testDeleteMediaFromAlbumThrowMediaNotFoundException() throws Exception {
-		Long pictureId = 1L;
+		String pictureId = UUID.randomUUID().toString();
 		Long albumId = 1L;
 		Picture picture = new Picture();
 		picture.setId(pictureId);
@@ -423,7 +424,7 @@ public class AlbumControllerTest {
 	@Test
 	@WithMockUser
 	public void testDeleteMediaFromAlbumThrowAlbumNotFoundException() throws Exception {
-		Long pictureId = 1L;
+		String pictureId = UUID.randomUUID().toString();
 		Long albumId = 1L;
 		Picture picture = new Picture();
 		picture.setId(pictureId);
@@ -447,7 +448,7 @@ public class AlbumControllerTest {
 	@Test
 	@WithMockUser
 	public void testDeleteMediaFromAlbumNotInAlbumList() throws Exception {
-		Long pictureId = 1L;
+		String pictureId = UUID.randomUUID().toString();
 		Long albumId = 1L;
 		Picture picture = new Picture();
 

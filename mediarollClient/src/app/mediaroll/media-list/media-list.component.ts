@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, OnInit} from '@angular/core';
 import { Media } from '../../models/media';
 import { MediaService } from '../../services/media/media.service';
+import { AuthentificationService } from '../../services/authentification.service';
 
 @Component({
   selector: 'app-medialist',
@@ -9,24 +9,23 @@ import { MediaService } from '../../services/media/media.service';
   styleUrls: ['./media-list.component.css']
 })
 export class MediaListComponent implements OnInit {
-
   medias: Media[] = [];
 
-  constructor(private mediaService: MediaService, public sanitizer: DomSanitizer) { }
+  constructor(private mediaService: MediaService) {}
 
   ngOnInit() {
     this.mediaService.getAllMedias().subscribe(medias => {
-      console.log(medias);
       this.medias = medias;
     });
+
   }
+
 
   ngAfterViewChecked() {
-    ($('.materialboxed') as any).materialbox();
+    ($(".materialboxed") as any).materialbox();
   }
 
-  mediaUrl(encodedMedia: string){
-    return this.sanitizer.bypassSecurityTrustResourceUrl(encodedMedia);
+  mediaUrl(id: string) {
+    return this.mediaService.buildUrlToMediaWithId(id);
   }
-
 }

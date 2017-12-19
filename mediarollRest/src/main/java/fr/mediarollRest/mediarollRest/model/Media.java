@@ -7,13 +7,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.hateoas.Link;
 import org.springframework.util.Assert;
 
@@ -30,17 +30,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @Inheritance
 public abstract class Media {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	@Id @GeneratedValue(generator="system-uuid")
+	@GenericGenerator(name="system-uuid",strategy = "uuid")
+	private String id;
 	private String name;
 	private String description;
 	private String importDate;
 	private String filePath;
 	private boolean privateMedia;
-	@JsonInclude
-	@Transient
-	private String encodedMedia;
 
 	@JsonInclude
 	@Transient
@@ -63,11 +60,11 @@ public abstract class Media {
 		this.links = new ArrayList<>();
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -104,15 +101,7 @@ public abstract class Media {
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
-
-	public String getEncodedMedia() {
-		return encodedMedia;
-	}
-
-	public void setEncodedMedia(String encodedMedia) {
-		this.encodedMedia = encodedMedia;
-	}
-
+	
 	public boolean isPrivateMedia() {
 		return privateMedia;
 	}

@@ -1,8 +1,6 @@
-<div class="row">
-    <div *ngFor="let media of medias" class="col s3">
-        <img *ngIf="media.type == 'picture' else elseBlock" class="materialboxed" width="250" [src]='mediaUrl(media.encodedMedia)'>
-        <ng-template #elseBlock>
-            <video width="250" [src]='mediaUrl(media.encodedMedia)' controls></video>
-        </ng-template>
-    </div>
+<div *ngFor="let media of medias" class="col s4 media">
+    <img *ngIf="media.type == 'picture' else elseBlock" class="materialboxed" width="400" [src]='mediaUrl(media.id)'>
+    <ng-template #elseBlock>
+        <video class="responsive-video" width="400" [src]='mediaUrl(media.id)' controls></video>
+    </ng-template>
 </div>
