@@ -11,6 +11,8 @@ import { MediaListComponent } from './media-list/media-list.component';
 
 import { NavComponent } from './nav/nav.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { FileUploadComponent } from './fileupload/file-upload.component';
+import { MediaOnChangesComponent } from './media-on-changes/media-on-changes.component';
 
 @NgModule({
   imports: [
@@ -22,7 +24,9 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     HomeComponent,
     MediaListComponent,
     NavComponent,
-    SidebarComponent
+    SidebarComponent,
+    FileUploadComponent,
+    MediaOnChangesComponent
   ],
   providers: [AuthGuard, MediaService]
 })

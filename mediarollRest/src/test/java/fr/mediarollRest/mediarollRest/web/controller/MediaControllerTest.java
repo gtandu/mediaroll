@@ -1,10 +1,9 @@
 package fr.mediarollRest.mediarollRest.web.controller;
 
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS;
-import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS_WITH_ID;
+import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
@@ -20,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.junit.Before;
@@ -214,12 +214,12 @@ public class MediaControllerTest {
 		String filePath = "src/test/resources/fileToDelete.txt";
 		Picture picture = new Picture();
 		picture.setFilePath(filePath);
-		Long id = 1L;
+		String id = UUID.randomUUID().toString();
 
-		when(mediaService.findById(anyLong())).thenReturn(picture);
+		when(mediaService.findById(eq(id))).thenReturn(picture);
 		when(accountService.findByMail(anyString())).thenReturn(new Account());
 		when(mediaManagerService.deleteMediaInFileSystem(any(Account.class), anyString())).thenReturn(true);
-		when(mediaService.deleteMediaById(anyLong())).thenReturn(true);
+		when(mediaService.deleteMediaById(eq(id))).thenReturn(true);
 
 		ResultActions result = mockMvc.perform(delete(MEDIAS + MEDIA_ID, id));
 
@@ -238,9 +238,9 @@ public class MediaControllerTest {
 		String filePath = "src/test/resources/fileToDelete.txt";
 		Picture picture = new Picture();
 		picture.setFilePath(filePath);
-		Long id = 1L;
+		String id = UUID.randomUUID().toString();
 
-		when(mediaService.findById(anyLong())).thenReturn(picture);
+		when(mediaService.findById(eq(id))).thenReturn(picture);
 		when(accountService.findByMail(anyString())).thenThrow(new AccountNotFoundException());
 
 		ResultActions result = mockMvc.perform(delete(MEDIAS + MEDIA_ID, id));
@@ -260,9 +260,9 @@ public class MediaControllerTest {
 		String filePath = "src/test/resources/fileToDelete.txt";
 		Picture picture = new Picture();
 		picture.setFilePath(filePath);
-		Long id = 1L;
+		String id = UUID.randomUUID().toString();
 
-		when(mediaService.findById(anyLong())).thenThrow(new MediaNotFoundException());
+		when(mediaService.findById(eq(id))).thenThrow(new MediaNotFoundException());
 
 		ResultActions result = mockMvc.perform(delete(MEDIAS + MEDIA_ID, id));
 
@@ -278,9 +278,9 @@ public class MediaControllerTest {
 		String filePath = "src/test/resources/fileToDelete.txt";
 		Picture picture = new Picture();
 		picture.setFilePath(filePath);
-		Long id = 1L;
+		String id = UUID.randomUUID().toString();
 
-		when(mediaService.findById(anyLong())).thenReturn(picture);
+		when(mediaService.findById(eq(id))).thenReturn(picture);
 		when(accountService.findByMail(anyString())).thenReturn(new Account());
 		when(mediaManagerService.deleteMediaInFileSystem(any(Account.class), anyString())).thenReturn(false);
 
@@ -300,12 +300,12 @@ public class MediaControllerTest {
 		String filePath = "src/test/resources/fileToDelete.txt";
 		Picture picture = new Picture();
 		picture.setFilePath(filePath);
-		Long id = 1L;
+		String id = UUID.randomUUID().toString();
 
-		when(mediaService.findById(anyLong())).thenReturn(picture);
+		when(mediaService.findById(eq(id))).thenReturn(picture);
 		when(accountService.findByMail(anyString())).thenReturn(new Account());
 		when(mediaManagerService.deleteMediaInFileSystem(any(Account.class), anyString())).thenReturn(true);
-		when(mediaService.deleteMediaById(anyLong())).thenReturn(false);
+		when(mediaService.deleteMediaById(eq(id))).thenReturn(false);
 
 		ResultActions result = mockMvc.perform(delete(MEDIAS + MEDIA_ID, id));
 
@@ -321,8 +321,7 @@ public class MediaControllerTest {
 	@Test
 	@WithMockUser
 	public void testUpdateMediaInfo() throws Exception {
-		Long id = 1L;
-
+		String id = UUID.randomUUID().toString();
 		Picture pictureToUpdate = new Picture();
 		Picture pictureUpdated = new Picture();
 		ObjectMapper mapper = new ObjectMapper();
@@ -342,8 +341,7 @@ public class MediaControllerTest {
 	@Test
 	@WithMockUser
 	public void testUpdateMediaInfoMediaNotFoundException() throws Exception {
-		Long id = 1L;
-
+		String id = UUID.randomUUID().toString();
 		Picture pictureToUpdate = new Picture();
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -393,58 +391,13 @@ public class MediaControllerTest {
 
 		verify(accountService).findByMail(eq(mailAccount));
 	}
-
-	@Test
-	@WithMockUser("test@mail.fr")
-	public void testGetAllMediasThrowMediaNotFoundException() throws Exception {
-
-		String mailAccount = "test@mail.fr";
-
-		Account account = new Account();
-		ArrayList<Media> mediaList = new ArrayList<>();
-		mediaList.add(new Picture());
-		account.setMediaList(mediaList);
-		when(accountService.findByMail(eq(mailAccount))).thenReturn(account);
-		when(mediaService.encodeBase64(any(Media.class))).thenThrow(new MediaNotFoundException());
-
-		ResultActions result = mockMvc.perform(get(MEDIAS));
-
-		result.andExpect(status().isNotFound());
-		result.andDo(print());
-
-		verify(accountService).findByMail(eq(mailAccount));
-		verify(mediaService).encodeBase64(any(Media.class));
-	}
-
-	@Test
-	@WithMockUser("test@mail.fr")
-	public void testGetAllMediasThrowIOException() throws Exception {
-
-		String mailAccount = "test@mail.fr";
-
-		Account account = new Account();
-		ArrayList<Media> mediaList = new ArrayList<>();
-		mediaList.add(new Picture());
-		account.setMediaList(mediaList);
-		when(accountService.findByMail(eq(mailAccount))).thenReturn(account);
-		when(mediaService.encodeBase64(any(Media.class))).thenThrow(new IOException());
-
-		ResultActions result = mockMvc.perform(get(MEDIAS));
-
-		result.andExpect(status().isNotFound());
-		result.andDo(print());
-
-		verify(accountService).findByMail(eq(mailAccount));
-		verify(mediaService).encodeBase64(any(Media.class));
-	}
-
+	
 	@Test
 	@WithMockUser
 	public void testGetMediaById() throws Exception {
 
-		Long mediaId = 1L;
+		String mediaId = UUID.randomUUID().toString();
 		when(mediaService.findById(eq(mediaId))).thenReturn(new Picture());
-		when(mediaService.encodeBase64(any(Media.class))).thenReturn("encodedBase");
 
 		ResultActions result = mockMvc.perform(get(MEDIAS_WITH_ID, mediaId));
 
@@ -452,7 +405,6 @@ public class MediaControllerTest {
 		result.andDo(print());
 
 		verify(mediaService).findById(eq(mediaId));
-		verify(mediaService).encodeBase64(any(Media.class));
 
 	}
 
@@ -460,7 +412,7 @@ public class MediaControllerTest {
 	@WithMockUser
 	public void testGetMediaByIdThrowMediaNotFoundException() throws Exception {
 
-		Long mediaId = 1L;
+		String mediaId = UUID.randomUUID().toString();
 		when(mediaService.findById(eq(mediaId))).thenThrow(new MediaNotFoundException());
 
 		ResultActions result = mockMvc.perform(get(MEDIAS_WITH_ID, mediaId));
@@ -469,26 +421,7 @@ public class MediaControllerTest {
 		result.andDo(print());
 
 		verify(mediaService).findById(eq(mediaId));
-		verify(mediaService, never()).encodeBase64(any(Media.class));
 
 	}
 	
-	@Test
-	@WithMockUser
-	public void testGetMediaByIdThrowIOException() throws Exception {
-
-		Long mediaId = 1L;
-		when(mediaService.findById(eq(mediaId))).thenReturn(new Picture());
-		when(mediaService.encodeBase64(any(Media.class))).thenThrow(new IOException());
-
-		ResultActions result = mockMvc.perform(get(MEDIAS_WITH_ID, mediaId));
-
-		result.andExpect(status().isInternalServerError());
-		result.andDo(print());
-
-		verify(mediaService).findById(eq(mediaId));
-		verify(mediaService).encodeBase64(any(Media.class));
-
-	}
-
 }

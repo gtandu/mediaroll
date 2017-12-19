@@ -1,8 +1,6 @@
-<<<<<<< HEAD
-.container{
-    padding-top:64px;
-    margin-left:325px;
-    margin-bottom: 3%;
+.container {
+    padding-top: 64px;
+    margin-left: 325px;
 }
 
 .my-drop-zone {
@@ -12,32 +10,28 @@
 .nv-file-over {
     border: dotted 3px red;
 }
+
+
 /* Default class applied to drop zones on over */
 
 .another-file-over-class {
     border: dotted 3px green;
 }
 
-div
-{
+div {
     font-family: 'Champagne';
 }
 
-h3
-{
+h3 {
     font-size: 20px;
     font-weight: bold;
     color: #333333;
-    margin : 0;
+    margin: 0;
 }
 
-.folder-path{
-    margin : 1% 0px 1% 0px;
-    padding : 1% 2% 1% 2%;
+.folder-path {
+    margin: 1% 0px 1% 0px;
+    padding: 1% 2% 1% 2%;
     background-color: #f2f2f2;
     border-radius: 5px;
-=======
-.row {
-    margin-top: 3em;
->>>>>>> gtandu
 }

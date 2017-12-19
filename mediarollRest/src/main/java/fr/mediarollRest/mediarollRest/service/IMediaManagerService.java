@@ -1,7 +1,7 @@
 package fr.mediarollRest.mediarollRest.service;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,5 +17,5 @@ public interface IMediaManagerService {
 	
 	public boolean deleteMediaInFileSystem(Account account, String filePath);
 	
-	public InputStream getInputStreamFromMedia(String filePath) throws MediaNotFoundException;
+	public FileInputStream getInputStreamFromMedia(String filePath) throws MediaNotFoundException;
 }

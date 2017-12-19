@@ -11,6 +11,8 @@ public class Paths {
     public static final String MEDIAS = "/medias";
     public static final String MEDIA_ID = "/{mediaId}";
     public static final String MEDIAS_WITH_ID = MEDIAS + MEDIA_ID;
+    public static final String PICTURES = MEDIAS+"/pictures";
+    public static final String VIDEOS = MEDIAS+"/videos";
     public static final String ALBUMS = "/albums";
     public static final String ALBUM_ID = "/{albumId}";
     public static final String ALBUM_WITH_ID = ALBUMS + ALBUM_ID;

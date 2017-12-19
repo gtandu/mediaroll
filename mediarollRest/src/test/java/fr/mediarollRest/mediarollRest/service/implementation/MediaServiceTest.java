@@ -2,17 +2,18 @@ package fr.mediarollRest.mediarollRest.service.implementation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,8 +27,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import com.google.common.net.MediaType;
 
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
+import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.model.Picture;
+import fr.mediarollRest.mediarollRest.model.Video;
+import fr.mediarollRest.mediarollRest.repository.AccountRepository;
 import fr.mediarollRest.mediarollRest.repository.MediaRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,6 +39,9 @@ public class MediaServiceTest {
 
 	@Mock
 	private MediaRepository mediaRepository;
+	
+	@Mock
+	private AccountRepository accountRepository;
 	
 	@Mock
 	private MediaManagerService mediaManagerService;
@@ -58,7 +65,7 @@ public class MediaServiceTest {
 	@Test
 	public void testDeleteMediaByIdSuccess() throws Exception {
 		// WHEN
-		Long id = 1L;
+		String id = UUID.randomUUID().toString();
 		when(mediaRepository.deleteById(eq(id))).thenReturn(1);
 
 		// GIVEN
@@ -72,7 +79,7 @@ public class MediaServiceTest {
 	@Test
 	public void testDeleteMediaByIdFailed() throws Exception {
 		// WHEN
-		Long id = 1L;
+		String id = UUID.randomUUID().toString();;
 		when(mediaRepository.deleteById(eq(id))).thenReturn(0);
 
 		// GIVEN
@@ -85,8 +92,8 @@ public class MediaServiceTest {
 
 	@Test
 	public void testFindByIdFound() throws Exception {
-		Long id = 1L;
-		when(mediaRepository.findById(anyLong())).thenReturn(Optional.of(new Picture()));
+		String id = UUID.randomUUID().toString();;
+		when(mediaRepository.findById(anyString())).thenReturn(Optional.of(new Picture()));
 
 		Media media = mediaService.findById(id);
 
@@ -97,8 +104,8 @@ public class MediaServiceTest {
 
 	@Test(expected = MediaNotFoundException.class)
 	public void testFindByIdNotFound() throws Exception {
-		Long id = 1L;
-		when(mediaRepository.findById(anyLong())).thenReturn(Optional.empty());
+		String id = UUID.randomUUID().toString();;
+		when(mediaRepository.findById(anyString())).thenReturn(Optional.empty());
 
 		mediaService.findById(id);
 
@@ -107,12 +114,12 @@ public class MediaServiceTest {
 
 	@Test
 	public void testUpdateMediaInfo() throws Exception {
-		Long mediaId = 1L;
+		String mediaId = UUID.randomUUID().toString();;
 		Media mediaWithNewInfo = new Picture();
 		Picture mediaToUpdate =new Picture();
 		mediaWithNewInfo.setDescription("test description");
 
-		when(mediaRepository.findById(anyLong())).thenReturn(Optional.of(mediaToUpdate));
+		when(mediaRepository.findById(anyString())).thenReturn(Optional.of(mediaToUpdate));
 		when(mediaRepository.save(any(Media.class))).thenReturn(mediaToUpdate);
 		
 		Media mediaUpdated = mediaService.updateMediaInfo(mediaId, mediaWithNewInfo);
@@ -126,11 +133,11 @@ public class MediaServiceTest {
 	
 	@Test(expected=MediaNotFoundException.class)
 	public void testUpdateMediaInfoThrowMediaNotFoundException() throws Exception {
-		Long mediaId = 1L;
+		String mediaId = UUID.randomUUID().toString();;
 		Media media = new Picture();
 		media.setDescription("test description");
 
-		when(mediaRepository.findById(anyLong())).thenReturn(Optional.empty());
+		when(mediaRepository.findById(eq(mediaId))).thenReturn(Optional.empty());
 		
 		mediaService.updateMediaInfo(mediaId, media);
 		
@@ -185,16 +192,34 @@ public class MediaServiceTest {
 	}
 
 	@Test
-	public void testEncodeBase64() throws Exception {
-		String filePath = "src/test/resources/image.jpg";
-		Picture picture = new Picture();
-		picture.setFilePath(filePath);
-
-		String encodeBase64 = mediaService.encodeBase64(picture);
+	public void testGetAllVideos() throws Exception {
 		
-		assertThat(encodeBase64).isNotEmpty();
+		String owner = "babar@hotmail.fr";
+		when(accountRepository.findByMail(eq(owner))).thenReturn(Optional.of(new Account()));
+		when(mediaRepository.findVideos(any(Account.class))).thenReturn(Arrays.asList(new Video()));
 		
+		List<Video> videosList = mediaService.getAllVideos(owner);
+		
+		assertThat(videosList).isNotNull();
+		assertThat(videosList).isNotEmpty();
+		
+		verify(accountRepository).findByMail(eq(owner));
+		verify(mediaRepository).findVideos(any(Account.class));
 	}
 
+	@Test
+	public void testGetAllPictures() throws Exception {
+		String owner = "babar@hotmail.fr";
+		when(accountRepository.findByMail(eq(owner))).thenReturn(Optional.of(new Account()));
+		when(mediaRepository.findPictures(any(Account.class))).thenReturn(Arrays.asList(new Picture()));
+		
+		List<Picture> picturesList = mediaService.getAllPictures(owner);
+		
+		assertThat(picturesList).isNotNull();
+		assertThat(picturesList).isNotEmpty();
+		
+		verify(accountRepository).findByMail(eq(owner));
+		verify(mediaRepository).findPictures(any(Account.class));
+	}
 
 }

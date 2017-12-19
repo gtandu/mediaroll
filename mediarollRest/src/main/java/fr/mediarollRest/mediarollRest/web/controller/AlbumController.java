@@ -146,7 +146,7 @@ public class AlbumController {
 			@ApiResponse(code = 404, message = "Album is not found.")})
 	@PutMapping(value = ALBUM_WITH_ID + COVER + MEDIAS_WITH_ID)
 	public ResponseEntity<AlbumResource> addCoverToAlbum(@PathVariable("albumId") Long albumId,
-			@PathVariable("mediaId") Long pictureId) {
+			@PathVariable("mediaId") String pictureId) {
 
 		try {
 			Picture picture = (Picture) mediaService.findById(pictureId);
@@ -170,7 +170,7 @@ public class AlbumController {
 			@ApiResponse(code = 404, message = "Album is not found.")})
 	@PostMapping(value = ALBUM_WITH_ID + MEDIAS_WITH_ID)
 	public ResponseEntity<AlbumResource> addMediaToAlbum(@PathVariable("albumId") Long albumId,
-			@PathVariable("mediaId") Long mediaId) {
+			@PathVariable("mediaId") String mediaId) {
 
 		try {
 			Album album = albumService.findAlbumById(albumId);
@@ -199,7 +199,7 @@ public class AlbumController {
 			@ApiResponse(code = 404, message = "Media is not found.")})
 	@DeleteMapping(value = ALBUM_WITH_ID + MEDIAS_WITH_ID)
 	public ResponseEntity<AlbumResource> deleteMediaFromAlbum(@PathVariable("albumId") Long albumId,
-			@PathVariable("mediaId") Long mediaId) {
+			@PathVariable("mediaId") String mediaId) {
 
 		try {
 			Album album = albumService.findAlbumById(albumId);
