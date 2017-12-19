@@ -7,7 +7,7 @@
 </div>
 
 <div class="container">
-    <div class="row">
+    <div ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}" (fileOver)="fileOverBase($event)" [uploader]="uploader" class="row well my-drop-zone">
 
         <div class="folder-path">
             <h3>Bibliothèque</h3>

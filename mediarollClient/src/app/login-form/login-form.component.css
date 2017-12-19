@@ -5,6 +5,15 @@ div
     font-family: 'Champagne';
 }
 
+img{
+    vertical-align:-20px;
+}
+
+.small{
+    width:80px;
+    height:80px;
+}
+
 .row
 {
     margin: 2px;

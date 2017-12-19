@@ -1,14 +1,22 @@
 nav{
-    padding-left : 5%;
+    padding-left : 3%;
     padding-right : 2%;
     display: block;
     position: fixed;
+    background-color: #9e9e9e;
+    /**background: linear-gradient(to right, #FF8C97,pink)*/
 }
 
 .logo
 {
     font-family: 'Journey';
     font-size: 28px;
+    color: #fff;
+}
+
+.small{
+    width:60px;
+    height: 60px;
 }
 
 div
@@ -18,4 +26,8 @@ div
 
 li{
     padding-left: 2%;
+}
+
+img{
+    vertical-align:-17px;
 }
