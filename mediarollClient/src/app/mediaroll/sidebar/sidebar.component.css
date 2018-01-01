@@ -1,23 +1,7 @@
-<<<<<<< HEAD
-.side-nav{
-    margin-top:67px;
-    width:250px;
-    background-color: #f5f5f5;
-}
-
-.subheader{
-    font-size: 18px;
-    font-weight: bold;
-    color: #333333;
-    margin : 0;
-}
-
-.link{
-    font-size: 16px;
-=======
 .side-nav {
     margin-top: 64px;
-    width: 200px;
+    width: 240px;
+    background-color: #f5f5f5;
 }
 
 .subheader {
@@ -25,5 +9,8 @@
     font-weight: bold;
     color: #333333;
     margin: 0;
->>>>>>> gtandu
+}
+
+.link {
+    font-size: 16px;
 }

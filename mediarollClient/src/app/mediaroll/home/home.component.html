@@ -1,4 +1,4 @@
-<div class="navbar">
+<div class="navbar navbar-fixed">
     <app-nav></app-nav>
 </div>
 
@@ -7,14 +7,9 @@
 </div>
 
 <div class="container">
-    <div ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}" (fileOver)="fileOverBase($event)" [uploader]="uploader" class="row well my-drop-zone">
 
-        <div class="folder-path">
-            <h3>Bibliothèque</h3>
-        </div>
-
+    <div class="row">
         <app-fileupload></app-fileupload>
-
     </div>
 
     <div class="row">
