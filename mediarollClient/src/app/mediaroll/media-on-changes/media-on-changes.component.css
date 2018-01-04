@@ -87,18 +87,21 @@
 
 /* The Close Button */
 
-.close {
+.media-action {
     position: absolute;
     top: 15px;
     right: 35px;
+}
+
+.media-action-btn {
     color: #f1f1f1;
     font-size: 40px;
     font-weight: bold;
     transition: 0.3s;
 }
 
-.close:hover,
-.close:focus {
+.media-action-btn:hover,
+.media-action-btn:focus {
     color: #bbb;
     text-decoration: none;
     cursor: pointer;
