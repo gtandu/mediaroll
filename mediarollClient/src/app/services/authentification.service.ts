@@ -12,7 +12,7 @@ export class AuthentificationService {
     constructor(private http: Http) {
         var currentUser = JSON.parse(localStorage.getItem('currentUser'));
         this.token = currentUser && currentUser.token;
-        this.server = "http://localhost:8080";
+        this.server = "http://localhost:8095";
     }
 
     login(mail: String, password: String): Observable<Boolean> {

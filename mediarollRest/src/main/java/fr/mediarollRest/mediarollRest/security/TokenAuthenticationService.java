@@ -40,6 +40,7 @@ public class TokenAuthenticationService {
         logger.info("Account : {} & Token : {}", username, JWT);
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
         res.getWriter().write(mapper.writeValueAsString(token));
+        res.getWriter().close();
     }
 
     static Authentication getAuthentication(HttpServletRequest request) {

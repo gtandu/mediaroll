@@ -54,7 +54,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@CrossOrigin
 @Api(value = "medias", description = "Operations pertaining to medias in MediaRoll")
 public class MediaController {
 
