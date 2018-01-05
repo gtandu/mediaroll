@@ -10,7 +10,6 @@ import { AppComponent } from './app.component';
 import { LoginFormComponent } from './login-form/login-form.component';
 import * as $ from 'jquery';
 
-
 @NgModule({
   declarations: [
     AppComponent,

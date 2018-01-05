@@ -1,6 +1,6 @@
 <div class="row" *ngIf="mediasUploaded">
     <div *ngFor="let media of mediasUploaded" class="col s4 media">
-        <img #pictureEl *ngIf="media.type == 'picture' else elseBlock" (click)="showModal(pictureEl)" class="mediaroll-pictures media" [attr.data-id]="media.id" width="400" [src]='mediaUrl(media.id)'>
+        <img #pictureEl *ngIf="media.type == 'picture' else elseBlock" [id]="media.id" (click)="showModal(pictureEl)" class="mediaroll-pictures media" [attr.data-id]="media.id" width="400" [src]='mediaUrl(media.id)'>
         <ng-template #elseBlock>
             <video class="responsive-video mediaroll-videos" width="400" [src]='mediaUrl(media.id)' controls></video>
         </ng-template>

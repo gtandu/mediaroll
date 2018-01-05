@@ -1,6 +1,8 @@
 import { Component, OnInit, OnChanges, SimpleChanges, SimpleChange, Input} from '@angular/core';
 import { Media } from '../../models/media';
 import { MediaService } from '../../services/media/media.service';
+import swal from 'sweetalert2';
+
 @Component({
   selector: 'app-media-on-changes',
   templateUrl: './media-on-changes.component.html',
@@ -11,7 +13,8 @@ export class MediaOnChangesComponent implements OnInit, OnChanges {
 
   constructor(private mediaService: MediaService) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+  }
 
   ngOnChanges(changes: SimpleChanges) { }
 
@@ -33,15 +36,52 @@ export class MediaOnChangesComponent implements OnInit, OnChanges {
   }
 
   deleteMedia() {
-    const mediaId = $('#modalContent').attr('data-id');
-    const isDeleted = this.mediaService.deleteMediaById(mediaId).subscribe(
-      response => {
-        console.log(response);
-      },
-      err => {
-        console.log('Error occured.');
+    swal({
+      title: 'Etes-vous sure?',
+      text: "Vous ne pourrez plus recuperer ce media !",
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Supprimer !',
+      cancelButtonText: 'Annuler !',
+      confirmButtonClass: 'btn btn-success',
+      cancelButtonClass: 'btn btn-danger',
+      buttonsStyling: false,
+      reverseButtons: true
+    }).then((result) => {
+      if (result.value) {
+        const mediaId = $('#modalContent').attr('data-id');
+        const isDeleted = this.mediaService.deleteMediaById(mediaId).subscribe(
+          response => {
+            swal(
+              'Suppression !',
+              'Le fichier a été supprimé !',
+              'success'
+            );
+            this.closeModal();
+            console.log($('#' + mediaId).parent());
+            $('#' + mediaId).parent().remove();
+          },
+          err => {
+            console.log('Error occured.');
+            swal(
+              'Suppression !',
+              'Une erreur est survenue !',
+              'error'
+            );
+          }
+        );
+      // result.dismiss can be 'cancel', 'overlay',
+      // 'close', and 'timer'
+      } else if (result.dismiss === 'cancel') {
+        swal(
+          'Annulation',
+          'La suppression a été annulé !',
+          'error'
+        );
       }
-    );
+    });
   }
 
   mediaUrl(id: string) {
