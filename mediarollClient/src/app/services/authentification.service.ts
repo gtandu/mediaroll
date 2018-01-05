@@ -10,15 +10,15 @@ export class AuthentificationService {
     public server: string;
 
     constructor(private http: Http) {
-        var currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         this.token = currentUser && currentUser.token;
-        this.server = "http://localhost:8095";
+        this.server = 'http://localhost:8080';
     }
 
     login(mail: String, password: String): Observable<Boolean> {
-        let body = JSON.stringify({ mail: mail, password: password });
-        let headers = new Headers({ 'Content-Type': 'application/json' });
-        let options = new RequestOptions({ headers: headers });
+        const body = JSON.stringify({ mail: mail, password: password });
+        const headers = new Headers({ 'Content-Type': 'application/json' });
+        const options = new RequestOptions({ headers: headers });
 
         return this.http.post(this.server+'/api-token', body, options)
             .map((response: Response) => {
