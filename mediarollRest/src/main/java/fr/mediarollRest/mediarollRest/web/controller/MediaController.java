@@ -1,6 +1,10 @@
 package fr.mediarollRest.mediarollRest.web.controller;
 
-import static fr.mediarollRest.mediarollRest.constant.Paths.*;
+import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS;
+import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS_WITH_ID;
+import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
+import static fr.mediarollRest.mediarollRest.constant.Paths.PICTURES;
+import static fr.mediarollRest.mediarollRest.constant.Paths.VIDEOS;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -22,6 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,6 +54,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
+@CrossOrigin
 @Api(value = "medias", description = "Operations pertaining to medias in MediaRoll")
 public class MediaController {
 
@@ -152,7 +158,6 @@ public class MediaController {
 			throws IOException {
 
 		Media mediaToSave = null;
-		ArrayList<Media> mediasSavedList = new ArrayList<>();
 		Account account = null;
 		String mail = principal.getName();
 

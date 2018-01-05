@@ -32,8 +32,12 @@ export class MediaService {
     return this.http.get(this.authService.server + Paths.VIDEOS, this.options).map((response: Response) => response.json());
   }
 
-  buildUrlToMediaWithId(id: string) {
-    return this.authService.server + Paths.MEDIAS + '/' + id + '/response';
+  deleteMediaById(mediaId: string) {
+    return this.http.delete(this.authService.server + Paths.MEDIAS + `/${mediaId}`, this.options);
+  }
+
+  buildUrlToMediaWithId(mediaId: string) {
+    return this.authService.server + Paths.MEDIAS + `/${mediaId}/response`;
   }
 
 }

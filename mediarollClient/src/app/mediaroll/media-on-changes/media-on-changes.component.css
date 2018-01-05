@@ -5,13 +5,13 @@
 
 /* Style the Image Used to Trigger the Modal */
 
-#myImg {
+.media {
     border-radius: 5px;
     cursor: pointer;
     transition: 0.3s;
 }
 
-#myImg:hover {
+.media:hover {
     opacity: 0.7;
 }
 

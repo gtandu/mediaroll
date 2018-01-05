@@ -1,19 +1,19 @@
-<div *ngFor="let media of medias" class="col s4 media">
-    <img id="myImg" *ngIf="media.type == 'picture' else elseBlock" class="mediaroll-pictures" width="400" [src]='mediaUrl(media.id)'>
-    <div id="myModal" class="modal">
-        <!-- The Close Button -->
-        <div class="media-action">
-            <span class="media-action-btn"><i class="small material-icons">share</i></span>
-            <span class="media-action-btn"><i class="small material-icons">delete</i></span>
-            <span id="close" class="media-action-btn"><i class="small material-icons">close</i></span>
-        </div>
-        <!-- Modal Content (The Image) -->
-        <img class="modal-content" id="img01">
-
-        <!-- Modal Caption (Image Text) -->
-        <div id="caption"></div>
-    </div>
+<div *ngFor="let media of medias" class="col s4 media-container">
+    <img #pictureEl *ngIf="media.type == 'picture' else elseBlock" (click)="showModal(pictureEl)" class="mediaroll-pictures media" width="400" [attr.data-id]="media.id" [src]='mediaUrl(media.id)'>
     <ng-template #elseBlock>
         <video class="responsive-video mediaroll-videos" width="400" [src]='mediaUrl(media.id)' controls></video>
     </ng-template>
+</div>
+<div id="myModal" class="modal">
+    <!-- The Close Button -->
+    <div class="media-action">
+        <span class="media-action-btn"><i class="small material-icons">share</i></span>
+        <span id="delete" (click)="deleteMedia()" class="media-action-btn"><i class="small material-icons">delete</i></span>
+        <span id="close" (click)="closeModal()" class="media-action-btn"><i class="small material-icons">close</i></span>
+    </div>
+    <!-- Modal Content (The Image) -->
+    <img class="modal-content" id="modalContent">
+
+    <!-- Modal Caption (Image Text) -->
+    <div id="caption"></div>
 </div>

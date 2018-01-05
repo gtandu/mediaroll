@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewChecked} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Media } from '../../models/media';
 import { MediaService } from '../../services/media/media.service';
 import { AuthentificationService } from '../../services/authentification.service';
@@ -8,10 +8,10 @@ import { AuthentificationService } from '../../services/authentification.service
   templateUrl: './media-list.component.html',
   styleUrls: ['./media-list.component.css']
 })
-export class MediaListComponent implements OnInit, AfterViewChecked {
+export class MediaListComponent implements OnInit {
   medias: Media[] = [];
 
-  constructor(private mediaService: MediaService) {}
+  constructor(private mediaService: MediaService) { }
 
   ngOnInit() {
     this.mediaService.getAllMedias().subscribe(medias => {
@@ -20,36 +20,32 @@ export class MediaListComponent implements OnInit, AfterViewChecked {
 
   }
 
+  showModal(el: HTMLImageElement) {
+    $('#myModal').show();
+    $('#modalContent').attr('src', el.src);
+    $('#modalContent').attr('data-id', el.getAttribute('data-id'));
+    $('#caption').html($(this).attr('alt'));
+    $('.navbar').css('z-index', '0');
+    $('#slide-out').css('z-index', '0');
 
-  ngAfterViewChecked() {
-    this.modalImage();
   }
 
-  modalImage() {
-    // Get the modal
-    const modal = $('#myModal');
-    // Get the image and insert it inside the modal - use its "alt" text as a caption
-    const img = $('#myImg');
-    const modalImg = $('#img01');
-    const captionText = $('#caption');
-    img.click(function () {
-      modal.show();
-      modalImg.attr('src', $(this).attr('src'));
-      captionText.html($(this).attr('alt'));
-      $('.navbar').css('z-index', '0');
-      $('#slide-out').css('z-index', '0');
-    });
+  closeModal() {
+    $('#myModal').hide();
+    $('.navbar').css('z-index', '');
+    $('#slide-out').css('z-index', '');
+  }
 
-    // Get the <span> element that closes the modal
-    const span = $('#close');
-
-    // When the user clicks on <span> (x), close the modal
-    span.click(function () {
-      modal.hide();
-      $('.navbar').css('z-index', '');
-      $('#slide-out').css('z-index', '');
-    });
-
+  deleteMedia() {
+    const mediaId = $('#modalContent').attr('data-id');
+    const isDeleted = this.mediaService.deleteMediaById(mediaId).subscribe(
+      response => {
+        console.log(response);
+      },
+      err => {
+        console.log('Error occured.');
+      }
+    );
   }
 
   mediaUrl(id: string) {
