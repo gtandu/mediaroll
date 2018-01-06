@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewChecked } from '@angular/core';
 import { AuthentificationService } from '../../services/authentification.service';
 import { FileUploader, FileUploaderOptions, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Media } from '../../models/media';
@@ -8,7 +8,7 @@ import { Media } from '../../models/media';
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.css'],
 })
-export class FileUploadComponent implements OnInit {
+export class FileUploadComponent implements OnInit, AfterViewChecked {
 
   mediasUploaded: Media[] = [];
   url: string;
@@ -30,6 +30,7 @@ export class FileUploadComponent implements OnInit {
   constructor(private authService: AuthentificationService) { }
 
   ngOnInit() {
+    $('.modal').modal();
     this.uploader = new FileUploader(this.options);
     this.uploader.onSuccessItem = (item, response, status, headers) => this.onSuccessItem(item, response, status, headers);
   }
@@ -40,10 +41,20 @@ export class FileUploadComponent implements OnInit {
     });
   }
 
+  ngAfterViewChecked() {
+    this.openModal();
+  }
+
   onSuccessItem(item: FileItem, response: string, status: number, headers: ParsedResponseHeaders): any {
     this.mediasUploaded.push(JSON.parse(response));
     this.loading = true;
-}
+  }
+
+  openModal(){
+    $('#inputFile').change(function(){
+      $('#modal1').modal('open');
+    });
+  }
 
   public fileOverBase(e: any): void {
     this.hasBaseDropZoneOver = e;
