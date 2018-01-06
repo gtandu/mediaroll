@@ -23,7 +23,7 @@
     /* Hidden by default */
     position: fixed;
     /* Stay in place */
-    z-index: 1;
+    z-index: 3;
     /* Sit on top */
     padding-top: 100px;
     /* Location of the box */
@@ -41,7 +41,6 @@
     background-color: rgba(0, 0, 0, 0.9);
     /* Black w/ opacity */
 }
-
 
 /* Modal Content (Image) */
 
@@ -114,4 +113,12 @@
     .modal-content {
         width: 100%;
     }
+}
+
+.img{
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    max-width: 100%;
+    height: 300px;
 }

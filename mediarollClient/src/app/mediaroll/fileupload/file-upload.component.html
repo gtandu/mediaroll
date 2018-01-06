@@ -1,93 +1,101 @@
-<div class="col m12 s12">
-    <h3>Sélectionner un média</h3>
-    <div ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}" (fileOver)="fileOverBase($event)" [uploader]="uploader" class="well my-drop-zone">
-        <p class="center">Faites glisser votre fichier ici</p>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col m12 s12">
-        <div class="file-field input-field">
-            <div class="btn">
-                <span>Importer</span>
-                <input class="btn" type="file" ng2FileSelect [uploader]="uploader" multiple />
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col m12 s12" style="margin-bottom: 40px">
-
-        <h3>Fichiers en upload</h3>
-        <p>Fichiers en attente: {{ uploader?.queue?.length }}</p>
-
-        <table class="table centered responsive-table">
-            <thead>
-                <tr>
-                    <th width="50% ">Nom du fichier</th>
-                    <th>Taille</th>
-                    <th>Progression</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of uploader.queue ">
-                    <td><strong>{{ item?.file?.name }}</strong></td>
-                    <td>{{ item?.file?.size/1024/1024 | number:'.2-2' }} MB</td>
-                    <td>
-                        <div class="progress " style="margin-bottom: 0; ">
-                            <div class="determinate " [ngStyle]="{ 'width': item.progress + '%' } "></div>
+<div id="modal1" class="modal bottom-sheet">
+    
+        <div class="row">
+                <div class="col m10 s10 l10">
+        
+                    <h3>Liste d'attente</h3>
+                    <p>Fichiers en attente: {{ uploader?.queue?.length }}</p>
+        
+                    <table class="table centered responsive-table">
+                        <thead>
+                            <tr>
+                                <th>Statut</th>
+                                <th width="50%">Nom du fichier</th>
+                                <th>Taille</th>
+                                <th width="15%">Progression</th>
+                                <th width="25%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of uploader.queue ">
+                                <td>
+                                    <span *ngIf="item.isSuccess "><i class="material-icons green-text">check_circle</i></span>
+                                    <span *ngIf="item.isCancel "><i class="material-icons orange-text">warning</i></span>
+                                    <span *ngIf="item.isError "><i class="material-icons red-text">error</i></span>
+                                </td>
+                                <td><strong>{{ item?.file?.name }}</strong></td>
+                                <td>{{ item?.file?.size/1024/1024 | number:'.2-2' }} MB</td>
+                                <td>
+                                    <div class="progress " style="margin-bottom: 0; ">
+                                        <div class="determinate " [ngStyle]="{ 'width': item.progress + '%' } "></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button type="button " class="btn btn-success btn-xs green lighten-2" (click)="item.upload() " [disabled]="item.isReady || item.isUploading || item.isSuccess ">
+                                            <span class="glyphicon glyphicon-upload " draggable="true"></span>
+                                            <i class="material-icons">add_circle</i>
+                                        </button>
+                                    <button type="button " class="btn btn-warning btn-xs orange lighten-2" (click)="item.cancel() " [disabled]="!item.isUploading ">
+                                            <span class="glyphicon glyphicon-ban-circle "></span>
+                                            <i class="material-icons">cancel</i>
+                                        </button>
+                                    <button type="button " class="btn btn-danger btn-xs red lighten-2" (click)="item.remove() ">
+                                            <span class="glyphicon glyphicon-trash "></span>
+                                            <i class="material-icons">delete</i>
+                                        </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+        
+                    <div>
+                        <div>
+                            Progression totale:
+                            <div class="progress">
+                                <div class="determinate" [ngStyle]="{ 'width': uploader.progress + '%' } "></div>
+                            </div>
                         </div>
-                    </td>
-                    <td>
-                        <span *ngIf="item.isSuccess "><i class="material-icons green-text">check_circle</i></span>
-                        <span *ngIf="item.isCancel "><i class="material-icons orange-text">warning</i></span>
-                        <span *ngIf="item.isError "><i class="material-icons red-text">error</i></span>
-                    </td>
-                    <td>
-                        <button type="button " class="btn btn-success btn-xs " (click)="item.upload() " [disabled]="item.isReady || item.isUploading || item.isSuccess ">
-                                <span class="glyphicon glyphicon-upload " draggable="true"></span> Uploader
-                            </button>
-                        <button type="button " class="btn btn-warning btn-xs " (click)="item.cancel() " [disabled]="!item.isUploading ">
-                                <span class="glyphicon glyphicon-ban-circle "></span> Annuler
-                            </button>
-                        <button type="button " class="btn btn-danger btn-xs " (click)="item.remove() ">
-                                <span class="glyphicon glyphicon-trash "></span> Supprimer
-                            </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        <button type="button " class="btn btn-success btn-s green lighten-2" (click)="uploader.uploadAll() " [disabled]="!uploader.getNotUploadedItems().length ">
+                                    <span class="glyphicon glyphicon-upload "></span> Tous Uploader
+                                </button>
+                        <button type="button " class="btn btn-warning btn-s orange lighten-2" (click)="uploader.cancelAll() " [disabled]="!uploader.isUploading ">
+                                    <span class="glyphicon glyphicon-ban-circle "></span> Tout Annuler
+                                </button>
+                        <button type="button " class="btn btn-danger btn-s red lighten-2" (click)="uploader.clearQueue() " [disabled]="!uploader.queue.length ">
+                                    <span class="glyphicon glyphicon-trash "></span> Tout Supprimer
+                                </button>
+                    </div>
+        
+                </div>
 
-        <div>
-            <div>
-                Progression totale:
-                <div class="progress">
-                    <div class="determinate" [ngStyle]="{ 'width': uploader.progress + '%' } "></div>
+                <div class="col offset-m10 m2 offset-s10 s2 offset-l10 l2" style="margin-left:0px;">
+                    <h3 class="center">Sélectionner un média</h3>
+                    <br/>
+                    <div ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}" (fileOver)="fileOverBase($event)" 
+                    [uploader]="uploader" class="well my-drop-zone">
+                        <p class="center">Faites glisser votre fichier ici</p>
+                    </div>
                 </div>
             </div>
-            <button type="button " class="btn btn-success btn-s " (click)="uploader.uploadAll() " [disabled]="!uploader.getNotUploadedItems().length ">
-                        <span class="glyphicon glyphicon-upload "></span> Upload all
-                    </button>
-            <button type="button " class="btn btn-warning btn-s " (click)="uploader.cancelAll() " [disabled]="!uploader.isUploading ">
-                        <span class="glyphicon glyphicon-ban-circle "></span> Cancel all
-                    </button>
-            <button type="button " class="btn btn-danger btn-s " (click)="uploader.clearQueue() " [disabled]="!uploader.queue.length ">
-                        <span class="glyphicon glyphicon-trash "></span> Remove all
-                    </button>
-        </div>
+</div>
 
+<div class="file-field input-field right">
+    <div class="waves-effect waves-light btn">
+        <span><i class="material-icons">cloud_upload</i></span>
+        <input id="inputFile" class="btn" type="file" ng2FileSelect [uploader]="uploader" multiple/>
     </div>
 </div>
 
-<div class="row">
+<a class="waves-effect waves-light btn modal-trigger right" href="#modal1">
+    <i class="material-icons">cloud_queue</i>
+</a>
+
+<div class="row no-margin">
     <div class="folder-path">
         <h3>Bibliothèque</h3>
     </div>
 </div>
 
-<div class="row" *ngIf="mediasUploaded">
+<div class="row no-margin" *ngIf="mediasUploaded">
     <app-media-on-changes [mediasUploaded]=mediasUploaded></app-media-on-changes>
 </div>

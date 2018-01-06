@@ -1,10 +1,6 @@
-.container {
-    padding-top: 64px;
-    margin-left: 325px;
-}
-
 .my-drop-zone {
     border: dotted 3px lightgray;
+    height: 180px;
 }
 
 .nv-file-over {
@@ -30,8 +26,42 @@ h3 {
 }
 
 .folder-path {
-    margin: 1% 0px 1% 0px;
-    padding: 1% 2% 1% 2%;
+    padding: 15px 0px 0px 2%;
     background-color: #f2f2f2;
     border-radius: 5px;
+    height: 53px;
+}
+
+.no-margin{
+    margin: 0px;
+}
+
+.modal.bottom-sheet{
+    padding: 1% 3% 0% 3%;
+}
+
+.input-field{
+    margin: 0px;
+    height: 30px;
+}
+
+.btn{
+        margin: 3px;
+        padding-left: 10px;
+        padding-right: 10px; 
+        height: 45px;
+        border-radius: 5px;
+        color: #1f1f1f;
+        background-color: #f2f2f2;
+}
+
+.btn.modal-trigger{
+    margin: 3px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px; 
+    height: 45px;
+    border-radius: 5px;
+    color: #1f1f1f;
+    background-color: #f2f2f2;
 }

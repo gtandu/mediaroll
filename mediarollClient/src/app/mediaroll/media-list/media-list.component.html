@@ -1,5 +1,6 @@
-<div *ngFor="let media of medias" class="col s4 media-container">
-    <img #pictureEl *ngIf="media.type == 'picture' else elseBlock" [id]="media.id" (click)="showModal(pictureEl)" class="mediaroll-pictures media" width="400" [attr.data-id]="media.id" [src]='mediaUrl(media.id)'>
+<div *ngFor="let media of medias" class="col s12 m6 l3 media-container">
+    <img #pictureEl *ngIf="media.type == 'picture' else elseBlock" [id]="media.id"
+    (click)="showModal(pictureEl)" class="mediaroll-pictures media img" [attr.data-id]="media.id" [src]='mediaUrl(media.id)'>
     <ng-template #elseBlock>
         <video class="responsive-video mediaroll-videos" width="400" [src]='mediaUrl(media.id)' controls></video>
     </ng-template>
