@@ -6,7 +6,7 @@ import { Media } from '../../models/media';
 @Component({
   selector: 'app-fileupload',
   templateUrl: './file-upload.component.html',
-  styleUrls: ['./file-upload.component.css']
+  styleUrls: ['./file-upload.component.css'],
 })
 export class FileUploadComponent implements OnInit {
 
@@ -32,6 +32,12 @@ export class FileUploadComponent implements OnInit {
   ngOnInit() {
     this.uploader = new FileUploader(this.options);
     this.uploader.onSuccessItem = (item, response, status, headers) => this.onSuccessItem(item, response, status, headers);
+  }
+
+  onNotify(mediaId: string): void {
+    this.mediasUploaded = this.mediasUploaded.filter(function (el) {
+      return el.id !== mediaId;
+    });
   }
 
   onSuccessItem(item: FileItem, response: string, status: number, headers: ParsedResponseHeaders): any {

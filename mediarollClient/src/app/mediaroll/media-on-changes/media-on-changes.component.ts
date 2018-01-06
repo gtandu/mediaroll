@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, SimpleChanges, SimpleChange, Input} from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, SimpleChange, Input, Output, EventEmitter} from '@angular/core';
 import { Media } from '../../models/media';
 import { MediaService } from '../../services/media/media.service';
 import swal from 'sweetalert2';
@@ -11,15 +11,17 @@ import swal from 'sweetalert2';
 export class MediaOnChangesComponent implements OnInit, OnChanges {
   @Input() mediasUploaded: Media[];
 
+  @Output() notify: EventEmitter<string> = new EventEmitter<string>();
+
   constructor(private mediaService: MediaService) { }
 
   ngOnInit() {
   }
 
-  ngOnChanges(changes: SimpleChanges) { }
+  ngOnChanges(changes: SimpleChanges) { 
+  }
 
   showModal(el: HTMLImageElement) {
-    console.log(el);
     $('#myModal').show();
     $('#modalContent').attr('src', el.src);
     $('#modalContent').attr('data-id', el.getAttribute('data-id'));
@@ -60,8 +62,8 @@ export class MediaOnChangesComponent implements OnInit, OnChanges {
               'success'
             );
             this.closeModal();
-            console.log($('#' + mediaId).parent());
             $('#' + mediaId).parent().remove();
+            this.notify.emit(mediaId);
           },
           err => {
             console.log('Error occured.');

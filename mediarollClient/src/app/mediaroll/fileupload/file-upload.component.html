@@ -89,5 +89,5 @@
 </div>
 
 <div class="row" *ngIf="mediasUploaded">
-    <app-media-on-changes [mediasUploaded]=mediasUploaded></app-media-on-changes>
+    <app-media-on-changes (notify)='onNotify($event)' [mediasUploaded]=mediasUploaded></app-media-on-changes>
 </div>
