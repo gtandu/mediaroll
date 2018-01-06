@@ -20,7 +20,7 @@ public class SwaggerConfig {
     public Docket api() { 
         return new Docket(DocumentationType.SWAGGER_2).useDefaultResponseMessages(false)
           .select()                                  
-          .apis(RequestHandlerSelectors.basePackage("fr.mediarollRest.mediarollRest.web.resource"))             
+          .apis(RequestHandlerSelectors.basePackage("fr.mediarollRest.mediarollRest.web.controller"))             
           .paths(PathSelectors.any())                          
           .build().apiInfo(apiInfo());                                           
     }
