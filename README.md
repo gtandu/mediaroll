@@ -46,7 +46,7 @@ Comme Google Photos, il résulte d'un besoin de partager des photos entre amis.
 		spring.datasource.password = root		
 				
 ### Démarrer le serveur
-* Dans le package **fr.diptrack.DiptrackApplication.java**
+* Sélectionnez votre projet
 *  **Cliquez droit -> Run as -> Java Application**
 *  Lorsque vous ouvrez la console, vous devriez voir  :
 
