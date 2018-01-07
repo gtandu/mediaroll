@@ -54,6 +54,7 @@ public class AccountService implements IAccountService {
 
 	@Override
 	public Account saveAccountAndEncodePassword(Account account) {
+		account.setStorageSpace(Account.STORAGE_SPACE_SIZE);
 		account.setPassword(passwordEncoder.encode(account.getPassword()));
 		return accountRepository.save(account);
 	}
