@@ -3,6 +3,8 @@ package fr.mediarollRest.mediarollRest.web.controller;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS_WITH_ID;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
+import static fr.mediarollRest.mediarollRest.constant.Paths.PICTURES;
+import static fr.mediarollRest.mediarollRest.constant.Paths.VIDEOS;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -19,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -44,6 +47,7 @@ import fr.mediarollRest.mediarollRest.exception.SpaceAvailableNotEnoughException
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.model.Picture;
+import fr.mediarollRest.mediarollRest.model.Video;
 import fr.mediarollRest.mediarollRest.service.implementation.AccountService;
 import fr.mediarollRest.mediarollRest.service.implementation.MediaManagerService;
 import fr.mediarollRest.mediarollRest.service.implementation.MediaService;
@@ -421,6 +425,42 @@ public class MediaControllerTest {
 		result.andDo(print());
 
 		verify(mediaService).findById(eq(mediaId));
+
+	}
+
+	@Test
+	@WithMockUser("test@mail.fr")
+	public void testGetAllPictures() throws Exception {
+		String mail = "test@mail.fr";
+		Picture pic1 = new Picture();
+		Picture pic2 = new Picture();
+		
+		when(mediaService.getAllPictures(eq(mail))).thenReturn(Arrays.asList(pic1,pic2));
+		
+		ResultActions result = mockMvc.perform(get(PICTURES));
+		
+		result.andExpect(status().isOk());
+		result.andDo(print());
+		
+		verify(mediaService).getAllPictures(eq(mail));
+
+	}
+	
+	@Test
+	@WithMockUser("test@mail.fr")
+	public void testGetAllVideos() throws Exception {
+		String mail = "test@mail.fr";
+		Video video1 = new Video();
+		Video video2 = new Video();
+		
+		when(mediaService.getAllVideos(eq(mail))).thenReturn(Arrays.asList(video1,video2));
+		
+		ResultActions result = mockMvc.perform(get(VIDEOS));
+		
+		result.andExpect(status().isOk());
+		result.andDo(print());
+		
+		verify(mediaService).getAllVideos(eq(mail));
 
 	}
 	

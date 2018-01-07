@@ -140,8 +140,8 @@ public class AlbumController {
 		}
 	}
 
-	@ApiOperation(value = "Delete album")
-	@ApiResponses(value = { @ApiResponse(code = 201, message = "Album updated."),
+	@ApiOperation(value = "Add cover to album")
+	@ApiResponses(value = { @ApiResponse(code = 201, message = "Album cover updated."),
 			@ApiResponse(code = 404, message = "Media is not found."),
 			@ApiResponse(code = 404, message = "Album is not found.")})
 	@PutMapping(value = ALBUM_WITH_ID + COVER + MEDIAS_WITH_ID)

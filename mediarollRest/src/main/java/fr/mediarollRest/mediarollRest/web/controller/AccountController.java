@@ -109,11 +109,13 @@ public class AccountController {
             @ApiResponse(code = 200, message = "User updated"),
             @ApiResponse(code = 404, message = "User not found in database"),
     })
-	@RequestMapping(value = ACCOUNTS, method = RequestMethod.PUT)
-	public ResponseEntity<AccountResource> updateUser(@RequestBody Account account) {
+	@RequestMapping(value = ACCOUNTS+MAIL, method = RequestMethod.PUT)
+	public ResponseEntity<AccountResource> updateUser(@PathVariable("mail") String mail, @RequestBody Account account) {
 
 		Account accountUpdated;
 		try {
+			//TODO REFACTOR
+			account.setMail(mail);
 			accountUpdated = accountService.updateUser(account);
 			AccountResource accountResource = accountAssembler.toResource(accountUpdated);
 			return new ResponseEntity<>(accountResource, HttpStatus.OK);
