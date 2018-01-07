@@ -109,6 +109,9 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
+	<scm>
+		<url>https://github.com/gtandu/mediaroll</url>
+		<connection>scm:git:ssh://git@github.com/gtandu/mediaroll.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/gtandu/mediaroll.git</developerConnection>
+	</scm>
 </project>
