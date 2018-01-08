@@ -58,7 +58,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 	    
 	    CorsConfiguration configAutenticacao = new CorsConfiguration();
 	    configAutenticacao.setAllowCredentials(true);
-	    configAutenticacao.addAllowedOrigin("http://localhost:4200");
+	    configAutenticacao.addAllowedOrigin("http://mediaroll.xyz");
 	    configAutenticacao.addAllowedHeader("Authorization");
 	    configAutenticacao.addAllowedHeader("Content-Type");
 	    configAutenticacao.addAllowedHeader("Accept");
