@@ -4,12 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -20,18 +23,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.google.common.net.MediaType;
 
+import fr.mediarollRest.mediarollRest.exception.AccountExistInSharedListOfMediaException;
+import fr.mediarollRest.mediarollRest.exception.AccountNotExistInSharedListOfMediaException;
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.model.Picture;
 import fr.mediarollRest.mediarollRest.model.Video;
-import fr.mediarollRest.mediarollRest.repository.AccountRepository;
 import fr.mediarollRest.mediarollRest.repository.MediaRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,16 +44,17 @@ public class MediaServiceTest {
 
 	@Mock
 	private MediaRepository mediaRepository;
-	
+
 	@Mock
-	private AccountRepository accountRepository;
-	
+	private AccountService accountService;
+
 	@Mock
 	private MediaManagerService mediaManagerService;
 
 	@InjectMocks
+	@Spy
 	private MediaService mediaService;
-	
+
 	private InputStream fileToUpload;
 
 	private String fileName;
@@ -79,7 +85,8 @@ public class MediaServiceTest {
 	@Test
 	public void testDeleteMediaByIdFailed() throws Exception {
 		// WHEN
-		String id = UUID.randomUUID().toString();;
+		String id = UUID.randomUUID().toString();
+		;
 		when(mediaRepository.deleteById(eq(id))).thenReturn(0);
 
 		// GIVEN
@@ -92,7 +99,7 @@ public class MediaServiceTest {
 
 	@Test
 	public void testFindByIdFound() throws Exception {
-		String id = UUID.randomUUID().toString();;
+		String id = UUID.randomUUID().toString();
 		when(mediaRepository.findById(anyString())).thenReturn(Optional.of(new Picture()));
 
 		Media media = mediaService.findById(id);
@@ -104,7 +111,8 @@ public class MediaServiceTest {
 
 	@Test(expected = MediaNotFoundException.class)
 	public void testFindByIdNotFound() throws Exception {
-		String id = UUID.randomUUID().toString();;
+		String id = UUID.randomUUID().toString();
+		;
 		when(mediaRepository.findById(anyString())).thenReturn(Optional.empty());
 
 		mediaService.findById(id);
@@ -114,47 +122,49 @@ public class MediaServiceTest {
 
 	@Test
 	public void testUpdateMediaInfo() throws Exception {
-		String mediaId = UUID.randomUUID().toString();;
+		String mediaId = UUID.randomUUID().toString();
+		;
 		Media mediaWithNewInfo = new Picture();
-		Picture mediaToUpdate =new Picture();
+		Picture mediaToUpdate = new Picture();
 		mediaWithNewInfo.setDescription("test description");
 
 		when(mediaRepository.findById(anyString())).thenReturn(Optional.of(mediaToUpdate));
 		when(mediaRepository.save(any(Media.class))).thenReturn(mediaToUpdate);
-		
+
 		Media mediaUpdated = mediaService.updateMediaInfo(mediaId, mediaWithNewInfo);
-		
+
 		assertThat(mediaUpdated).isNotNull();
 		assertThat(mediaUpdated.getDescription()).isEqualTo(mediaWithNewInfo.getDescription());
-		
+
 		verify(mediaRepository).findById(eq(mediaId));
 		verify(mediaRepository).save(any(Media.class));
 	}
-	
-	@Test(expected=MediaNotFoundException.class)
+
+	@Test(expected = MediaNotFoundException.class)
 	public void testUpdateMediaInfoThrowMediaNotFoundException() throws Exception {
-		String mediaId = UUID.randomUUID().toString();;
+		String mediaId = UUID.randomUUID().toString();
+		;
 		Media media = new Picture();
 		media.setDescription("test description");
 
 		when(mediaRepository.findById(eq(mediaId))).thenReturn(Optional.empty());
-		
+
 		mediaService.updateMediaInfo(mediaId, media);
-		
+
 		verify(mediaRepository).findById(eq(mediaId));
 	}
 
 	@Test
 	public void testSaveMedia() throws Exception {
 		Picture picture = new Picture();
-		
+
 		when(mediaRepository.save(any(Picture.class))).thenReturn(new Picture());
-		
+
 		mediaService.saveMedia(picture);
-		
+
 		verify(mediaRepository).save(any(Picture.class));
 	}
-	
+
 	@Test
 	public void testIsMedia() throws Exception {
 		media = new MockMultipartFile(fileName, fileName, MediaType.JPEG.type(), fileToUpload);
@@ -174,7 +184,7 @@ public class MediaServiceTest {
 
 		assertThat(isMedia).isFalse();
 	}
-	
+
 	@Test
 	public void testGetMediaTypeMultipartFile() throws Exception {
 		media = new MockMultipartFile(fileName, fileName, MediaType.JPEG.type(), fileToUpload);
@@ -193,33 +203,122 @@ public class MediaServiceTest {
 
 	@Test
 	public void testGetAllVideos() throws Exception {
-		
+
 		String owner = "babar@hotmail.fr";
-		when(accountRepository.findByMail(eq(owner))).thenReturn(Optional.of(new Account()));
+		when(accountService.findByMail(eq(owner))).thenReturn(new Account());
 		when(mediaRepository.findVideos(any(Account.class))).thenReturn(Arrays.asList(new Video()));
-		
+
 		List<Video> videosList = mediaService.getAllVideos(owner);
-		
+
 		assertThat(videosList).isNotNull();
 		assertThat(videosList).isNotEmpty();
-		
-		verify(accountRepository).findByMail(eq(owner));
+
+		verify(accountService).findByMail(eq(owner));
 		verify(mediaRepository).findVideos(any(Account.class));
 	}
 
 	@Test
 	public void testGetAllPictures() throws Exception {
 		String owner = "babar@hotmail.fr";
-		when(accountRepository.findByMail(eq(owner))).thenReturn(Optional.of(new Account()));
+		when(accountService.findByMail(eq(owner))).thenReturn(new Account());
 		when(mediaRepository.findPictures(any(Account.class))).thenReturn(Arrays.asList(new Picture()));
-		
+
 		List<Picture> picturesList = mediaService.getAllPictures(owner);
-		
+
 		assertThat(picturesList).isNotNull();
 		assertThat(picturesList).isNotEmpty();
-		
-		verify(accountRepository).findByMail(eq(owner));
+
+		verify(accountService).findByMail(eq(owner));
 		verify(mediaRepository).findPictures(any(Account.class));
 	}
+
+	@Test
+	public void testAddUserToSharedList() throws Exception {
+		String mail = "test@hotmail.fr";
+		String mediaId = UUID.randomUUID().toString();
+		Account account = new Account();
+		account.setSharedMedias(new ArrayList<>());
+		Picture picture = new Picture();
+		picture.setSharedPeople(new ArrayList<>());
+
+		when(accountService.findByMail(eq(mail))).thenReturn(account);
+		doReturn(picture).when(mediaService).findById(mediaId);
+		doReturn(new Picture()).when(mediaService).saveMedia(picture);
+
+		mediaService.addUserToSharedList(mail, mediaId);
+
+		verify(accountService).findByMail(eq(mail));
+		verify(mediaService).findById(mediaId);
+		verify(mediaService).saveMedia(picture);
+
+	}
+
+	@Test(expected = AccountExistInSharedListOfMediaException.class)
+	public void testAddUserToSharedListThrowAccountExistInSharedListOfMediaException() throws Exception {
+		String mail = "test@hotmail.fr";
+		String mediaId = UUID.randomUUID().toString();
+		Account account = new Account();
+		account.setSharedMedias(new ArrayList<>());
+		Picture picture = new Picture();
+		picture.setSharedPeople(Arrays.asList(account));
+
+		when(accountService.findByMail(eq(mail))).thenReturn(account);
+		doReturn(picture).when(mediaService).findById(mediaId);
+
+		mediaService.addUserToSharedList(mail, mediaId);
+
+		verify(accountService).findByMail(eq(mail));
+		verify(mediaService).findById(mediaId);
+		verify(mediaService, never()).saveMedia(picture);
+
+	}
+
+	@Test
+	public void testRemoveUserFromSharedList() throws Exception {
+		String mail = "test@hotmail.fr";
+		String mediaId = UUID.randomUUID().toString();
+
+		Account account = new Account();
+		account.setSharedMedias(new ArrayList<>());
+
+		Picture picture = new Picture();
+		picture.setSharedPeople(new ArrayList<>());
+		picture.getSharedPeople().add(account);
+		account.getSharedMedias().add(picture);
+
+		when(accountService.findByMail(eq(mail))).thenReturn(account);
+		doReturn(picture).when(mediaService).findById(mediaId);
+
+		mediaService.removeUserFromSharedList(mail, mediaId);
+
+		verify(accountService).findByMail(eq(mail));
+		verify(mediaService).findById(mediaId);
+		verify(mediaService).saveMedia(picture);
+
+	}
+	
+	@Test(expected=AccountNotExistInSharedListOfMediaException.class)
+	public void testRemoveUserFromSharedListAccountNotExistInSharedListOfMediaException() throws Exception {
+		String mail = "test@hotmail.fr";
+		String mediaId = UUID.randomUUID().toString();
+
+		Account account = new Account();
+		account.setSharedMedias(new ArrayList<>());
+
+		Picture picture = new Picture();
+		picture.setSharedPeople(new ArrayList<>());
+
+		when(accountService.findByMail(eq(mail))).thenReturn(account);
+		doReturn(picture).when(mediaService).findById(mediaId);
+
+		mediaService.removeUserFromSharedList(mail, mediaId);
+
+		verify(accountService).findByMail(eq(mail));
+		verify(mediaService).findById(mediaId);
+		verify(mediaService, never()).saveMedia(picture);
+
+	}
+	
+	
 
 }

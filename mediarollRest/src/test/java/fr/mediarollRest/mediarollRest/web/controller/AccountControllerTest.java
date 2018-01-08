@@ -36,7 +36,6 @@ import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.resource.AccountResource;
 import fr.mediarollRest.mediarollRest.service.IAccountService;
-import fr.mediarollRest.mediarollRest.web.controller.AccountController;
 import fr.mediarollRest.mediarollRest.web.resource.assembler.AccountAssembler;
 
 @RunWith(SpringRunner.class)
@@ -175,7 +174,7 @@ public class AccountControllerTest {
 		when(accountAssembler.toResource(any(Account.class))).thenReturn(new AccountResource(account));
 
 		ResultActions result = mockMvc
-				.perform(put(ACCOUNTS).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON));
+				.perform(put(ACCOUNTS+MAIL, mail).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON));
 
 		result.andExpect(status().isOk()).andDo(print());
 
@@ -190,7 +189,7 @@ public class AccountControllerTest {
 		String accountJSON = objectMapper.writeValueAsString(account);
 		when(accountService.updateUser(eq(account))).thenThrow(new AccountNotFoundException());
 
-		ResultActions result = mockMvc.perform(put(ACCOUNTS).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON));
+		ResultActions result = mockMvc.perform(put(ACCOUNTS+MAIL, mail).contentType(MediaType.APPLICATION_JSON_UTF8).content(accountJSON));
 			
 		result.andExpect(status().isNotFound()).andDo(print());
 
