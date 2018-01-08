@@ -85,7 +85,7 @@ Comme Google Photos, il résulte d'un besoin de partager des photos entre amis.
 	`webpack: Compiled successfully.`
       
 * Votre serveur est lancé.
-* Ouvrez votre navigateur et allez à l'adresse suivante : [http://localhost:4200/login](http://localhost:4200/login)
+* Ouvrez votre navigateur et allez à l'adresse suivante : [http://www.mediaroll.xyz](http://www.mediaroll.xyz)
 * Ouvrez le fichier suivant "**authentification.service.ts**" dans le dossier **mediaroll/mediarollClient/src/app/services/**
 * Modifier l'adresse du serveur pour qu'elle pointe vers votre API REST
 
