@@ -1,5 +1,6 @@
 package fr.mediarollRest.mediarollRest.web.controller;
 
+import static fr.mediarollRest.mediarollRest.constant.Paths.ACCOUNT_WITH_MAIL;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS_WITH_ID;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -462,6 +464,36 @@ public class MediaControllerTest {
 		
 		verify(mediaService).getAllVideos(eq(mail));
 
+	}
+
+	@Test
+	@WithMockUser("test@mail.fr")
+	public void testAddUserToSharedList() throws Exception {
+		String mail = "test@mail.fr";
+		String mediaId = UUID.randomUUID().toString();
+		
+		when(mediaService.addUserToSharedList(mail, mediaId)).thenReturn(new Picture());
+		
+		ResultActions result = mockMvc.perform(post(MEDIAS_WITH_ID+ACCOUNT_WITH_MAIL, mediaId, mail));
+		result.andExpect(status().isOk());
+		result.andDo(print());
+		
+		verify(mediaService).addUserToSharedList(eq(mail), eq(mediaId));
+	}
+	
+	@Test
+	@WithMockUser("test@mail.fr")
+	public void testRemoveUserFromSharedList() throws Exception {
+		String mail = "test@mail.fr";
+		String mediaId = UUID.randomUUID().toString();
+		
+		when(mediaService.removeUserFromSharedList(mail, mediaId)).thenReturn(new Picture());
+		
+		ResultActions result = mockMvc.perform(delete(MEDIAS_WITH_ID+ACCOUNT_WITH_MAIL, mediaId, mail));
+		result.andExpect(status().isNoContent());
+		result.andDo(print());
+		
+		verify(mediaService).removeUserFromSharedList(eq(mail), eq(mediaId));
 	}
 	
 }

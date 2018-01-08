@@ -1,5 +1,6 @@
 package fr.mediarollRest.mediarollRest.web.controller;
 
+import static fr.mediarollRest.mediarollRest.constant.Paths.ACCOUNT_WITH_MAIL;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIAS_WITH_ID;
 import static fr.mediarollRest.mediarollRest.constant.Paths.MEDIA_ID;
@@ -35,6 +36,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import fr.mediarollRest.mediarollRest.exception.AccountExistInSharedListOfMediaException;
+import fr.mediarollRest.mediarollRest.exception.AccountNotExistInSharedListOfMediaException;
 import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.SpaceAvailableNotEnoughException;
@@ -65,7 +68,7 @@ public class MediaController {
 
 	@Autowired
 	private MessageSource messageSource;
-
+	
 	private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
 	@ApiOperation(value = "Get media info")
@@ -235,11 +238,18 @@ public class MediaController {
 	@GetMapping(value = PICTURES)
 	public ResponseEntity<List<Picture>> getAllPictures(Principal principal) {
 
-		List<Picture> picturesList = mediaService.getAllPictures(principal.getName());
-		for (Picture picture : picturesList) {
-			buildLink(principal, picture);
+		List<Picture> picturesList;
+		try {
+			picturesList = mediaService.getAllPictures(principal.getName());
+			for (Picture picture : picturesList) {
+				buildLink(principal, picture);
+			}
+			return new ResponseEntity<List<Picture>>(picturesList, HttpStatus.OK);
+		} catch (AccountNotFoundException e) {
+			logger.error(messageSource.getMessage("error.account.not.found", null, Locale.FRANCE), principal.getName());
 		}
-		return new ResponseEntity<List<Picture>>(picturesList, HttpStatus.OK);
+		return null;
+		
 	}
 
 	@ApiOperation(value = "Get all videos from user")
@@ -247,13 +257,51 @@ public class MediaController {
 	@GetMapping(value = VIDEOS)
 	public ResponseEntity<List<Video>> getAllVideos(Principal principal) {
 
-		List<Video> videosList = mediaService.getAllVideos(principal.getName());
-		for (Video video : videosList) {
-			buildLink(principal, video);
-		}
-		return new ResponseEntity<List<Video>>(videosList, HttpStatus.OK);
-	}
+		List<Video> videosList;
+		try {
+			videosList = mediaService.getAllVideos(principal.getName());
+			for (Video video : videosList) {
+				buildLink(principal, video);
+			}
+			return new ResponseEntity<List<Video>>(videosList, HttpStatus.OK);
+		} catch (AccountNotFoundException e) {
+			logger.error(messageSource.getMessage("error.account.not.found", null, Locale.FRANCE), principal.getName());
 
+		}
+		return null;
+		
+	}
+	
+	@PostMapping(MEDIAS_WITH_ID+ACCOUNT_WITH_MAIL)
+	public ResponseEntity<Media> addUserToSharedList(@PathVariable("mediaId") String mediaId, @PathVariable("mail") String mail, Principal principal){
+		try {
+			Media media = mediaService.addUserToSharedList(mail, mediaId);
+			buildLink(principal, media);
+			return new ResponseEntity<>(media, HttpStatus.OK);
+		} catch (AccountExistInSharedListOfMediaException e) {
+			return new ResponseEntity<>(HttpStatus.CONFLICT);
+		} catch (AccountNotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} catch (MediaNotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@DeleteMapping(MEDIAS_WITH_ID+ACCOUNT_WITH_MAIL)
+	public ResponseEntity<Media> removeUserToSharedList(@PathVariable("mediaId") String mediaId, @PathVariable("mail") String mail, Principal principal){
+		try {
+			Media media = mediaService.removeUserFromSharedList(mail, mediaId);
+			buildLink(principal, media);
+			return new ResponseEntity<>(media, HttpStatus.NO_CONTENT);
+		} catch (AccountNotExistInSharedListOfMediaException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} catch (AccountNotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} catch (MediaNotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
 	private void buildLink(Principal principal, Media media) {
 		media.add(linkTo(methodOn(MediaController.class).getMediaById(principal, media.getId())).withSelfRel());
 		media.add(linkTo(methodOn(MediaController.class).getAllMedias(principal)).withRel("media lists"));

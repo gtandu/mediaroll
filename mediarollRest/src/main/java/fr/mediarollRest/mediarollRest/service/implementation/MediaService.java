@@ -13,12 +13,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.net.MediaType;
 
+import fr.mediarollRest.mediarollRest.exception.AccountExistInSharedListOfMediaException;
+import fr.mediarollRest.mediarollRest.exception.AccountNotExistInSharedListOfMediaException;
+import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.model.Account;
 import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.model.Picture;
 import fr.mediarollRest.mediarollRest.model.Video;
-import fr.mediarollRest.mediarollRest.repository.AccountRepository;
 import fr.mediarollRest.mediarollRest.repository.MediaRepository;
 import fr.mediarollRest.mediarollRest.service.IMediaService;
 
@@ -29,7 +31,7 @@ public class MediaService implements IMediaService {
 	private MediaRepository mediaRepository;
 
 	@Autowired
-	private AccountRepository accountRepository;
+	private AccountService accountService;
 
 	public Media saveMedia(Media media) {
 		return mediaRepository.save(media);
@@ -108,26 +110,48 @@ public class MediaService implements IMediaService {
 	}
 
 	@Override
-	public List<Picture> getAllPictures(String owner) {
-		Optional<Account> optionalAccount = accountRepository.findByMail(owner);
-
-		if (optionalAccount.isPresent()) {
-			Account account = optionalAccount.get();
-			return mediaRepository.findPictures(account);
-		}
-		// TODO REFACTOR
-		return null;
+	public List<Picture> getAllPictures(String owner) throws AccountNotFoundException {
+		Account account = accountService.findByMail(owner);
+		return mediaRepository.findPictures(account);
 	}
 
 	@Override
-	public List<Video> getAllVideos(String owner) {
-		Optional<Account> optionalAccount = accountRepository.findByMail(owner);
+	public List<Video> getAllVideos(String owner) throws AccountNotFoundException {
+		Account account = accountService.findByMail(owner);
+		return mediaRepository.findVideos(account);
+	}
 
-		if (optionalAccount.isPresent()) {
-			Account account = optionalAccount.get();
-			return mediaRepository.findVideos(account);
+	@Override
+	public Media addUserToSharedList(String userMail, String mediaId)
+			throws AccountExistInSharedListOfMediaException, AccountNotFoundException, MediaNotFoundException {
+
+		Account account = accountService.findByMail(userMail);
+		Media media = this.findById(mediaId);
+
+		if (media.getSharedPeople().contains(account)) {
+			throw new AccountExistInSharedListOfMediaException();
+		} else {
+			account.getSharedMedias().add(media);
+			media.getSharedPeople().add(account);
+			return this.saveMedia(media);
 		}
-		// TODO REFACTOR
-		return null;
+
+	}
+
+	@Override
+	public Media removeUserFromSharedList(String userMail, String mediaId)
+			throws AccountNotFoundException, MediaNotFoundException, AccountNotExistInSharedListOfMediaException {
+
+		Account account = accountService.findByMail(userMail);
+		Media media = this.findById(mediaId);
+
+		if (media.getSharedPeople().contains(account)) {
+			account.getSharedMedias().remove(media);
+			media.getSharedPeople().remove(account);
+			return this.saveMedia(media);
+		} else {
+			throw new AccountNotExistInSharedListOfMediaException();
+		}
+
 	}
 }
