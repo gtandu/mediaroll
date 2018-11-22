@@ -1,7 +1,5 @@
 # Bienvenue sur MediaRoll
 
-![MediaRoll Logo](https://github.com/gtandu/mediaroll/blob/master/mediarollClient/src/assets/img/icon.png)
-
 MediaRoll est une plateforme de sauvegarde et de partage de photos/vidéos à distance.
 Comme Google Photos, il résulte d'un besoin de partager des photos entre amis.
 
@@ -59,7 +57,7 @@ Comme Google Photos, il résulte d'un besoin de partager des photos entre amis.
 * Pour pouvoir stocker les médias uploadés, vous devez créer un compte sur [AWS](https://aws.amazon.com/fr/) si ce n'est pas déjà fait et créer un nouveau compartiment S3.
 Vous obtiendrez toutes les informations nécessaires dans **un fichier CSV à ne pas perdre**.
 
-Selon le profil que vous utilisez **dev** ou **mem** dans **src/main/resources/application-dev.properties** ou **src/main/resources/application-mem.properties**.
+* Selon le profil que vous utilisez **dev** ou **mem** dans **src/main/resources/application-dev.properties** ou **src/main/resources/application-mem.properties**.
 Decommentez les propriétés suivantes et completer par les valeurs du CSV.
 
 		#AWS S3
