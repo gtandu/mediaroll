@@ -52,7 +52,7 @@ export class FileUploadComponent implements OnInit, AfterViewChecked {
 
   openModal(){
     $('#inputFile').change(function(){
-      $('#modal1').modal('show');
+      $('#modal1').modal('open');
     });
   }
 
