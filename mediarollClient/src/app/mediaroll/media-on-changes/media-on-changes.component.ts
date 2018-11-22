@@ -1,7 +1,8 @@
 import { Component, OnInit, OnChanges, SimpleChanges, SimpleChange, Input, Output, EventEmitter} from '@angular/core';
 import { Media } from '../../models/media';
 import { MediaService } from '../../services/media/media.service';
-import swal from 'sweetalert2';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-media-on-changes',
@@ -38,7 +39,7 @@ export class MediaOnChangesComponent implements OnInit, OnChanges {
   }
 
   deleteMedia() {
-    swal({
+    Swal({
       title: 'Etes-vous sure?',
       text: "Vous ne pourrez plus recuperer ce media !",
       type: 'warning',
@@ -56,7 +57,7 @@ export class MediaOnChangesComponent implements OnInit, OnChanges {
         const mediaId = $('#modalContent').attr('data-id');
         const isDeleted = this.mediaService.deleteMediaById(mediaId).subscribe(
           response => {
-            swal(
+            Swal(
               'Suppression !',
               'Le fichier a été supprimé !',
               'success'
@@ -67,7 +68,7 @@ export class MediaOnChangesComponent implements OnInit, OnChanges {
           },
           err => {
             console.log('Error occured.');
-            swal(
+            Swal(
               'Suppression !',
               'Une erreur est survenue !',
               'error'
@@ -76,8 +77,8 @@ export class MediaOnChangesComponent implements OnInit, OnChanges {
         );
       // result.dismiss can be 'cancel', 'overlay',
       // 'close', and 'timer'
-      } else if (result.dismiss === 'cancel') {
-        swal(
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal(
           'Annulation',
           'La suppression a été annulé !',
           'error'

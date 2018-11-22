@@ -12,7 +12,7 @@ export class AuthentificationService {
     constructor(private http: Http) {
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         this.token = currentUser && currentUser.token;
-        this.server = 'http://localhost:8080';
+        this.server = 'http://mediaroll.eu-west-3.elasticbeanstalk.com';
     }
 
     login(mail: String, password: String): Observable<Boolean> {
