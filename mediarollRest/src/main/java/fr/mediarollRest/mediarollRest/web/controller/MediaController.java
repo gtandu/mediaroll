@@ -36,6 +36,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.services.config.AmazonConfigClient;
+
 import fr.mediarollRest.mediarollRest.exception.AccountExistInSharedListOfMediaException;
 import fr.mediarollRest.mediarollRest.exception.AccountNotExistInSharedListOfMediaException;
 import fr.mediarollRest.mediarollRest.exception.AccountNotFoundException;
@@ -46,6 +49,7 @@ import fr.mediarollRest.mediarollRest.model.Media;
 import fr.mediarollRest.mediarollRest.model.Picture;
 import fr.mediarollRest.mediarollRest.model.Video;
 import fr.mediarollRest.mediarollRest.service.implementation.AccountService;
+import fr.mediarollRest.mediarollRest.service.implementation.AmazonClient;
 import fr.mediarollRest.mediarollRest.service.implementation.MediaManagerService;
 import fr.mediarollRest.mediarollRest.service.implementation.MediaService;
 import io.swagger.annotations.Api;
@@ -64,11 +68,11 @@ public class MediaController {
 	private MediaService mediaService;
 
 	@Autowired
-	private MediaManagerService mediaManagerService;
+	private MessageSource messageSource;
 
 	@Autowired
-	private MessageSource messageSource;
-	
+	private AmazonClient amazonClient;
+
 	private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
 	@ApiOperation(value = "Get media info")
@@ -128,7 +132,7 @@ public class MediaController {
 	@ApiOperation(value = "Get media stream")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved media's stream."),
 			@ApiResponse(code = 404, message = "The media is not found. Check ID."),
-			@ApiResponse(code = 500, message = "An error occured during the process")})
+			@ApiResponse(code = 500, message = "An error occured during the process") })
 	@GetMapping(value = MEDIAS_WITH_ID + "/response")
 	public ResponseEntity<byte[]> getMediaAsResponseEntity(@PathVariable("mediaId") String mediaId) {
 		HttpHeaders headers = new HttpHeaders();
@@ -136,7 +140,7 @@ public class MediaController {
 		byte[] media;
 		try {
 			Media mediaFromDb = mediaService.findById(mediaId);
-			InputStream in = mediaManagerService.getInputStreamFromMedia(mediaFromDb.getFilePath());
+			InputStream in = amazonClient.getInputStreamFromMedia(mediaFromDb.getKeyS3());
 			media = IOUtils.toByteArray(in);
 			headers.setCacheControl(CacheControl.noCache().getHeaderValue());
 			ResponseEntity<byte[]> responseEntity = new ResponseEntity<>(media, headers, HttpStatus.OK);
@@ -169,7 +173,7 @@ public class MediaController {
 
 			try {
 				account = accountService.findByMail(mail);
-				mediaToSave = mediaManagerService.saveMediaInFileSystem(account, media);
+				mediaToSave = amazonClient.uploadFile(account, media);
 				mediaToSave.setOwner(account);
 				account.getMediaList().add(mediaToSave);
 				Media mediaSaved = mediaService.saveMedia(mediaToSave);
@@ -209,19 +213,9 @@ public class MediaController {
 		try {
 			Media mediaInDb = mediaService.findById(mediaId);
 			Account account = accountService.findByMail(principal.getName());
-			boolean isDeleteFromFileSystem = mediaManagerService.deleteMediaInFileSystem(account,
-					mediaInDb.getFilePath());
-
-			if (isDeleteFromFileSystem) {
-				boolean isDeleteFromDb = mediaService.deleteMediaById(mediaId);
-				if (isDeleteFromDb) {
-					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-				} else {
-					return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-				}
-			} else {
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+			boolean isDeleteFromFileSystem = amazonClient.deleteFileFromS3Bucket(account, mediaInDb.getKeyS3());
+			mediaService.deleteMediaById(mediaId);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
 		} catch (MediaNotFoundException e) {
 			logger.error(messageSource.getMessage("error.media.not.found", null, Locale.FRANCE), mediaId);
@@ -234,7 +228,7 @@ public class MediaController {
 	}
 
 	@ApiOperation(value = "Get all pictures from user")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved user's pictures.")})
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved user's pictures.") })
 	@GetMapping(value = PICTURES)
 	public ResponseEntity<List<Picture>> getAllPictures(Principal principal) {
 
@@ -249,11 +243,11 @@ public class MediaController {
 			logger.error(messageSource.getMessage("error.account.not.found", null, Locale.FRANCE), principal.getName());
 		}
 		return null;
-		
+
 	}
 
 	@ApiOperation(value = "Get all videos from user")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved user's videos.")})
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved user's videos.") })
 	@GetMapping(value = VIDEOS)
 	public ResponseEntity<List<Video>> getAllVideos(Principal principal) {
 
@@ -269,11 +263,12 @@ public class MediaController {
 
 		}
 		return null;
-		
+
 	}
-	
-	@PostMapping(MEDIAS_WITH_ID+ACCOUNT_WITH_MAIL)
-	public ResponseEntity<Media> addUserToSharedList(@PathVariable("mediaId") String mediaId, @PathVariable("mail") String mail, Principal principal){
+
+	@PostMapping(MEDIAS_WITH_ID + ACCOUNT_WITH_MAIL)
+	public ResponseEntity<Media> addUserToSharedList(@PathVariable("mediaId") String mediaId,
+			@PathVariable("mail") String mail, Principal principal) {
 		try {
 			Media media = mediaService.addUserToSharedList(mail, mediaId);
 			buildLink(principal, media);
@@ -286,9 +281,10 @@ public class MediaController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
-	
-	@DeleteMapping(MEDIAS_WITH_ID+ACCOUNT_WITH_MAIL)
-	public ResponseEntity<Media> removeUserToSharedList(@PathVariable("mediaId") String mediaId, @PathVariable("mail") String mail, Principal principal){
+
+	@DeleteMapping(MEDIAS_WITH_ID + ACCOUNT_WITH_MAIL)
+	public ResponseEntity<Media> removeUserToSharedList(@PathVariable("mediaId") String mediaId,
+			@PathVariable("mail") String mail, Principal principal) {
 		try {
 			Media media = mediaService.removeUserFromSharedList(mail, mediaId);
 			buildLink(principal, media);
@@ -301,7 +297,7 @@ public class MediaController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
-	
+
 	private void buildLink(Principal principal, Media media) {
 		media.add(linkTo(methodOn(MediaController.class).getMediaById(principal, media.getId())).withSelfRel());
 		media.add(linkTo(methodOn(MediaController.class).getAllMedias(principal)).withRel("media lists"));

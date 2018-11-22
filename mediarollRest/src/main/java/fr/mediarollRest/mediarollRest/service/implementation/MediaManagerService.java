@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -19,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.net.MediaType;
 
-import fr.mediarollRest.mediarollRest.constant.Properties;
 import fr.mediarollRest.mediarollRest.exception.MediaNotFoundException;
 import fr.mediarollRest.mediarollRest.exception.SpaceAvailableNotEnoughException;
 import fr.mediarollRest.mediarollRest.model.Account;
@@ -28,6 +26,7 @@ import fr.mediarollRest.mediarollRest.model.Picture;
 import fr.mediarollRest.mediarollRest.model.Video;
 import fr.mediarollRest.mediarollRest.service.IMediaManagerService;
 
+@Deprecated
 @Service
 public class MediaManagerService implements IMediaManagerService {
 
@@ -39,6 +38,7 @@ public class MediaManagerService implements IMediaManagerService {
 
 	public static final String VIDEOS_FOLDER = "videos";
 	public static final String PICTURES_FOLDER = "pictures";
+	public static final String MEDIAS_FOLDER = "../medias";
 
 	@Override
 	public Media saveMediaInFileSystem(Account account, MultipartFile media)
@@ -65,8 +65,8 @@ public class MediaManagerService implements IMediaManagerService {
 				byte[] bytes = media.getBytes();
 
 				// Creating the directory to store file
-				String rootPath = Properties.MEDIAS_FOLDER;
-				File dir = new File(rootPath + File.separator + folder);
+				String rootPath = MEDIAS_FOLDER;
+				File dir = new File(folder);
 				if (!dir.exists()) {
 					dir.mkdirs();
 				}

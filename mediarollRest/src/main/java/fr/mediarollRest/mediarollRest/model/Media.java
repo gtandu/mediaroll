@@ -37,6 +37,7 @@ public abstract class Media {
 	private String description;
 	private String importDate;
 	private String filePath;
+	private String keyS3;
 	private boolean privateMedia;
 
 	@JsonInclude
@@ -90,6 +91,14 @@ public abstract class Media {
 
 	public void setImportDate(String importDate) {
 		this.importDate = importDate;
+	}
+	
+	public String getKeyS3() {
+		return keyS3;
+	}
+
+	public void setKeyS3(String keyS3) {
+		this.keyS3 = keyS3;
 	}
 
 	@JsonIgnore
